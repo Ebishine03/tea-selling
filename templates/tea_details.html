@@ -1,0 +1,6 @@
+<h1>{{ tea.name }}</h1>
+<img src="{{ tea.image.url }}" alt="{{ tea.name }}">
+<p>{{ tea.description }}</p>
+<p>Price: ${{ tea.price }}</p>
+<p>In stock: {{ tea.stock }}</p>
+<a href="{% url 'order_tea' tea.pk %}">Order Now</a>

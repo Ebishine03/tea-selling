@@ -1,0 +1,90 @@
+{% load static %}
+
+<div class="sticky-top shadow">
+    <nav class="navbar navbar-expand-lg py-2">
+        <a href="index.html" class="navbar-brand">
+            <img class="logo m-2" src="{% static 'img/logo.png' %}" alt="Site Logo">
+        </a>
+
+        <!-- Icons for profile and cart (always visible on small screens) -->
+        <div class="d-lg-none d-flex ms-auto">
+            <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="/search/" method="GET">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text bg-white border-0" type="submit">
+                        <i class="fas fa-search"></i> <!-- Search Icon inside input -->
+                    </button>
+                </div>
+            </form>
+            
+            
+            <a href="profile.html" class="nav-item nav-link mt-2 ms-2">
+                <i class="fas fa-user text-success"></i> <span class="ms-2 mt-2"></span>
+            </a>
+            <a href="cart.html" class="nav-item nav-link mt-2">
+                <i class="fas fa-shopping-cart text-warning"></i> <span class="ms-2 mt-2"></span>
+            </a>
+            
+        </div>
+
+        <!-- Toggler for offcanvas menu -->
+        <button class="navbar-toggler ms-2 shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Links and Search Bar for larger screens -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <!-- Search Bar -->
+            <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text bg-white border-0" type="submit">
+                        <i class="fas fa-search"></i> 
+                    </button>
+                </div>
+            </form>
+            
+            
+
+   
+            <div class="navbar-nav">
+                <a href="index.html" class="nav-item nav-link  text-dark">Home</a>
+                <a href="about.html" class="nav-item nav-link  text-dark">About</a>
+                <a href="product.html" class="nav-item nav-link  text-dark">Products</a>
+                <a href="store.html" class="nav-item nav-link  text-dark" >Store</a>
+            </div>
+
+            
+            <div class="d-none d-lg-flex ms-3">
+                <a href="profile.html" class="nav-item nav-link mt-2">
+                    <i class="fas fa-user text-success"></i> <span class="ms-2 mt-2"></span>
+                </a>
+                <a href="cart.html" class="nav-item nav-link mt-2 ms-3">
+                    <i class="fas fa-shopping-cart text-warning"></i> <span class="ms-2 mt-2"></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Menu for smaller screens -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <a href="index.html" class="nav-item nav-link ml-2 mt-2">Home</a>
+            <a href="about.html" class="nav-item nav-link ml-2 mt-2">About</a>
+            <a href="product.html" class="nav-item nav-link ml-2 mt-2">Products</a>
+            <a href="store.html" class="nav-item nav-link ml-2 mt-2">Store</a>
+
+            <!-- Profile and Cart Icons in offcanvas menu -->
+            <a href="profile.html" class="nav-item nav-link mt-2">
+                <i class="fas fa-user text-success"></i> <span class="ms-2 mt-2">Account</span>
+            </a>
+            <a href="cart.html" class="nav-item nav-link mt-2">
+                <i class="fas fa-shopping-cart text-warning"></i> <span class="ms-2 mt-2">Cart</span>
+            </a>
+        </div>
+    </div>
+</div>
