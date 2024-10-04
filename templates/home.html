@@ -81,7 +81,7 @@
     <div class="container py-5">
         <div class="section-title text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
            
-            <h1 class="display-6">Best Deal</h1>
+            <h1 class="display-6 fw-bold  text-muted">Best Deal</h1>
         </div>
         <div class="owl-carousel product-carousel wow fadeInUp" data-wow-delay="0.5s">
             <a href="" class="d-block product-item rounded" style="text-decoration: none;">
@@ -117,433 +117,213 @@
 </div>
 <!-- offer End -->
 
-
-
-
 <!-- Combo Products Start -->
 <div class="container-xxl py-5">
     <div class="container">
         <div class="section-title text-center mx-auto" style="max-width: 500px;">
-            <h1 class="display-6">LATEST PRODUCTS</h1>
+            <h1 class="display-6 fw-bold text-muted">COMBO PRODUCTS</h1>
+        </div>
+        <!-- Filter and Sort Options -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <!-- Filter by Category -->
+                <label for="filter-category" class="form-label fw-bold">Filter by Category:</label>
+                <select id="filter-category" class="form-select text-secondary fw-bold">
+                    <option value="all">All Categories</option>
+                    <option value="tea">Tea</option>
+                    <option value="spices">Spices</option>
+                    <option value="combo">Combo Products</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 text-end">
+                <!-- Sort by -->
+                <label for="sort-products" class="form-label fw-bolder">Sort by:</label>
+                <select id="sort-products" class="form-select text-secondary fw-bold">
+                    <option value="default">Default</option>
+                    <option value="price-low-high">Price: Low to High</option>
+                    <option value="price-high-low">Price: High to Low</option>
+                    <option value="rating-high-low">Rating: High to Low</option>
+                    <option value="date-newest-first">Date Newest First</option>
+                    <option value="date-oldest-first">Date Oldest First</option>
+                    <option value="name-asc">Name: A-Z</option>
+                    <option value="name-desc">Name: Z-A</option>
+                </select>
+            </div>
         </div>
         <div class="row g-4">
             <!-- Product Card Start -->
-            <div class="col-lg-4 col-md-6 shadow  ">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-1.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-success"></small>
-                            <small class="fa fa-star text-success"></small>
-                            <small class="fa fa-star text-success"></small>
-                            <small class="fa fa-star text-success"></small>
-                            <small class="fa fa-star text-success"></small>
-                        </div>
-                        <h4 class="mb-3">Nature Close Tea</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="fw-bold">$19.00</h4>
-                    </div>
-                    <!-- Buttons Always Visible -->
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-           
-
-         
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-2.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Green Tea Tulsi</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 shadow">
+            <div class="col-lg-4 col-md-6 shadow-lg p-3 bg-body-tertiary rounded">
                 <div class="store-item position-relative text-center">
                     <img class="img-fluid" src="{% static 'img/store-product-3.jpg' %}" alt="">
                     <div class="p-4">
                         <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
+                            {% for star in "★★★★★" %}
+                                {% if forloop.counter <= product.rating %}
+                                    <small class="fa fa-star text-warning"></small>
+                                {% else %}
+                                    <small class="fa fa-star text-secondary"></small>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                         <h4 class="mb-3">Instant Tea Premix</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
+                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed.</p>
                         <h4 class="text-primary">$19.00</h4>
                     </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
+                   
                 </div>
             </div>
             <!-- Product Card End -->
-            <!-- Button to view more products -->
-           
+            <div class="text-center mt-5">
+                <a href="{% url 'view-products' 'combo-products' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>
-<!-- Combo Products End -->  
+<!-- Combo Products End -->
 
-<!-- Latest Products Start -->
-<div class="container-xxl py-5"></div>
-    <div class="container">
-        <div class="section-title text-center mx-auto" style="max-width: 500px;">
-            <h1 class="display-6">COMBO PRODUCTS</h1>
-        </div>
-        <div class="row g-4">
-            <!-- Product Card Start -->
-            <div class="col-lg-4 col-md-6 shadow  ">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-1.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Nature Close Tea</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <!-- Buttons Always Visible -->
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-           
-
-         
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-2.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Green Tea Tulsi</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-3.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Instant Tea Premix</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product Card End -->
-            <!-- Button to view more products -->
-           
-        </div>
-    </div>
-</div>
-<!-- Latest Products End -->
-
-
-
-<!-- Featured Products Start -->
+<!-- Tea Products Start -->
 <div class="container-xxl py-5">
     <div class="container">
         <div class="section-title text-center mx-auto" style="max-width: 500px;">
-            <h1 class="display-6">FEATURED PRODUCTS</h1>
+            <h1 class="display-6 fw-bold text-muted">Tea Product</h1>
+        </div>
+        <!-- Filter and Sort Options -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <!-- Filter by Category -->
+                <label for="filter-category" class="form-label fw-bold">Filter by Category:</label>
+                <select id="filter-category" class="form-select text-secondary fw-bold">
+                    <option value="all">All Categories</option>
+                    <option value="tea">Tea</option>
+                    <option value="spices">Spices</option>
+                    <option value="combo">Combo Products</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 text-end">
+                <!-- Sort by -->
+                <label for="sort-products" class="form-label fw-bolder">Sort by:</label>
+                <select id="sort-products" class="form-select text-secondary fw-bold">
+                    <option value="default">Default</option>
+                    <option value="price-low-high">Price: Low to High</option>
+                    <option value="price-high-low">Price: High to Low</option>
+                    <option value="rating-high-low">Rating: High to Low</option>
+                    <option value="date-newest-first">Date Newest First</option>
+                    <option value="date-oldest-first">Date Oldest First</option>
+                    <option value="name-asc">Name: A-Z</option>
+                    <option value="name-desc">Name: Z-A</option>
+                </select>
+            </div>
         </div>
         <div class="row g-4">
             <!-- Product Card Start -->
-            <div class="col-lg-4 col-md-6 shadow  ">
+             {% for product in recent_tea %}
+            <div class="col-lg-4 col-md-6 shadow-lg p-3 bg-body-tertiary rounded">
                 <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-1.jpg' %}" alt="">
+                   
+                    <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}"/>
                     <div class="p-4">
                         <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
+                            {% for star in "★★★★★" %}
+                                {% if forloop.counter <= product.rating %}
+                                    <small class="fa fa-star text-warning"></small>
+                                {% else %}
+                                    <small class="fa fa-star text-secondary"></small>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <h4 class="mb-3">Nature Close Tea</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
+                        <h4 class="mb-3">{{ product.title }}</h4>
+                        <p>{{ product.description }}</p>
+                        <h4 class="fw-bold">${{ product.price }}</h4>
                     </div>
-                    <!-- Buttons Always Visible -->
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
+                   
                 </div>
             </div>
-           
-
-         
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-2.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Green Tea Tulsi</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-3.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Instant Tea Premix</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
             <!-- Product Card End -->
-            <!-- Button to view more products -->
-           
+            <div class="text-center mt-5">
+                <a href="{% url 'view-products' 'tea' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>
-<!-- Featured Products End -->
+<!-- Tea Products End -->
 
-
-
-<!-- All Products Start -->
+<!-- Spice Products Start -->
 <div class="container-xxl py-5">
     <div class="container">
         <div class="section-title text-center mx-auto" style="max-width: 500px;">
-            <h1 class="display-6">ALL PRODUCTS</h1>
+            <h1 class="display-6 fw-bold text-muted">SPICES</h1>
+        </div>
+        <!-- Filter and Sort Options -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <!-- Filter by Category -->
+                <label for="filter-category" class="form-label fw-bold">Filter by Category:</label>
+                <select id="filter-category" class="form-select text-secondary fw-bold">
+                    <option value="all">All Categories</option>
+                    <option value="tea">Tea</option>
+                    <option value="spices">Spices</option>
+                    <option value="combo">Combo Products</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 text-end">
+                <!-- Sort by -->
+                <label for="sort-products" class="form-label fw-bolder">Sort by:</label>
+                <select id="sort-products" class="form-select text-secondary fw-bold">
+                    <option value="default">Default</option>
+                    <option value="price-low-high">Price: Low to High</option>
+                    <option value="price-high-low">Price: High to Low</option>
+                    <option value="rating-high-low">Rating: High to Low</option>
+                    <option value="date-newest-first">Date Newest First</option>
+                    <option value="date-oldest-first">Date Oldest First</option>
+                    <option value="name-asc">Name: A-Z</option>
+                    <option value="name-desc">Name: Z-A</option>
+                </select>
+            </div>
         </div>
         <div class="row g-4">
             <!-- Product Card Start -->
-            <div class="col-lg-4 col-md-6 shadow  ">
+            {% for product in recent_tea %}
+            <div class="col-lg-4 col-md-6 shadow-lg p-3 bg-body-tertiary rounded">
                 <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-1.jpg' %}" alt="">
+                    tdnjug
+                    <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
+                    
                     <div class="p-4">
                         <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
+                            {% for star in "★★★★★" %}
+                                {% if forloop.counter <= product.rating %}
+                                    <small class="fa fa-star text-warning"></small>
+                                {% else %}
+                                    <small class="fa fa-star text-secondary"></small>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <h4 class="mb-3">Nature Close Tea</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
+                        <h4 class="mb-3">{{ product.title }}</h4>
+                        <p>{{ product.description }}</p>
+                        <h4 class="fw-bold">${{ product.price }}</h4>
                     </div>
-                    <!-- Buttons Always Visible -->
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
+                   
                 </div>
             </div>
-           
-
-         
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-2.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Green Tea Tulsi</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-3.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Instant Tea Premix</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
             <!-- Product Card End -->
-            <!-- Button to view more products -->
-           
+            <div class="text-center mt-5">
+                <a href="{% url 'view-products' 'spices' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>
-<!-- All Products End -->
-
-
-<!-- other Products Start -->
-<div class="container-xxl py-5">
-    <div class="container">
-        <div class="section-title text-center mx-auto" style="max-width: 500px;">
-            <h1 class="display-6">SPICES</h1>
-        </div>
-        <div class="row g-4">
-            <!-- Product Card Start -->
-            <div class="col-lg-4 col-md-6 shadow  ">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-1.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Nature Close Tea</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <!-- Buttons Always Visible -->
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-           
-
-         
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-2.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Green Tea Tulsi</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 shadow">
-                <div class="store-item position-relative text-center">
-                    <img class="img-fluid" src="{% static 'img/store-product-3.jpg' %}" alt="">
-                    <div class="p-4">
-                        <div class="text-center mb-3">
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                            <small class="fa fa-star text-primary"></small>
-                        </div>
-                        <h4 class="mb-3">Instant Tea Premix</h4>
-                        <p>Aliqu diam amet diam et eos. Clita erat ipsum lorem erat ipsum lorem sit sed</p>
-                        <h4 class="text-primary">$19.00</h4>
-                    </div>
-                    <div class="buttons-container">
-                        <a href="" class="btn btn-dark rounded-pill py-2 px-4 m-2">More Detail <i class="fa fa-arrow-right ms-2"></i></a>
-                        <a href="" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product Card End -->
-            <!-- Button to view more products -->
-           
-        </div>
-    </div>
-</div>
-<!-- Other Products End -->  
+<!-- Spice Products End -->
 
 <!-- Contact Start -->
 <div class="container-xxl contact py-5">

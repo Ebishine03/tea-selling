@@ -11,8 +11,8 @@
             <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="/search/" method="GET">
                 <div class="input-group">
                     <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
-                    <button class="input-group-text bg-white border-0" type="submit">
-                        <i class="fas fa-search"></i> <!-- Search Icon inside input -->
+                    <button class="input-group-text  border-1 sr-sm" type="submit">
+                        <i class="fas fa-search"></i>
                     </button>
                 </div>
             </form>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- Toggler for offcanvas menu -->
-        <button class="navbar-toggler ms-2 shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+        <button  class="navbar-toggler ms-2 shadow " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -38,7 +38,7 @@
             <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
                 <div class="input-group">
                     <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
-                    <button class="input-group-text bg-white border-0" type="submit">
+                    <button class="input-group-text bg-white border-1 sr-btn" type="submit">
                         <i class="fas fa-search"></i> 
                     </button>
                 </div>
@@ -48,21 +48,35 @@
 
    
             <div class="navbar-nav">
-                <a href="index.html" class="nav-item nav-link  text-dark">Home</a>
+                <a href="{% url 'home' %}" class="nav-item nav-link  text-dark">Home</a>
                 <a href="about.html" class="nav-item nav-link  text-dark">About</a>
-                <a href="product.html" class="nav-item nav-link  text-dark">Products</a>
+                <div class="nav-item dropdown ">
+                    <a href="#" class="nav-link dropdown-toggle text-dark" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Products
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'offer-products' %}">OFFER PRODUCTS</a></li>
+                        
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'combo-products' %}">COMBO PRODUCTS</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'tea' %}">TEA</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'spices' %}">SPICES</a></li>
+                        
+                    </ul>
+                    
+                </div>
+                
                 <a href="store.html" class="nav-item nav-link  text-dark" >Store</a>
+                <a href="profile.html" class="nav-item nav-link "><i class="fas fa-user text-success"></i> </a>
+                    
+                
+                <a href="cart.html" class="nav-item nav-link mt-1 ms-3">
+                    <i class="fas fa-shopping-cart text-warning"></i>
+                </a>
             </div>
 
             
-            <div class="d-none d-lg-flex ms-3">
-                <a href="profile.html" class="nav-item nav-link mt-2">
-                    <i class="fas fa-user text-success"></i> <span class="ms-2 mt-2"></span>
-                </a>
-                <a href="cart.html" class="nav-item nav-link mt-2 ms-3">
-                    <i class="fas fa-shopping-cart text-warning"></i> <span class="ms-2 mt-2"></span>
-                </a>
-            </div>
+                
+            
         </div>
     </nav>
 
@@ -73,9 +87,16 @@
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <a href="index.html" class="nav-item nav-link ml-2 mt-2">Home</a>
+            <a href="{% url 'home' %}" class="nav-item nav-link  text-dark">Home</a>
             <a href="about.html" class="nav-item nav-link ml-2 mt-2">About</a>
-            <a href="product.html" class="nav-item nav-link ml-2 mt-2">Products</a>
+            <p class="nav-item nav-link ml-2 mt-2">Products</p>
+            <ul class="">
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'offer-products' %}">OFFER PRODUCTS</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'combo-products' %}">COMBO PRODUCTS</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'tea' %}">TEA</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'spices' %}">SPICES</a></li>
+            </ul>
+            
             <a href="store.html" class="nav-item nav-link ml-2 mt-2">Store</a>
 
             <!-- Profile and Cart Icons in offcanvas menu -->

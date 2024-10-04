@@ -1,0 +1,338 @@
+[
+    {
+        "model": "Products.Product",
+        "pk": 1,
+        "fields": {
+            "title": "Nature Close Spice",
+            "description": "A blend of natural spices for a rich flavor.",
+            "price": 19.00,
+            "discounted_price": 15.00,
+            "product_image": "img/product1.jpg",
+            "category": "SPICE",
+            "stock": 100,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 2,
+        "fields": {
+            "title": "Green Spice Tulsi",
+            "description": "Tulsi-based spice mix for culinary use.",
+            "price": 25.00,
+            "discounted_price": 20.00,
+            "product_image": "img/product2.jpg",
+            "category": "SPICE",
+            "stock": 80,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 3,
+        "fields": {
+            "title": "Instant Spice Premix",
+            "description": "Convenient spice premix for quick cooking.",
+            "price": 15.00,
+            "discounted_price": 10.00,
+            "product_image": "img/product3.jpg",
+            "category": "SPICE",
+            "stock": 50,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 4,
+        "fields": {
+            "title": "Masala Mix",
+            "description": "Traditional masala spice blend for all dishes.",
+            "price": 30.00,
+            "discounted_price": 25.00,
+            "product_image": "img/product4.jpg",
+            "category": "SPICE",
+            "stock": 70,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 5,
+        "fields": {
+            "title": "Herbal Spice Blend",
+            "description": "A blend of herbal spices designed for detox.",
+            "price": 22.00,
+            "discounted_price": 18.00,
+            "product_image": "img/product5.jpg",
+            "category": "SPICE",
+            "stock": 60,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 6,
+        "fields": {
+            "title": "Chamomile Spice",
+            "description": "A soothing spice blend perfect for calming dishes.",
+            "price": 20.00,
+            "discounted_price": 16.00,
+            "product_image": "img/product6.jpg",
+            "category": "SPICE",
+            "stock": 90,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 7,
+        "fields": {
+            "title": "Lemon Ginger Spice",
+            "description": "Zesty lemon ginger spice for enhancing dishes.",
+            "price": 18.00,
+            "discounted_price": 14.00,
+            "product_image": "img/product7.jpg",
+            "category": "SPICE",
+            "stock": 110,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 8,
+        "fields": {
+            "title": "Earl Grey Spice",
+            "description": "Aromatic spice blend with bergamot flavor.",
+            "price": 28.00,
+            "discounted_price": 24.00,
+            "product_image": "img/product8.jpg",
+            "category": "SPICE",
+            "stock": 40,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 9,
+        "fields": {
+            "title": "Darjeeling Spice",
+            "description": "Premium spice known for its unique flavor.",
+            "price": 35.00,
+            "discounted_price": 30.00,
+            "product_image": "img/product9.jpg",
+            "category": "SPICE",
+            "stock": 30,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 10,
+        "fields": {
+            "title": "Chai Spice Mix",
+            "description": "Spicy and flavorful mix for chai beverages.",
+            "price": 15.00,
+            "discounted_price": 12.00,
+            "product_image": "img/product10.jpg",
+            "category": "SPICE",
+            "stock": 20,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 11,
+        "fields": {
+            "title": "Iced Green Spice",
+            "description": "Refreshing iced spice mix for cool dishes.",
+            "price": 10.00,
+            "discounted_price": 8.00,
+            "product_image": "img/product11.jpg",
+            "category": "SPICE",
+            "stock": 50,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 12,
+        "fields": {
+            "title": "Fruit Infusion Spice",
+            "description": "A fruity spice blend for a refreshing taste.",
+            "price": 12.00,
+            "discounted_price": 10.00,
+            "product_image": "img/product12.jpg",
+            "category": "SPICE",
+            "stock": 100,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 13,
+        "fields": {
+            "title": "Nature Close Tea",
+            "description": "A soothing herbal tea made from natural herbs.",
+            "price": 19.00,
+            "discounted_price": 15.00,
+            "product_image": "img/product1.jpg",
+            "category": "TEA",
+            "stock": 100,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 14,
+        "fields": {
+            "title": "Green Tea Tulsi",
+            "description": "Green tea infused with Tulsi for a refreshing taste.",
+            "price": 25.00,
+            "discounted_price": 20.00,
+            "product_image": "img/product2.jpg",
+            "category": "TEA",
+            "stock": 80,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 15,
+        "fields": {
+            "title": "Instant Tea Premix",
+            "description": "Convenient instant tea premix for quick brewing.",
+            "price": 15.00,
+            "discounted_price": 10.00,
+            "product_image": "img/product3.jpg",
+            "category": "TEA",
+            "stock": 50,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 16,
+        "fields": {
+            "title": "Masala Chai",
+            "description": "Spicy and flavorful traditional Indian tea.",
+            "price": 30.00,
+            "discounted_price": 25.00,
+            "product_image": "img/product4.jpg",
+            "category": "TEA",
+            "stock": 70,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 17,
+        "fields": {
+            "title": "Herbal Detox Tea",
+            "description": "A blend of herbs designed to detoxify the body.",
+            "price": 22.00,
+            "discounted_price": 18.00,
+            "product_image": "img/product5.jpg",
+            "category": "TEA",
+            "stock": 60,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 18,
+        "fields": {
+            "title": "Chamomile Tea",
+            "description": "A calming tea perfect for relaxation.",
+            "price": 20.00,
+            "discounted_price": 16.00,
+            "product_image": "img/product6.jpg",
+            "category": "TEA",
+            "stock": 90,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 19,
+        "fields": {
+            "title": "Lemon Ginger Tea",
+            "description": "Zesty lemon ginger tea for a refreshing drink.",
+            "price": 18.00,
+            "discounted_price": 14.00,
+            "product_image": "img/product7.jpg",
+            "category": "TEA",
+            "stock": 110,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 20,
+        "fields": {
+            "title": "Earl Grey Tea",
+            "description": "Aromatic tea blend with bergamot flavor.",
+            "price": 28.00,
+            "discounted_price": 24.00,
+            "product_image": "img/product8.jpg",
+            "category": "TEA",
+            "stock": 40,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 21,
+        "fields": {
+            "title": "Darjeeling Tea",
+            "description": "Premium tea known for its unique flavor.",
+            "price": 35.00,
+            "discounted_price": 30.00,
+            "product_image": "img/product9.jpg",
+            "category": "TEA",
+            "stock": 30,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 22,
+        "fields": {
+            "title": "Chai Premix",
+            "description": "Spicy and flavorful premix for chai beverages.",
+            "price": 15.00,
+            "discounted_price": 12.00,
+            "product_image": "img/product10.jpg",
+            "category": "TEA",
+            "stock": 20,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 23,
+        "fields": {
+            "title": "Iced Green Tea",
+            "description": "Refreshing iced green tea for hot days.",
+            "price": 10.00,
+            "discounted_price": 8.00,
+            "product_image": "img/product11.jpg",
+            "category": "TEA",
+            "stock": 50,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "Products.Product",
+        "pk": 24,
+        "fields": {
+            "title": "Fruit Infusion Tea",
+            "description": "A fruity tea blend for a refreshing drink.",
+            "price": 12.00,
+            "discounted_price": 10.00,
+            "product_image": "img/product12.jpg",
+            "category": "TEA",
+            "stock": 100,
+            "created_at": "2024-10-04T10:00:00Z"
+        }
+    }
+]

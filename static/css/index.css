@@ -1,3 +1,4 @@
+
 a {
   text-decoration: none;
 }
@@ -171,6 +172,13 @@ a {
       opacity: 1;
   }
 }
+.sr-btn{
+background-color: transparent;
+}
+.sr-sm{
+  background-color: transparent;
+}
+
 #offcanvasMenu {
   width: 250px; 
   background-color: aliceblue;
@@ -281,8 +289,9 @@ a .owl-carousel{
   text-decoration: none;
 }
 .product {
-  background: linear-gradient(rgba(136, 180, 78, .1), rgba(136, 180, 78, .1)), url(../img/product-bg.png) left bottom no-repeat;
-  background-size: auto;
+  background: linear-gradient(rgba(136, 180, 78, .1), rgba(136, 180, 78, .1)), url(../img/jungle.jpg) left bottom no-repeat;
+  background-size: cover;
+  
 }
 
 .product-carousel .owl-nav {
@@ -299,10 +308,11 @@ a .owl-carousel{
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  background: var(--primary);
+  color: #4bc7d2;
+  
+  background: rgb(rgb(2, 75, 43), green, blue);
   border-radius: 55px;
-  box-shadow: 0 0 45px rgba(0, 0, 0, .15);
+  box-shadow: rgba(85, 219, 138, 0.871) 0px 0px 0px 3px;
   font-size: 25px;
   transition: .5s;
 }
