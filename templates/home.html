@@ -289,8 +289,8 @@
             </div>
         </div>
         <div class="row g-4">
-            <!-- Product Card Start -->
-            {% for product in recent_tea %}
+            <!--  Card Start -->
+            {% for product in recent_spice %}
             <div class="col-lg-4 col-md-6 shadow-lg p-3 bg-body-tertiary rounded">
                 <div class="store-item position-relative text-center">
                     tdnjug
@@ -314,9 +314,9 @@
                 </div>
             </div>
             {% endfor %}
-            <!-- Product Card End -->
+            <!--  Card End -->
             <div class="text-center mt-5">
-                <a href="{% url 'view-products' 'spices' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                <a href="{% url 'view-products' 'spice' %}" class="btn btn-primary rounded-pill py-3 px-5">
                     View More <i class="fa fa-arrow-right ms-2"></i>
                 </a>
             </div>

@@ -8,7 +8,7 @@
 
         <!-- Icons for profile and cart (always visible on small screens) -->
         <div class="d-lg-none d-flex ms-auto">
-            <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="/search/" method="GET">
+            <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="{% url 'search_products' %}" method="GET">
                 <div class="input-group">
                     <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
                     <button class="input-group-text  border-1 sr-sm" type="submit">
@@ -59,7 +59,7 @@
                         
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'combo-products' %}">COMBO PRODUCTS</a></li>
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'tea' %}">TEA</a></li>
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'spices' %}">SPICES</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'spice' %}">SPICES</a></li>
                         
                     </ul>
                     

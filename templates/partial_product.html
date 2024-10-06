@@ -1,0 +1,38 @@
+
+
+
+{% for product in products %}
+<div class="col-lg-4 col-md-6 mb-4">
+    <div class="card shadow-lg p-3 bg-body-tertiary rounded">
+        <!-- Product Image -->
+        <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
+
+        <!-- Product Details -->
+        <div class="p-4 text-center">
+            <!-- Rating -->
+            <div class="text-center mb-3">
+                {% for star in "★★★★★" %}
+                    {% if forloop.counter <= product.rating %}
+                        <small class="fa fa-star text-warning"></small>
+                    {% else %}
+                        <small class="fa fa-star text-secondary"></small>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Product Title -->
+            <h4 class="mb-3">{{ product.title }}</h4>
+
+            <!-- Product Description -->
+            <p>{{ product.description }}</p>
+
+            <!-- Product Price -->
+            <h4 class="fw-bold">${{ product.price }}</h4>
+        </div>
+    </div>
+</div>
+{% empty %}
+  <p>No products found.</p>
+{% endfor %}
+
+

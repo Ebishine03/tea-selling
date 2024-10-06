@@ -4,6 +4,7 @@ from django.conf import settings
 from .views import *
 urlpatterns = [
 path('view-products/<str:category>/',view_products,name='view-products'),
+#  path('view-products/<slug:category_slug>/', view_products, name='product-view_products'),
 
 
 
