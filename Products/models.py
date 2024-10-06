@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 # Define main product categories
 CATEGORY_CHOICES = (
     ('TEA', 'TEA PRODUCTS'),
@@ -16,10 +16,10 @@ class Product(models.Model):
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)  # Main product category
     stock = models.PositiveIntegerField(default=0)  # Remaining stock
     created_at = models.DateTimeField(auto_now_add=True)
-
+    updated_at = models.DateTimeField(auto_now=True)
     
     is_offer = models.BooleanField(default=False)
-    is_latest = models.BooleanField(default=True)  # Automatically mark new products as latest
+    is_latest = models.BooleanField(default=True)  
 
     def __str__(self):
         return self.title
@@ -28,11 +28,16 @@ class Product(models.Model):
         return self.stock > 0
 
 
+
 class ComboProduct(models.Model):
-    name = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
     products = models.ManyToManyField(Product, related_name='combos')  
-    combo_price = models.FloatField() 
+    price = models.FloatField() 
     is_offer = models.BooleanField(default=False)
-    is_latest = models.BooleanField(default=True) 
+    image = models.ImageField(upload_to='combo_products/', blank=True, null=True)  
+    description = models.TextField(blank=True, null=True)  
+    created_at = models.DateTimeField(default=timezone.now)  
+    updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
-        return self.name
+        return self.title

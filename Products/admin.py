@@ -9,7 +9,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(ComboProduct)
 class ComboProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'combo_price', 'is_offer', 'is_latest')
-    list_filter = ('is_offer', 'is_latest')
-    search_fields = ('name',)
-    filter_horizontal = ('products',)  # Allows easier selection of multiple products for the combo
+    list_display = ('title', 'price','updated_at','created_at', 'is_offer','image','description')
+    list_filter = ('is_offer', 'title')
+    search_fields = ('title',)
+    filter_horizontal = ('products',)  

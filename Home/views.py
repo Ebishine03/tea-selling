@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from Products.models import Product
+from Products.models import Product,ComboProduct
 # Create your views here.
 
 
@@ -11,7 +11,7 @@ def index(request):
     recent_tea = Product.objects.filter(category='TEA').order_by('-created_at')[:3]
     recent_spice = Product.objects.filter(category='SPICE').order_by('-created_at')[:3]
     recent_offer = Product.objects.filter(category='OFFER').order_by('-created_at')[:3]
-    recent_combo = Product.objects.filter(category='COMBO').order_by('-created_at')[:3]
+    recent_combo = ComboProduct.objects.all().order_by('-id')[:3]
     print(recent_combo,recent_offer,recent_spice,recent_tea)
     print('hello wohekn ')
 
