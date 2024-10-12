@@ -1,0 +1,42 @@
+{% for chunk in chunked_products %}
+    <div class="row mt-5 ms-1">
+        {% for product in chunk %}
+        <div class="col-lg-4 col-md-6 mb-4 mt-2">
+            <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
+                <!-- Product Image -->
+                <div class="image-container">
+                    <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
+                </div>
+        
+                <!-- Product Details -->
+                <div class="p-4">
+                    <!-- Product Title -->
+                    <h4 class="mb-3">{{ product.title }}</h4>
+                    <!-- Product Description -->
+                    <h4 class="mb-3">${{ product.description }}</h4>
+                    <!-- Product Price -->
+                    <h4 class="fw-bold mb-0">${{ product.price }}</h4>
+
+                    <!-- Button Container -->
+                    <div class="mt-4">
+                        <!-- Add to Cart Button -->
+                        <form method="POST" action="{% url 'add_to_cart' product.id %}" class="mb-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                        </form>
+                        
+                        <!-- Buy Now Button -->
+                        <form method="POST" action="{% url 'buy_now' product.slug %}">  <!-- Use slug instead of id -->
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
+                            <button type="submit" class="btn btn-success w-100">Buy Now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% empty %}
+    <p class="text-center">No products available.</p>
+{% endfor %}

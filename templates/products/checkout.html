@@ -1,0 +1,40 @@
+<!-- products/checkout.html -->
+{% extends 'base/index.html' %}
+
+{% block content %}
+<h2>Checkout</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <h3>Shipping Address</h3>
+    <select name="address" required>
+        {% for address in addresses %}
+            <option value="{{ address.id }}">{{ address }}</option>
+        {% endfor %}
+    </select>
+
+    <h3>Payment Method</h3>
+    <select name="payment_method" required>
+        <option value="credit_card">Credit Card</option>
+        <option value="paypal">PayPal</option>
+        <!-- Add other payment methods as needed -->
+    </select>
+
+    <h3>Order Summary</h3>
+    <ul>
+        {% for item in items %}
+            <li>
+                {{ item.item.product.title }} - Quantity: {{ item.item.quantity }} - Total: {{ item.item_total }}
+                <!-- Add buttons to modify cart items -->
+                <button type="submit" name="action" value="increase" formaction="?item_id={{ item.item.id }}">+</button>
+                <button type="submit" name="action" value="decrease" formaction="?item_id={{ item.item.id }}">-</button>
+                <button type="submit" name="action" value="remove" formaction="?item_id={{ item.item.id }}">Remove</button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h4>Total Price: {{ total_price }}</h4>
+
+    <button type="submit" name="action" value="place_order">Place Order</button>
+</form>
+{% endblock %}

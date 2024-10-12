@@ -1,0 +1,256 @@
+{% extends 'base/index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- About Start -->
+{% include 'base/carousel.html' %}
+<!-- About End -->
+
+<!-- Article Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <img class="img-fluid" src="{% static 'img/article.jpg' %}" alt="">
+            </div>
+            <div class="col-lg-6">
+                <div class="section-title">
+                    <h1 class="display-6">The history of tea leaf in the world</h1>
+                </div>
+                <h3 class="mb-4">1868 by Tata Tea is a collection of specially curated tea blends poised to spark many moments of magic. Inspired by India – this collection tells the glorious stories of tea in a simple yet evocative manner. Each tea is born amidst a variety of flora, fauna, climate and topography. Furthermore, teas are paired with spices and flavours, fruits & flowers culminating in a taste experience that is unforgettable. 1868 is a celebration of diversity with each carefully selected variant having its unique story to tell, 1868 is celebration of Truly Indian Tea Stories.</h3>
+                <a href="" class="btn btn-dark rounded-pill py-3 px-5">Read More</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Article End -->
+
+<!-- Offer Start -->
+<div class="container-fluid product py-5 my-5">
+    <div class="container py-5">
+        <div class="section-title text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-6 fw-bold text-muted">Best Deal</h1>
+        </div>
+        <div class="owl-carousel product-carousel wow fadeInUp" data-wow-delay="0.5s">
+            <a href="" class="d-block product-item rounded" style="text-decoration: none;">
+                <img src="{% static 'img/product-1.jpg' %}" alt="">
+                <div class="bg-white shadow-sm text-center p-4 position-relative mt-n5 mx-4">
+                    <h4 class="text-dark">Green Tea</h4>
+                    <span class="text-body">Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum</span>
+                </div>
+            </a>
+            <a href="" class="d-block product-item rounded" style="text-decoration: none;">
+                <img src="{% static 'img/product-1.jpg' %}" alt="">
+                <div class="bg-white shadow-sm text-center p-4 position-relative mt-n5 mx-4">
+                    <h4 class="text-dark">Black Tea</h4>
+                    <span class="text-body">Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum</span>
+                </div>
+            </a>
+            <a href="" class="d-block product-item rounded" style="text-decoration: none;">
+                <img src="{% static 'img/product-1.jpg' %}" alt="">
+                <div class="bg-white shadow-sm text-center p-4 position-relative mt-n5 mx-4">
+                    <h4 class="text-dark">Spiced Tea</h4>
+                    <span class="text-body">Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum</span>
+                </div>
+            </a>
+            <a href="" class="d-block product-item rounded" style="text-decoration: none;">
+                <img src="{% static 'img/product-1.jpg' %}" alt="">
+                <div class="bg-white shadow-sm text-center p-4 position-relative mt-n5 mx-4">
+                    <h4 class="text-dark">Organic Tea</h4>
+                    <span class="text-body">Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+<!-- Offer End -->
+
+<!-- Combo Products Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="section-title text-center mx-auto" style="max-width: 500px;">
+            <h1 class="display-6 fw-bold text-muted">COMBO PRODUCTS</h1>
+        </div>
+        <div class="row g-4">
+            {% for product in recent_combo %}
+            <div class="col-lg-4 col-md-6">
+                <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
+                    <!-- Product Image -->
+                    <div class="image-container">
+                        {% if product.image %}
+                            <img class="img-fluid" src="{{ product.image.url }}" alt="{{ product.title }}" />
+                        {% else %}
+                            <img class="img-fluid" src="{% static 'default-image.jpg' %}" alt="No Image Available">
+                        {% endif %}
+                    </div>
+                    <!-- Product Info -->
+                    <div class="p-4">
+                        <div class="text-center mb-3">
+                            {% for star in "★★★★★" %}
+                                {% if forloop.counter <= product.rating %}
+                                    <small class="fa fa-star text-warning"></small>
+                                {% else %}
+                                    <small class="fa fa-star text-secondary"></small>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <h4 class="mb-3">{{ product.title }}</h4>
+                        <h4 class="fw-bold">${{ product.price }}</h4>
+
+                        <!-- Flex container for buttons -->
+                        <div class="d-flex justify-content-center gap-3">
+                            <!-- Add to Cart Button -->
+                            <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-3">Add to Cart</button>
+                            </form>
+
+                            <!-- Buy Now Button -->
+                            <form method="POST" action="{% url 'checkout' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
+                                <button type="submit" class="btn btn-success mt-3">Buy Now</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="text-center mt-5">
+                <a href="{% url 'view-products' category_slug='combo' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Combo Products End -->
+
+<!-- Tea Products Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="section-title text-center mx-auto" style="max-width: 500px;">
+            <h1 class="display-6 fw-bold text-muted">Tea Products</h1>
+        </div>
+        <div class="row g-4">
+            {% for product in recent_tea %}
+            <div class="col-lg-4 col-md-6">
+                <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
+                    <!-- Product Image -->
+                    <div class="image-container">
+                        {% if product.product_image %}
+                            <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}" />
+                        {% else %}
+                            <img class="img-fluid" src="{% static 'default-image.jpg' %}" alt="No Image Available">
+                        {% endif %}
+                    </div>
+                    <!-- Product Info -->
+                    <div class="p-4">
+                        <div class="text-center mb-3">
+                            {% for star in "★★★★★" %}
+                                {% if forloop.counter <= product.rating %}
+                                    <small class="fa fa-star text-warning"></small>
+                                {% else %}
+                                    <small class="fa fa-star text-secondary"></small>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <h4 class="mb-3">{{ product.title }}</h4>
+                        <p>{{ product.description }}</p>
+                        <h4 class="fw-bold">${{ product.price }}</h4>
+
+                        <!-- Flex container for buttons -->
+                        <div class="d-flex justify-content-center gap-3">
+                            <!-- Add to Cart Button -->
+                            <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-3">Add to Cart</button>
+                            </form>
+
+                            <!-- Buy Now Button -->
+                            <form method="POST" action="{% url 'checkout' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
+                                <button type="submit" class="btn btn-success mt-3">Buy Now</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="text-center mt-5">
+                <a href="{% url 'view-products' category_slug='TEA' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Tea Products End -->
+
+<!-- Spices Products Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="section-title text-center mx-auto" style="max-width: 500px;">
+            <h1 class="display-6 fw-bold text-muted">Spices Products</h1>
+        </div>
+        <div class="row g-4">
+            {% for product in recent_spice %}
+            <div class="col-lg-4 col-md-6">
+                <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
+                    <!-- Product Image -->
+                    <div class="image-container">
+                        {% if product.product_image %}
+                            <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}" />
+                        {% else %}
+                            <img class="img-fluid" src="{% static 'default-image.jpg' %}" alt="No Image Available">
+                        {% endif %}
+                    </div>
+                    <!-- Product Info -->
+                    <div class="p-4">
+                        <div class="text-center mb-3">
+                            {% for star in "★★★★★" %}
+                                {% if forloop.counter <= product.rating %}
+                                    <small class="fa fa-star text-warning"></small>
+                                {% else %}
+                                    <small class="fa fa-star text-secondary"></small>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <h4 class="mb-3">{{ product.title }}</h4>
+                        <p>{{ product.description }}</p>
+                        <h4 class="fw-bold">${{ product.price }}</h4>
+
+                        <!-- Flex container for buttons -->
+                        <div class="d-flex justify-content-center gap-3">
+                            <!-- Add to Cart Button -->
+                            <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-3">Add to Cart</button>
+                            </form>
+
+                            <!-- Buy Now Button -->
+                            <form method="POST" action="{% url 'checkout' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
+                                <button type="submit" class="btn btn-success mt-3">Buy Now</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="text-center mt-5">
+                <a href="{% url 'view-products' category_slug='SPICE' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Spices Products End -->
+
+{% endblock %}

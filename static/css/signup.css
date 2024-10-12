@@ -1,0 +1,95 @@
+/* General Container Styles */
+.container {
+    width: 100%;
+    max-width: 400px; /* Adjust the width as needed */
+    
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fcf9f9;
+    margin-top: 50px;
+}
+
+
+.form-container {
+    padding: 20px;
+}
+
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff; 
+}
+
+/* Button Styles */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+
+.text-error {
+    color: #dc3545; /* Bootstrap Danger Color */
+    font-size: 14px; /* Adjust font size */
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    background-color: #f8d7da; /* Light red background */
+    list-style-type: none; /* Remove bullet points */
+}
+
+ul.messages {
+    padding: 0;
+    margin: 0 0 15px;
+}
+
+.social-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.social {
+    width: 30px; /* Icon size */
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff; /* Icon color */
+    background-color: #007bff; /* Social button background */
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.social:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Responsive Design */

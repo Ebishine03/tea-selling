@@ -1,0 +1,134 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Profile Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Your Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="update_profile" value="1">
+
+                        <div class="form-group mb-3">
+                            <label for="first_name" class="form-label"><i class="fas fa-user"></i> First Name</label>
+                            <input type="text" class="form-control rounded-pill" name="first_name" value="{{ user.first_name }}" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="last_name" class="form-label"><i class="fas fa-user"></i> Last Name</label>
+                            <input type="text" class="form-control rounded-pill" name="last_name" value="{{ user.last_name }}" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="phone_number" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                            <input type="text" class="form-control rounded-pill" name="phone_number" value="{{ user.phone_number }}" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-gradient-primary w-100 rounded-pill">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm rounded">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Your Addresses</h4>
+                </div>
+                <div class="card-body">
+                    {% if addresses %}
+                        <ul class="list-group list-group-flush mb-3">
+                            {% for address in addresses %}
+                                <li class="list-group-item">
+                                    <strong>{{ address.street }}</strong>, {{ address.city }}, {{ address.state }} - {{ address.pin_code }}<br>
+                                    {{ address.country }}
+                                    <!-- Remove Address Button -->
+                                    <form method="POST" action="{% url 'profile' %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove this address?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="remove_address" value="1">
+                                        <input type="hidden" name="address_id" value="{{ address.id }}">
+                                        <button type="submit" class="btn btn-danger btn-sm float-end">Remove</button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            No addresses added yet.
+                        </div>
+                    {% endif %}
+        
+                    <h5 class="mb-3">Add New Address</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="add_address" value="1">
+        
+                        <div class="form-group mb-3">
+                            <label for="street" class="form-label"><i class="fas fa-home"></i> Street</label>
+                            <input type="text" class="form-control rounded-pill" name="street" required>
+                        </div>
+        
+                        <div class="form-group mb-3">
+                            <label for="city" class="form-label"><i class="fas fa-city"></i> City</label>
+                            <input type="text" class="form-control rounded-pill" name="city" required>
+                        </div>
+        
+                        <div class="form-group mb-3">
+                            <label for="state" class="form-label"><i class="fas fa-map-marker-alt"></i> State</label>
+                            <input type="text" class="form-control rounded-pill" name="state" required>
+                        </div>
+        
+                        <div class="form-group mb-3">
+                            <label for="zip_code" class="form-label"><i class="fas fa-envelope"></i> Pin Code</label>
+                            <input type="text" class="form-control rounded-pill" name="zip_code" required>
+                        </div>
+        
+                        <div class="form-group mb-3">
+                            <label for="country" class="form-label"><i class="fas fa-globe"></i> Country</label>
+                            <input type="text" class="form-control rounded-pill" name="country" required>
+                        </div>
+        
+                        <button type="submit" class="btn btn-gradient-primary w-100 rounded-pill">Add Address</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Styles -->
+<style>
+    .btn-gradient-primary {
+        background: linear-gradient(45deg, #1e90ff, #00bfff);
+        border: none;
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    }
+
+    .btn-gradient-primary:hover {
+        background: linear-gradient(45deg, #00bfff, #1e90ff);
+    }
+
+    .form-control {
+        padding-left: 2.5rem;
+        position: relative;
+    }
+
+    .form-control::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        width: 16px;
+        height: 16px;
+    }
+</style>
+{% endblock %}
