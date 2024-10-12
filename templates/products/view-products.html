@@ -1,0 +1,115 @@
+{% extends 'base/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-xxl py-5">
+</div>
+<div class="container">
+    <div class="section-title text-center mx-auto" style="max-width: 500px;">
+        <h1 class="display-6 fw-bold text-muted">
+            {% if selected_category_slug == 'TEA' or selected_category_slug == 'SPICE' %}
+                {{ selected_category_slug }} ITEMS
+            {% elif selected_category_slug == 'combo'  %}
+                COMBO PRODUCTS
+            {% else %}
+            OFFER PRODUCTS
+            {% endif %}
+        </h1>
+    </div>
+
+    <!-- Filter and Sort Options -->
+    <div class="row mb-4">
+        <!-- Search within Category -->
+        <div class="col-md-6 mt-2">
+            <div class="input-group">
+                <input type="text" id="search-query" name="search-query" class="form-control"
+                       placeholder="Search within {{ selected_category_slug }}" value="{{ request.GET.search_query }}">
+            </div>
+        </div>
+
+        <!-- Sort by -->
+        <div class="col-md-6 mt-2">
+            <div class="input-group justify-content-md-end">
+                <label for="sort-by" class="input-group-text fw-bold">Sort by:</label>
+                <select id="sort-by" name="sort-by" class="form-select">
+                    <option value="default">Select Options</option>
+                    <option value="price-low-high" {% if request.GET.sort_by == "price-low-high" %}selected{% endif %}>
+                        Price: Low to High
+                    </option>
+                    <option value="price-high-low" {% if request.GET.sort_by == "price-high-low" %}selected{% endif %}>
+                        Price: High to Low
+                    </option>
+                    <option value="rating-high-low" {% if request.GET.sort_by == "rating-high-low" %}selected{% endif %}>
+                        Rating: High to Low
+                    </option>
+                    <option value="date-newest" {% if request.GET.sort_by == "date-newest" %}selected{% endif %}>
+                        Date Newest First
+                    </option>
+                    <option value="date-oldest" {% if request.GET.sort_by == "date-oldest" %}selected{% endif %}>
+                        Date Oldest First
+                    </option>
+                    <option value="name-asc" {% if request.GET.sort_by == "name-asc" %}selected{% endif %}>
+                        Name: A-Z
+                    </option>
+                    <option value="name-desc" {% if request.GET.sort_by == "name-desc" %}selected{% endif %}>
+                        Name: Z-A
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product List -->
+    <div class="row g-4" id="product-list">
+        {% if chunked_products %}
+            {% include 'partials/partial_product.html' %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No products found.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Attach event listener for input in the search query
+        $('#search-query').on('input', function () {
+            var searchQuery = $(this).val();
+            var sortBy = $('#sort-by').val();
+
+            $.ajax({
+                url: "{% url 'view-products' selected_category_slug %}",  // Use the slug in the URL
+                data: {
+                    'search-query': searchQuery,
+                    'sort-by': sortBy
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('#product-list').html(data.html); // Update the product list dynamically
+                }
+            });
+        });
+
+        // Attach event listener for sort selection
+        $('#sort-by').on('change', function () {
+            var searchQuery = $('#search-query').val();
+            var sortBy = $(this).val();
+
+            $.ajax({
+                url: "{% url 'view-products' selected_category_slug %}",  // Use the slug in the URL
+                data: {
+                    'search-query': searchQuery,
+                    'sort-by': sortBy
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('#product-list').html(data.html); // Update the product list dynamically
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

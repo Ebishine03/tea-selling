@@ -1,0 +1,139 @@
+{% load static %}
+<div class="sticky-top shadow">
+    <nav class="navbar navbar-expand-lg py-2">
+        <a href="index.html" class="navbar-brand">
+            <img class="logo m-2" src="{% static 'img/logo.png' %}" alt="Site Logo">
+        </a>
+
+        <!-- Icons for profile and cart (always visible on small screens) -->
+        <div class="d-lg-none d-flex ms-auto">
+            <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="{% url 'search_products' %}" method="GET">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text border-1 sr-sm" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            {% if user.is_authenticated %}
+                <a>
+                    <div>
+                        <i class="fas fa-shopping-cart text-warning" style="font-size: 1.7rem;"></i>
+                        <span class="badge bg-danger">{{ request.user.cartitem_set.count }}</span>  <!-- Count of items in cart -->
+                    </div>
+                </a>
+            {% else %}
+            {% endif %}
+        </div>
+
+        <!-- Toggler for offcanvas menu -->
+        <button class="navbar-toggler ms-2 shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Links and Search Bar for larger screens -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <!-- Search Bar -->
+            <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text bg-white border-1 sr-btn" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="navbar-nav">
+                <a href="{% url 'home' %}" class="nav-item nav-link text-dark mt-3">Home</a>
+                <a href="about.html" class="nav-item nav-link mt-3 text-dark">About</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle text-dark mt-3" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Products
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='offer-products' %}">OFFER PRODUCTS</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='combo' %}">COMBO PRODUCTS</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='TEA' %}">TEA</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='SPICE' %}">SPICE</a></li>
+                
+                    </ul>
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="nav-item dropdown">
+                        <a href="{% url 'profile'%}" class="nav-link dropdown-toggle text-dark mt-3" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div>
+                                <span class="text-dark">{{ user.first_name }} {{ user.last_name }}</span>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'profile'%}">My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt text-danger"></i> Sign Out</a></li>
+                        </ul>
+                    </div>
+
+                    <a href="{% url 'view_cart' %}" class="nav-item nav-link mt-3">
+                        <div>
+                            <i class="fas fa-shopping-cart text-warning" style="font-size: 1.5rem;"></i>
+                            <span class="badge bg-danger">{{ request.user.cartitem_set.count }}</span>  <!-- Count of items in cart -->
+                        </div>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-item nav-link">
+                        <div>
+                            <i class="fas fa-user text-success" style="font-size: 1.7rem;"></i>
+                        </div>
+                        <span class="text-dark">Login</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Menu for smaller screens -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <a href="{% url 'home' %}" class="nav-item nav-link text-muted fw-bold text-dark">Home</a>
+            <a href="about.html" class="nav-item nav-link ml-2 mt-2 text-muted fw-bold">About</a>
+            <p class="nav-item nav-link mt-2 ms-3 text-muted fw-bold">Products</p>
+            <ul class="ms-4">
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='offer-products' %}">OFFER PRODUCTS</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='combo' %}">COMBO PRODUCTS</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='TEA' %}">TEA</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='SPICE' %}">SPICE</a></li>
+            </ul>
+
+            <!-- Profile and Cart Icons in offcanvas menu -->
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile'%}" class="nav-item nav-link">
+                    <div>
+                        <i class="fas fa-user text-success" style="font-size: 1.3rem;"></i>
+                    </div>
+                    <span class="text-dark">{{ user.first_name }} {{ user.last_name }}</span>
+                </a>
+                <ul class="ms-3">
+                    <a class="text-muted fw-bold" href="{% url 'profile'%} ">View Profile</a> <br><br>
+                    <a class="text-muted fw-bold" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt text-danger"></i> Sign Out</a>
+                </ul>
+
+                <a href="{% url 'view_cart' %}" class="nav-item nav-link mt-3">
+                    <div>
+                        <i class="fas fa-shopping-cart text-warning" style="font-size: 1.5rem;"></i>
+                        <span class="badge bg-danger">{{ request.user.cartitem_set.count }}</span>  <!-- Count of items in cart -->
+                    </div>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-item nav-link">
+                    <div>
+                        <i class="fas fa-user text-success" style="font-size: 1.7rem;"></i>
+                    </div>
+                    <span class="text-dark">Login</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>

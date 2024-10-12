@@ -1,0 +1,292 @@
+ <a href="{% url 'buy' product.id %}" class="btn btn-danger rounded-pill py-2 px-4 m-2">Buy Now <i class="fa fa-arrow-right ms-2"></i></a>
+                        <a href="{% url 'add-to-cart' product.id %}" class="btn btn-warning rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
+
+
+
+                         <div class="buttons-container">
+                        <a href="{% url 'product-detail' product.id %}" class="btn btn-dark rounded-pill py-2 px-4 m-2">Buy Now <i class="fa fa-arrow-right ms-2"></i></a>
+                        <a href="{% url 'add-to-cart' product.id %}" class="btn btn-danger rounded-pill py-2 px-4 m-2">Add to Cart <i class="fa fa-cart-plus ms-2"></i></a>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {% load static %}
+
+<div class="sticky-top shadow">
+    <nav class="navbar navbar-expand-lg py-2">
+        <a href="{% url 'home' %}" class="navbar-brand">
+            <img class="logo m-2" src="{% static 'img/logo.png' %}" alt="Site Logo">
+        </a>
+
+        <!-- Icons for profile and cart (always visible on small screens) -->
+        <div class="d-lg-none d-flex ms-auto">
+            <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="{% url 'search_products' %}" method="GET">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text border-1 sr-sm" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Profile and Logout for Small Screens -->
+            {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="profileDropdownSmall" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="profileDropdownSmall">
+                        <li><a class="dropdown-item" href="{% url 'edit_profile' %}">{{ user.get_full_name }}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </div>
+                <a href="cart.html" class="nav-item nav-link mt-2">
+                    <i class="fas fa-shopping-cart text-warning"></i>
+                </a>
+            {% else %}
+                <a class="nav-item nav-link" href="{% url 'login' %}">
+                    <i class="fas fa-user fa-dark"></i>
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Toggler for offcanvas menu -->
+        <button class="navbar-toggler ms-2 shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Links and Search Bar for larger screens -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <!-- Search Bar -->
+            <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text bg-white border-1 sr-btn" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="navbar-nav">
+                <a href="{% url 'home' %}" class="nav-item nav-link text-dark">Home</a>
+                <a href="about.html" class="nav-item nav-link text-dark">About</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle text-dark" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Products
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'offer-products' %}">OFFER PRODUCTS</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'combo-products' %}">COMBO PRODUCTS</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'TEA' %}">TEA</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'SPICE' %}">SPICES</a></li>
+                    </ul>
+                </div>
+                <a href="store.html" class="nav-item nav-link text-dark">Store</a>
+
+                <!-- Profile Button for large screens -->
+                {% if user.is_authenticated %}
+                    <div class="nav-item dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <li class="text-center">
+                                <span class="fw-bold">{{ user.get_full_name }}</span>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'edit_profile' %}">View Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                    <a href="cart.html" class="nav-item nav-link mt-1 ms-3">
+                        <i class="fas fa-shopping-cart text-warning"></i>
+                    </a>
+                {% else %}
+                    <a class="nav-item nav-link" href="{% url 'login' %}">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Menu for smaller screens -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <a href="{% url 'home' %}" class="nav-item nav-link text-dark">Home</a>
+            <a href="about.html" class="nav-item nav-link ml-2 mt-2">About</a>
+            <p class="nav-item nav-link ml-2 mt-2">Products</p>
+            <ul>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'offer-products' %}">OFFER PRODUCTS</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'combo-products' %}">COMBO PRODUCTS</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'TEA' %}">TEA</a></li>
+                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' 'SPICE' %}">SPICES</a></li>
+            </ul>
+            <a href="store.html" class="nav-item nav-link ml-2 mt-2">Store</a>
+
+            <!-- Profile and Logout Icons in offcanvas menu -->
+            {% if user.is_authenticated %}
+                <a href="{% url 'edit_profile' %}" class="nav-item nav-link mt-2">
+                    <i class="fas fa-user text-success"></i> <span class="ms-2 mt-2">{{ user.get_full_name }}</span>
+                </a>
+                <a href="{% url 'logout' %}" class="nav-item nav-link mt-2">
+                    <i class="fas fa-sign-out-alt text-danger"></i> <span class="ms-2 mt-2">Logout</span>
+                </a>
+                <a href="cart.html" class="nav-item nav-link mt-2">
+                    <i class="fas fa-shopping-cart text-warning"></i> <span class="ms-2 mt-2">Cart</span>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-item nav-link mt-2">
+                    <i class="fas fa-user text-success"></i> <span class="ms-2 mt-2">Login</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+ <form method="POST" action="{% url 'register' %}">
+                            {% csrf_token %}
+                            <div class="row gy-3 overflow-hidden">
+                                
+                                <!-- First Name Field -->
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="first_name" id="firstName" placeholder="First Name" value="{{ form.first_name.value|default_if_none:'' }}" required>
+                                        <label for="firstName">First Name</label>
+                                        {% if form.first_name.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.first_name.errors %}
+                                            <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Last Name Field -->
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="last_name" id="lastName" placeholder="Last Name" value="{{ form.last_name.value|default_if_none:'' }}" required>
+                                        <label for="lastName">Last Name</label>
+                                        {% if form.last_name.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.last_name.errors %}
+                                            <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Email Field -->
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com" value="{{ form.email.value|default_if_none:'' }}" required>
+                                        <label for="email">Email</label>
+                                        {% if form.email.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.email.errors %}
+                                            <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Phone Number Field -->
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="phone_number" id="phone_number" placeholder="Phone Number" value="{{ form.phone_number.value|default_if_none:'' }}" required>
+                                        <label for="phone_number">Phone Number</label>
+                                        {% if form.phone_number.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.phone_number.errors %}
+                                            <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Password Field -->
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" required>
+                                        <label for="password1">Password</label>
+                                        {% if form.password1.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.password1.errors %}
+                                            <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Confirm Password Field -->
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="password" class="form-control" name="password2" id="password2" placeholder="Confirm Password" required>
+                                        <label for="password2">Confirm Password</label>
+                                        {% if form.password2.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.password2.errors %}
+                                            <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Terms and Conditions -->
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="iAgree" id="iAgree" required>
+                                        <label class="form-check-label text-secondary" for="iAgree">
+                                            I agree to the <a href="#!" class="link-primary text-decoration-none">terms and conditions</a>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="col-12">
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary" type="submit">Sign Up</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>

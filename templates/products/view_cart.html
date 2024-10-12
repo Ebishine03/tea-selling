@@ -1,0 +1,211 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+{% load custom_filters %}
+
+<style>
+    .cart {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart .title {
+        margin-bottom: 20px;
+    }
+
+    .cart .title h4 {
+        font-weight: bold;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .cart .text-muted {
+        font-size: 0.9rem;
+        color: #777;
+    }
+
+    .cart img {
+        width: 100%;
+        border-radius: 8px;
+    }
+
+    .cart .border-top, .cart .border-bottom {
+        border-color: #e0e0e0 !important;
+    }
+
+    .cart .main {
+        padding: 10px 0;
+    }
+
+    .cart .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .cart .row .col {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .cart .btn-outline-secondary {
+        border-color: #ced4da;
+        color: #6c757d;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .cart .btn-outline-secondary:hover {
+        background-color: #f0f0f0;
+    }
+
+    .cart .border {
+        padding: 5px 12px;
+        border-radius: 4px;
+    }
+
+    .cart .close button {
+        font-size: 1.2rem;
+        color: #dc3545;
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+
+    .cart .close button:hover {
+        color: #c82333;
+    }
+
+    .cart .back-to-shop {
+        margin-top: 20px;
+    }
+
+    .cart .back-to-shop a {
+        font-weight: bold;
+        text-decoration: none;
+        color: #007bff;
+    }
+
+    .cart .back-to-shop a:hover {
+        color: #0056b3;
+    }
+
+    .summary {
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .summary h5 {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .summary .price {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .summary .checkout-btn {
+        background-color: #28a745;
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 4px;
+        width: 100%;
+        text-align: center;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    .summary .checkout-btn:hover {
+        background-color: #218838;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card-cart">
+        <div class="row">
+            <!-- Cart Items Section -->
+            <div class="col-md-8 cart">
+                <div class="title">
+                    <div class="row">
+                        <div class="col">
+                            <h4><b>Shopping Cart</b></h4>
+                        </div>
+                        <div class="col align-self-center text-right  fw-bold">
+                            {{ cart_items|total_cart_quantity }} items
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Cart Item Rows -->
+                {% for item in cart_items %}
+                <div class="row border-top border-bottom">
+                    <div class="row main align-items-center">
+                        <div class="col-2">
+                            <img class="img-fluid" src="{{ item.product.product_image.url }}" alt="{{ item.product.title }}">
+                        </div>
+                        <div class="col">
+                            <div class="row text-muted">{{ item.product.category }}</div>
+                            <div class="row">{{ item.product.title }}</div>
+                           
+                            <div class="row"> Unit Price: Rs{{ item.product.price|floatformat:2 }} </div>
+                        </div>
+                        <div class="col">
+                            <!-- Quantity Control Form -->
+                            <form method="POST" action="{% url 'view_cart' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+
+                                <button type="submit" name="action" value="decrease" class="btn btn-outline-secondary">-</button>
+                                <span class="border px-2">{{ item.quantity }}</span>
+                                <button type="submit" name="action" value="increase" class="btn btn-outline-secondary">+</button>
+                            </form>
+                        </div>
+                        <div class="col text-right">
+                            Price: Rs {{ item.product.price|multiply:item.quantity|floatformat:2 }}
+                            <div class="close" style="margin-top: 5px;">
+                                <form method="POST" action="{% url 'view_cart' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                                    <button type="submit" name="action" value="remove" class="btn " style="padding: 0;">Delete Product</button>
+                                </form>
+                            </div> 
+                        </div> 
+                    
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="back-to-shop mt-3">
+                    <a href="{% url 'clear_cart' %}" >&leftarrow; <span class="text-muted">Clear All</span></a>
+                    
+                </div>
+                
+            </div>
+
+            <!-- Summary Section -->
+            <div class="col-md-4 summary">
+                <h5>Summary</h5>
+                <div class="row">
+                    <div class="col">Items {{ cart_items|total_cart_quantity }}</div>
+                    <div class="col text-right price">{{ cart_items|sum_price|floatformat:2  }} Rs</div>
+                </div>
+                <div class="row mt-3">
+                    <button class="checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

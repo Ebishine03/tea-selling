@@ -1,0 +1,28 @@
+{% extends './index.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Search Results for "{{ search_query }}"</h2>
+
+    <div class="row">
+        {% if products %}
+            {% for product in products %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card shadow-lg p-3 bg-body-tertiary rounded">
+                        <!-- Product Image -->
+                        <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
+                        <!-- Product Details -->
+                        <div class="p-4 text-center">
+                            <h4 class="mb-3">{{ product.title }}</h4>
+                            <p>{{ product.description }}</p>
+                            <h4 class="fw-bold">${{ product.price }}</h4>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No products found for your search.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
