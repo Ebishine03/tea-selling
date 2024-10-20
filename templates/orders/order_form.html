@@ -1,0 +1,15 @@
+<!-- templates/employee/order_form.html -->
+
+{% extends 'base/index.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Update</button>
+        <a href="{% url 'order_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

@@ -2,7 +2,7 @@ from django import forms
 
 from .models import CustomUser
 from django.contrib.auth import get_user_model
-
+from Products .models import Product,Order
 class CustomUserRegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
@@ -34,6 +34,59 @@ class UserProfileForm(forms.ModelForm):
         model = User
         fields = ['first_name', 'last_name', 'email', 'phone_number']  
 
+
 class LoginForm(forms.Form):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    email = forms.EmailField(
+        max_length=254,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your email',
+            'required': 'required'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your password',
+            'required': 'required'
+        })
+    )
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['category', 'title', 'description', 'price', 'stock', 'product_image','is_offer']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'is_offer': forms.CheckboxInput(attrs={'class': 'form-check-input'}),  # Correct Checkbox widget
+
+            'product_image': forms.ClearableFileInput(attrs={'class': 'custom-file-input'}),  # Updated class
+        }
+class OrderStatusForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status', 'assigned_delivery']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'assigned_delivery': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'first_name', 'last_name', 'phone_number']
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+
+        }
+            # 'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+           
+
+
+         

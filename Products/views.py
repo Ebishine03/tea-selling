@@ -5,9 +5,10 @@ from django.contrib import messages
 from django.db.models import Q
 from itertools import islice
 from django.template.loader import render_to_string
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
+from django.db import transaction
 from .constants import  PAYMENT_METHOD_CHOICES
-
+from django.utils import timezone
 def chunked(iterable, size):
     it = iter(iterable)
     return iter(lambda: list(islice(it, size)), [])
@@ -18,10 +19,10 @@ def list_products(request, category_slug):
     sort_by = request.GET.get('sort-by', 'default')
 
     # Filter products based on category_slug
-    if category_slug == 'TEA':
-        products = Product.objects.filter(category='TEA')
-    elif category_slug == 'SPICE':
-        products = Product.objects.filter(category='SPICE')
+    if category_slug == 'tea':
+        products = Product.objects.filter(category__slug='tea')
+    elif category_slug == 'spice':
+        products = Product.objects.filter(category__slug='spice')
     elif category_slug == 'combo':
         products = ComboProduct.objects.all()
     elif category_slug == 'offer':
@@ -66,6 +67,7 @@ def list_products(request, category_slug):
         'selected_category_slug': category_slug,
     }
     return render(request, 'products/view-products.html', context)
+
 
 @login_required
 def add_to_cart(request, product_id):
@@ -146,83 +148,94 @@ def remove_from_cart(request, item_id):
     cart_item.delete()
     messages.success(request, f"Removed {cart_item.product.title} from your cart.")
     cart.calculate_total()
-    return redirect('view_cart')  # Redirect to the view cart page
-
+    return redirect('view_cart')  
 @login_required
 def clear_cart(request):
     if request.method == 'GET':
-        # Clear all items from the user's cart
+       
         CartItem.objects.filter(cart__user=request.user).delete()
         cart = get_object_or_404(Cart, user=request.user)
         cart.calculate_total()
         messages.success(request, "Cleared all items from your cart.")
         return redirect('view_cart')
-    return redirect('view_cart')  # Redirect if not GET
+    return redirect('view_cart')  
 
 
-@login_required
 def buy_now(request, product_slug):
-    """
-    Handles the 'Buy Now' process for a single product.
-    """
-    product = get_object_or_404(Product, slug=product_slug)  # Get product by slug
+    if not request.user.addresses.exists():
+        messages.error(request, "Please add an address before making a purchase.")
+        return redirect('add_address')  # Redirect to address management page
 
-    # Check if the product is in stock
-    if not product.is_in_stock():
-        messages.error(request, f"Sorry, {product.title} is out of stock.")
-        return redirect('list_products', category_slug=product.category)
+    product = get_object_or_404(Product,slug=product_slug)
 
     if request.method == 'POST':
-        # Retrieve selected address and payment method from the form
-        address_id = request.POST.get('address')
-        payment_method = request.POST.get('payment_method')
+        quantity = int(request.POST.get('quantity', 1))
 
-        if not address_id or not payment_method:
-            messages.error(request, "Please select a shipping address and payment method.")
-            return redirect('buy_now', product_slug=product_slug)
-
-        address = get_object_or_404(Address, id=address_id, user=request.user)
-
-        # Create a Payment record
-        payment = Payment.objects.create(
-            user=request.user,
-            address=address,
-            amount=product.price,
-            payment_method=payment_method,
-            is_completed=True,  # Set based on actual payment processing
-            status='Completed',  # Adjust as per payment gateway response
-        )
-
-        # Create an Order
-        order = Order.objects.create(
-            user=request.user,
-            payment=payment,
-            shipping_address=address,
-            total_price=product.price,
-            status='Pending',  # Initial status; can be updated based on business logic
-        )
-
-        # Create an OrderItem and reduce stock
-        OrderItem.objects.create(
+        # Create an order
+        order = Order.objects.create(user=request.user)
+        order_item = OrderItem.objects.create(
             order=order,
             product=product,
-            quantity=1,
-            price=product.price,  # Price at purchase time
+            quantity=quantity,
+            price=product.price
         )
+        
+        # Reduce stock
+        product.reduce_stock(quantity)
 
-        # Reduce the product stock
-        product.reduce_stock(1)
+        messages.success(request, "Your order has been placed successfully.")
+        return redirect('order_summary', order_id=order.id)
 
-        messages.success(request, "Your order has been placed successfully!")
-        return redirect('order_confirmation', order_id=order.id)
+    return render(request, 'orders/buy_now.html', {'product': product})
+@login_required
+def checkout_cart(request):
+    # Ensure the user has at least one address
+    if not request.user.addresses.exists():
+        messages.error(request, "Please add an address before checking out.")
+        return redirect('add_address')  # Redirect to address management page
 
-    # For GET requests, render the Buy Now checkout page
-    addresses = request.user.addresses.all()
-    payment_methods = PAYMENT_METHOD_CHOICES
+    cart = get_object_or_404(Cart, user=request.user)
+
+    if request.method == 'POST':
+        if not cart.items.exists():
+            messages.error(request, "Your cart is empty.")
+            return redirect('cart')
+
+        # Create the order
+        order = Order.objects.create(user=request.user)
+        total_price = 0
+
+        for cart_item in cart.items.all():
+            order_item = OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                price=cart_item.product.price
+            )
+            total_price += order_item.price * order_item.quantity
+
+            # Reduce stock
+            cart_item.product.reduce_stock(cart_item.quantity)
+
+        order.total_price = total_price
+        order.save()
+
+        # Clear the cart
+        cart.items.all().delete()
+
+        messages.success(request, "Your order has been placed successfully.")
+        return redirect('order_summary', order_id=order.id)
+
+    return render(request, 'orders/checkout_cart.html', {'cart': cart})
+@login_required
+def order_summary(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    # Retrieve order items
+    order_items = order.items.all()
 
     context = {
-        'product': product,
-        'addresses': addresses,
-        'payment_methods': payment_methods,
+        'order': order,
+        'order_items': order_items,
     }
-    return render(request, 'products/checkout.html', context)
+    return render(request, 'orders/order_summary.html', context)

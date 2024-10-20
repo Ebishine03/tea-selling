@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-
+from Products .models import Address
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -45,3 +45,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+  
+class EmployeeProfile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='employee_profile')
+    image = models.ImageField(upload_to='employee_images/', blank=True, null=True)
+    security_clearance = models.CharField(max_length=100)
+    date_hired = models.DateField()
+    employee_type = models.CharField(max_length=50, choices=[
+        ('inventory_manager', 'Inventory Manager'),
+        ('logistics_manager', 'Logistics Manager'),
+        ('customer_support', 'Customer Support'),
+        ('sales', 'Sales'),
+        ('marketing', 'Marketing'),
+    ], default='staff') 
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}'s profile"

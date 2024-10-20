@@ -1,0 +1,23 @@
+<!-- templates/employee/customer_detail.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Customer Detail{% endblock %}
+
+{% block content %}
+    <h2>Customer Detail</h2>
+    <p><strong>Email:</strong> {{ customer.user.email }}</p>
+    <p><strong>Name:</strong> {{ customer.user.first_name }} {{ customer.user.last_name }}</p>
+    <p><strong>Phone Number:</strong> {{ customer.user.phone_number }}</p>
+    <p><strong>Address:</strong> {{ customer.address }}</p>
+    <hr>
+    <h4>Orders:</h4>
+    <ul>
+        {% for order in orders %}
+            <li><a href="{% url 'order_detail' order.id %}">Order #{{ order.id }}</a> - {{ order.get_status_display }}</li>
+        {% empty %}
+            <li>No orders found.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'customer_list' %}" class="btn btn-secondary">Back to Customer List</a>
+{% endblock %}

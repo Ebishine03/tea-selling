@@ -1,0 +1,15 @@
+<!-- templates/employee/customer_form.html -->
+
+{% extends 'base/index.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Submit</button>
+        <a href="{% url 'customer_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

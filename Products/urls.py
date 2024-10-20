@@ -10,8 +10,11 @@ urlpatterns = [
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('remove-from-cart/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
     path('clear-cart/', clear_cart, name='clear_cart'),
-    path('buy-now/<slug:product_slug>/', buy_now, name='buy_now'),
-    path('checkout/',buy_now,name='checkout')
+    path('buy-now/<slug:product_slug>/',buy_now, name='buy_now'),
+    path('',checkout_cart, name='checkout'),
+     path('order-summary/<int:order_id>/', order_summary, name='order_summary')
+    
+    
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

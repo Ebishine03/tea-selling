@@ -1,0 +1,44 @@
+<!-- templates/employee/customer_list.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Customer List{% endblock %}
+
+{% block content %}
+    <h2>Customer List</h2>
+    <form method="get" class="form-inline mb-3">
+        <input type="text" name="q" class="form-control mr-2" placeholder="Search Customers..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.user.email }}</td>
+                    <td>{{ customer.user.first_name }} {{ customer.user.last_name }}</td>
+                    <td>{{ customer.user.phone_number }}</td>
+                    <td>{{ customer.address }}</td>
+                    <td>
+                        <a href="{% url 'customer_detail' customer.id %}" class="btn btn-sm btn-info">View</a>
+                        <a href="{% url 'edit_customer' customer.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{% url 'delete_customer' customer.id %}" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No customers found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include 'pagination.html' with page_obj=customers %}
+{% endblock %}

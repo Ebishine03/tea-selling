@@ -1,0 +1,59 @@
+<!-- templates/employee/order_list.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Order List{% endblock %}
+
+{% block content %}
+    <h2>Order List</h2>
+    <form method="get" class="form-inline mb-3">
+        <input type="text" name="q" class="form-control mr-2" placeholder="Search Orders..." value="{{ search_query }}">
+        <select name="status" class="form-control mr-2">
+            <option value="">All Statuses</option>
+            {% for key, value in orders.model.STATUS_CHOICES %}
+                <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ value }}</option>
+            {% endfor %}
+        </select>
+        <select name="delivery_person" class="form-control mr-2">
+            <option value="">All Delivery Personnel</option>
+            {% for delivery_person in delivery_personnel %}
+                <option value="{{ delivery_person.id }}" {% if delivery_person_id|add:'' == delivery_person.id|stringformat:"s" %}selected{% endif %}>{{ delivery_person.email }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-secondary">Filter</button>
+    </form>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Ordered At</th>
+                <th>Assigned Delivery</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.customer.user.email }}</td>
+                    <td>${{ order.total_price }}</td>
+                    <td>{{ order.get_status_display }}</td>
+                    <td>{{ order.ordered_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ order.assigned_delivery.email if order.assigned_delivery else 'Unassigned' }}</td>
+                    <td>
+                        <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-info">View</a>
+                        <a href="{% url 'update_order' order.id %}" class="btn btn-sm btn-warning">Update</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No orders found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include 'pagination.html' with page_obj=orders %}
+{% endblock %}

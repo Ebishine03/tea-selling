@@ -1,0 +1,59 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Edit Product: {{ product.title }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.category.label }}
+            {{ form.category }}
+            {% if form.category.errors %}
+                <div class="alert alert-danger">{{ form.category.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.title.label }}
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="alert alert-danger">{{ form.title.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="alert alert-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.price.label }}
+            {{ form.price }}
+            {% if form.price.errors %}
+                <div class="alert alert-danger">{{ form.price.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.stock.label }}
+            {{ form.stock }}
+            {% if form.stock.errors %}
+                <div class="alert alert-danger">{{ form.stock.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.product_image.label }}
+            {{ form.product_image }}
+            {% if form.product_image.errors %}
+                <div class="alert alert-danger">{{ form.product_image.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@ from .models import Product, ComboProduct,Address, Cart, CartItem, Payment
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price', 'discounted_price', 'category', 'stock', 'is_offer', 'is_offer', 'created_at')
+    list_display = ('title', 'price', 'category', 'stock', 'is_offer', 'created_at')
     list_filter = ('category', 'is_offer', )
     search_fields = ('title', 'description')
 

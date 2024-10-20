@@ -1,0 +1,39 @@
+<!-- templates/employee/order_detail.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Order Detail{% endblock %}
+
+{% block content %}
+    <h2>Order #{{ order.id }} Details</h2>
+    <p><strong>Customer:</strong> {{ order.customer.user.first_name }} {{ order.customer.user.last_name }} ({{ order.customer.user.email }})</p>
+    <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+    <p><strong>Ordered At:</strong> {{ order.ordered_at|date:"Y-m-d H:i" }}</p>
+    <p><strong>Updated At:</strong> {{ order.updated_at|date:"Y-m-d H:i" }}</p>
+    <p><strong>Assigned Delivery:</strong> {{ order.assigned_delivery.email if order.assigned_delivery else 'Unassigned' }}</p>
+    <hr>
+    <h4>Products:</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>${{ item.quantity|multiply:item.price }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
+    <a href="{% url 'order_list' %}" class="btn btn-secondary">Back to Orders</a>
+    <a href="{% url 'update_order' order.id %}" class="btn btn-warning">Update Order</a>
+{% endblock %}

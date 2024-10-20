@@ -2,7 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.utils.text import slugify
-from django.db import IntegrityError
+from django.core.validators import RegexValidator
+
+
 # Choices for product categories and order statuses
 CATEGORY_CHOICES = (
     ('TEA', 'TEA PRODUCTS'),
@@ -14,78 +16,177 @@ ORDER_STATUS_CHOICES = (
     ('Processing', 'Processing'),
     ('Shipped', 'Shipped'),
     ('Delivered', 'Delivered'),
+    ('Completed', 'Completed'),
     ('Cancelled', 'Cancelled'),
 )
 
-PAYMENT_METHOD_CHOICES = (
+
+PAYMENT_METHOD_CHOICES = [
     ('Credit Card', 'Credit Card'),
     ('PayPal', 'PayPal'),
-    ('Cash on Delivery', 'Cash on Delivery'),
+    ('Cash On Delivery', 'Cash On Delivery'),
     ('UPI', 'UPI'),
-)
-
-PAYMENT_STATUS_CHOICES = (
-    ('Pending', 'Pending'),
-    ('Completed', 'Completed'),
-    ('Failed', 'Failed'),
-)
-
+]
 class Category(models.Model):
-    title = models.CharField(max_length=100, unique=True, choices=CATEGORY_CHOICES)
-
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    description = models.TextField(blank=True)
+    
+    class Meta:
+        verbose_name_plural = "Categories"
+    
     def __str__(self):
-        return self.title
-
-
-
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            # Ensure slug is unique across both categories and products
+            while Category.objects.filter(slug=slug).exists() or Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
 class Product(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    price = models.FloatField()
-    discounted_price = models.FloatField()
-    slug = models.SlugField(unique=True, blank=True)
-    product_image = models.ImageField(upload_to='products')
-    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
-    stock = models.PositiveIntegerField(default=0)
+    category = models.ForeignKey(
+        Category, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='products'
+    )
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=270, unique=True, blank=True)
+    description = models.TextField(blank=True)
+    is_offer=models.BooleanField(default=False)
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2
+    )
+    stock = models.PositiveIntegerField()
+    product_image = models.ImageField(
+        upload_to='product_images/', 
+        blank=True, 
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_featured = models.BooleanField(default=False)  
-    is_offer = models.BooleanField(default=False)
     
     def __str__(self):
         return self.title
-
+    
     def save(self, *args, **kwargs):
-        # Automatically generate slug from title
-        if not self.slug:  # Only create slug if it hasn't been set
-            self.slug = slugify(self.title)
-            # Ensure slug is unique
-            unique_slug = self.slug
+        if not self.slug:
+            base_slug = slugify(self.title)
+            slug = base_slug
             counter = 1
-            while Product.objects.filter(slug=unique_slug).exists():
-                unique_slug = f"{self.slug}-{counter}"
+            # Ensure slug is unique across both categories and products
+            while Product.objects.filter(slug=slug).exists() or Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
                 counter += 1
-            self.slug = unique_slug
+            self.slug = slug
         super().save(*args, **kwargs)
 
-    def is_in_stock(self):
-        return self.stock > 0
+class Order(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('shipped', 'Shipped'),
+        ('delivered', 'Delivered'),
+        ('canceled', 'Canceled'),
+    )
+    
+    customer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Use CustomUser instead of Customer
+        on_delete=models.CASCADE, 
+        related_name='orders'
+    )
+    products = models.ManyToManyField(
+        Product, 
+        through='OrderItem', 
+        related_name='orders'
+    )
+    total_price = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        default=0.00
+    )
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES, 
+        default='pending'
+    )
+    ordered_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    assigned_delivery = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='deliveries'
+    )  # Assuming delivery personnel are users with role 'staff' or 'admin'
+    
+    def __str__(self):
+        return f"Order #{self.id} by {self.customer.email}"
+    
+    def calculate_total_price(self):
+        """
+        Calculates and updates the total price of the order based on associated OrderItems.
+        """
+        total = sum(item.product.price * item.quantity for item in self.order_items.all())
+        self.total_price = total
+        self.save()
 
-    def reduce_stock(self, quantity):
-        if self.stock >= quantity:
-            self.stock -= quantity
-            self.save()
-        else:
-            raise ValueError("Not enough stock available")
+class OrderItem(models.Model):
+    """
+    Represents the relationship between an Order and a Product, including quantity and price at the time of order.
+    """
+    order = models.ForeignKey(
+        Order, 
+        on_delete=models.CASCADE, 
+        related_name='order_items'
+    )
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='order_items'
+    )
+    quantity = models.PositiveIntegerField(
+        default=1,
+        validators=[
+            RegexValidator(
+                regex=r'^[1-9]\d*$',
+                message="Quantity must be a positive integer."
+            )
+        ]
+    )
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2
+    )  # Price at the time of order
+    
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity} (Order #{self.order.id})"
+    
+    def save(self, *args, **kwargs):
+        """
+        Override save method to automatically set the price based on the product's current price if not set.
+        """
+        if not self.price and self.product:
+            self.price = self.product.price
+        super().save(*args, **kwargs)
+ 
 class ComboProduct(models.Model):
     title = models.CharField(max_length=200)
-    products = models.ManyToManyField(Product, related_name='combos')  
-    price = models.FloatField() 
+    products = models.ManyToManyField(Product, related_name='combos')
+    price = models.FloatField()
     is_offer = models.BooleanField(default=False)
-    image = models.ImageField(upload_to='combo_products/', blank=True, null=True)  
-    description = models.TextField(blank=True, null=True)  
-    created_at = models.DateTimeField(default=timezone.now)  
+    image = models.ImageField(upload_to='combo_products/', blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -93,7 +194,7 @@ class ComboProduct(models.Model):
 
     def check_stock_availability(self):
         unavailable_products = [product.title for product in self.products.all() if not product.is_in_stock()]
-        return unavailable_products  
+        return unavailable_products
 
     def is_all_in_stock(self):
         return all(product.is_in_stock() for product in self.products.all())
@@ -132,7 +233,6 @@ class CartItem(models.Model):
         return f"{self.quantity} of {self.product.title} in {self.cart.user.email}'s cart"
 
     def increase_quantity(self, amount=1):
-        """Increase the quantity of the product in the cart."""
         if self.quantity + amount <= self.product.stock:
             self.quantity += amount
             self.save()
@@ -140,64 +240,27 @@ class CartItem(models.Model):
             raise ValueError("Cannot exceed available stock.")
 
     def decrease_quantity(self, amount=1):
-        """Decrease the quantity of the product or remove it from the cart."""
         if self.quantity > amount:
             self.quantity -= amount
             self.save()
         else:
-            self.delete()  # Remove the item if the quantity reaches 0 or less
+            self.delete()
+
+
 
 
 class Payment(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    PAYMENT_METHOD_CHOICES = [
+        ('Credit Card', 'Credit Card'),
+        ('PayPal', 'PayPal'),
+        ('Cash On Delivery', 'Cash On Delivery'),
+        ('UPI', 'UPI'),
+    ]
+    order = models.OneToOneField('Order', on_delete=models.CASCADE, related_name='payment')
     payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES)
-    is_completed = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=100, blank=True, null=True)  # Reference ID from payment gateway
-    status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='Pending')
+    payment_id = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    paid_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Payment of {self.amount} by {self.user.email}"
-
-
-class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=ORDER_STATUS_CHOICES, default='Pending')
-    refund_requested = models.BooleanField(default=False)
-    refunded_at = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return f"Order {self.id} by {self.user.email} - Status: {self.status}"
-
-    def request_refund(self):
-        if self.status == 'Delivered' and not self.refund_requested:
-            self.refund_requested = True
-            self.status = 'Refunded'
-            self.refunded_at = timezone.now()
-            self.save()
-            return True
-        return False
-
-    def cancel_order(self):
-        """Cancel the order."""
-        if self.status == 'Pending':
-            self.status = 'Cancelled'
-            self.save()
-            return True
-        return False
-
-
-class OrderItem(models.Model):
-    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey('Product', on_delete=models.PROTECT)  # Protect to prevent deletion if referenced in orders
-    quantity = models.PositiveIntegerField(default=1)
-    price = models.DecimalField(max_digits=10, decimal_places=2)  # Price at the time of purchase
-
-    def __str__(self):
-        return f"{self.quantity} x {self.product.title} for Order {self.order.id}"
+        return f"Payment {self.id} for Order {self.order.id}"
