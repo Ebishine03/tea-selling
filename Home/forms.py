@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import CustomUser
+from .models import CustomUser,EmployeeProfile
 from django.contrib.auth import get_user_model
 from Products .models import Product,Order
 class CustomUserRegistrationForm(forms.ModelForm):
@@ -74,7 +74,7 @@ class OrderStatusForm(forms.ModelForm):
             'assigned_delivery': forms.Select(attrs={'class': 'form-control'}),
         }
 
-class CustomerForm(forms.ModelForm):
+class CustomUserForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['email', 'first_name', 'last_name', 'phone_number']
@@ -89,4 +89,8 @@ class CustomerForm(forms.ModelForm):
            
 
 
-         
+class EmployeeProfileForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeProfile
+        fields = ['image', 'date_hired', 'employee_type']
+

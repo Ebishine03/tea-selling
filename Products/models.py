@@ -61,6 +61,9 @@ class Product(models.Model):
     slug = models.SlugField(max_length=270, unique=True, blank=True)
     description = models.TextField(blank=True)
     is_offer=models.BooleanField(default=False)
+    is_active=models.BooleanField(default=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='products_created', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='products_updated', on_delete=models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(
         max_digits=10, 
         decimal_places=2
@@ -77,17 +80,22 @@ class Product(models.Model):
     def __str__(self):
         return self.title
     
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.title)
-            slug = base_slug
-            counter = 1
-            # Ensure slug is unique across both categories and products
-            while Product.objects.filter(slug=slug).exists() or Category.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            self.slug = slug
-        super().save(*args, **kwargs)
+def save(self, *args, **kwargs):
+    if not self.slug:
+        base_slug = slugify(self.title)
+        slug = base_slug
+        counter = 1
+        
+        # Ensure slug is unique within the Product model
+        while Product.objects.filter(slug=slug).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+        
+        self.slug = slug
+
+    super().save(*args, **kwargs)
+
+
 
 class Order(models.Model):
     STATUS_CHOICES = (

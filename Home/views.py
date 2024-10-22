@@ -1,17 +1,19 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from Products.models import Product,ComboProduct,Address,Category,Order
 from django.contrib.auth import authenticate, login,logout
-from .forms import LoginForm,ProductForm
 from django.contrib import messages
 from .forms import CustomUserRegistrationForm  
 from django.contrib.auth.decorators import login_required
-from .forms import UserProfileForm
+
 from  .models import CustomUser  
+from .forms import *
 from .decorators import employee_required
-from .forms import ProductForm,OrderStatusForm,CustomerForm
+
 from django.utils import timezone
 from django.db.models import Q
 from .models import CustomUser
+from django.template.loader import render_to_string
+from django.http import JsonResponse,HttpResponse
 
 from django.urls import reverse
 # Create your views here.
@@ -20,7 +22,7 @@ def index(request):
     # Fetch categories by the correct slug (in lowercase)
        # Fetch categories by the correct slug (in lowercase)
     tea_category = get_object_or_404(Category, slug='tea')
-    spice_category = get_object_or_404(Category, slug='spice')
+    spice_category = get_object_or_404(Category, slug='spices')
 
 
     # Get recent products filtered by category
@@ -92,8 +94,8 @@ def custom_login_view(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                # Role-Based Redirection
-                if user.is_staff:
+                # Redirect based on user role
+                if user.role == 'staff':
                     return redirect('employee_dashboard')  # Redirect to employee dashboard
                 else:
                     return redirect('home')  # Redirect to customer home page
@@ -156,56 +158,6 @@ def profile_view(request):
         'addresses': addresses
     }
     return render(request, 'base/profile.html', context)
-@employee_required
-
-def product_list(request):
-    """
-    Display a list of all products with optional search and category filtering.
-    Supports sorting by title, price, and date, along with live search and category filtering.
-    """
-    search_query = request.GET.get('q', '')  # Search term (live search)
-    category_id = request.GET.get('category', '')  # Selected category ID
-    sort_by = request.GET.get('sort_by', '')  # Sorting criteria (A-Z, Z-A, price, etc.)
-
-    # Fetch all products
-    products = Product.objects.all()
-
-    # Apply search query (if present)
-    if search_query:
-        products = products.filter(title__icontains=search_query)
-
-    # Apply category filter (if selected)
-    if category_id:
-        products = products.filter(category__id=category_id)
-
-    # Sorting options
-    if sort_by == 'az':  # A-Z sort
-        products = products.order_by('title')
-    elif sort_by == 'za':  # Z-A sort
-        products = products.order_by('-title')
-    elif sort_by == 'price_asc':  # Price Low to High
-        products = products.order_by('price')
-    elif sort_by == 'price_desc':  # Price High to Low
-        products = products.order_by('-price')
-    elif sort_by == 'date_asc':  # Date Oldest First
-        products = products.order_by('created_at')
-    elif sort_by == 'date_desc':  # Date Newest First
-        products = products.order_by('-created_at')
-    else:
-        products = products.order_by('-updated_at')  # Default sort by latest update
-
-    # Fetch all categories for filtering
-    categories = Category.objects.all()
-
-    context = {
-        'products': products,
-        'categories': categories,
-        'search_query': search_query,
-        'selected_category': category_id,
-        'selected_sort': sort_by,
-    }
-
-    return render(request, 'employee/inventory_emp.html', context)
 
 @employee_required
 def add_product(request):
@@ -216,7 +168,9 @@ def add_product(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
-            product.edited_by = request.user  # Track who edited
+            product.created_by = request.user
+            
+            product.is_active=True
             product.save()
             form.save_m2m()  # If there are ManyToMany fields
             messages.success(request, 'Product added successfully.')
@@ -241,7 +195,7 @@ def edit_product(request, pk):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             product = form.save(commit=False)
-            product.edited_by = request.user  # Track who edited
+            product.updated_by = request.user  # Track who edited
             product.save()
             form.save_m2m()
             messages.success(request, 'Product updated successfully.')
@@ -263,15 +217,12 @@ def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     
     if request.method == 'POST':
-        product.delete()
+        product.is_active =False  
+        product.save() 
         messages.success(request, 'Product deleted successfully.')
-        return redirect('product_list')
+    return redirect('employee_dashboard')
     
-    context = {
-        'product': product,
-        'title': 'Delete Product',
-    }
-    return render(request, 'employee/product_confirm_delete.html', context)
+    
 def customer_list(request):
     """
     Display a list of all customers with optional search.
@@ -409,33 +360,103 @@ def update_order(request, pk):
         'title': 'Update Order',
     }
     return render(request, 'order_form.html', context)
-# your_app/views.py
 
 @employee_required
-def dashboard(request):
-    """
-    Display dashboard with product listing, add product form, and edit product functionality.
-    """
-    # Fetching products for the list
-    products = Product.objects.all().order_by('-updated_at')
 
-    # Metrics for the dashboard
+def dashboard(request):
+    products = Product.objects.filter(is_active=True)
+    
+    search_query = request.GET.get('search-query', '')
+    sort_by = request.GET.get('sort-by', 'default')
+
+    
+
+    # Apply search query if provided
+    if search_query:
+        products = products.filter(
+            Q(title__icontains=search_query) | Q(description__icontains=search_query)
+        )
+
+    # Apply sorting if selected
+    if sort_by == 'price-low-high':
+        products = products.order_by('price')
+    elif sort_by == 'price-high-low':
+        products = products.order_by('-price')
+    elif sort_by == 'rating-high-low':
+        products = products.order_by('-rating')  # Assuming you have a 'rating' field
+    elif sort_by == 'date-newest':
+        products = products.order_by('-created_at')  # Assuming a 'created_at' field
+    elif sort_by == 'date-oldest':
+        products = products.order_by('created_at')
+    elif sort_by == 'name-asc':
+        products = products.order_by('title')
+    elif sort_by == 'name-desc':
+        products = products.order_by('-title')
+
     products_count = products.count()
     customers_count = CustomUser.objects.count()
     today = timezone.now().date()
     today_orders_count = Order.objects.filter(ordered_at__date=today).count()
     pending_orders_count = Order.objects.filter(status='pending').count()
-    low_stock_products = products.filter(stock__lt=10)  # Threshold can be adjusted
 
+    # Filter low stock and out of stock products
+    low_stock_products = products.filter(stock__gt=0, stock__lt=10)
+    out_of_stock_products = products.filter(stock=0)  
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string('partials/product_table_partial.html', {'products': products})
+        return JsonResponse({'html': html})
     
+
     context = {
         'products_count': products_count,
         'customers_count': customers_count,
         'today_orders_count': today_orders_count,
         'pending_orders_count': pending_orders_count,
         'low_stock_products': low_stock_products,
-        'products': products,  # List of products to display
-         # Product form for adding or editing
+        'out_of_stock_products': out_of_stock_products,  
+        'products': products,  
+        'search_query': search_query,  # Pass query back to the template
+        'sort_by': sort_by,  # Pass sort option back to the template
     }
 
     return render(request, 'employee/inventory_emp.html', context)
+@employee_required
+def employee_profile(request):
+    user = request.user  # Get the logged-in user
+
+    try:
+        employee_profile = EmployeeProfile.objects.get(user=user)
+    except EmployeeProfile.DoesNotExist:
+        employee_profile = None
+
+    # Process form submissions
+    if request.method == 'POST':
+        user_form = CustomUserForm(request.POST, instance=user)
+        if employee_profile:
+            employee_form = EmployeeProfileForm(request.POST, request.FILES, instance=employee_profile)
+        else:
+            employee_form = None
+
+        # Validate and save forms
+        if user_form.is_valid() and (employee_form.is_valid() if employee_form else True):
+            user_form.save()
+            if employee_profile:
+                employee_form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('employee_dashboard')  # Redirect after successful update
+    else:
+        # Display forms with current data
+        user_form = CustomUserForm(instance=user)
+        if employee_profile:
+            employee_form = EmployeeProfileForm(instance=employee_profile)
+        else:
+            employee_form = None
+
+    context = {
+        'user_form': user_form,
+        'employee_form': employee_form,
+        'employee_profile': employee_profile
+    }
+
+    return render(request, 'employee/employee_profile.html', context)
+

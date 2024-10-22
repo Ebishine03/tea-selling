@@ -1,0 +1,43 @@
+{% extends 'employee/inventory_emp.html' %}
+
+{% block content %}
+<main id="main" class="main">
+    <div class="container mt-5">
+        <h2>Profile</h2>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- User Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>User Information</h4>
+                </div>
+                <div class="card-body">
+                    {{ user_form.as_p }} <!-- Allow editing for basic user details -->
+                </div>
+            </div>
+            
+            <!-- Employee Profile Details (Display only) -->
+            {% if employee_profile %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Employee Information</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Display employee image -->
+                    <div class="mb-3">
+                        <img src="{{ employee_profile.image.url }}" alt="Profile Image" width="150" height="150">
+                    </div>
+                    <p><strong>Security Clearance:</strong> {{ employee_profile.security_clearance }}</p>
+                    <p><strong>Date Hired:</strong> {{ employee_profile.date_hired }}</p>
+                    <p><strong>Employee Type:</strong> {{ employee_profile.get_employee_type_display }}</p> <!-- Display type without editing -->
+                </div>
+            </div>
+            {% endif %}
+    
+            <button type="submit" class="btn btn-primary">Update Profile</button> <!-- For updating user details only -->
+        </form>
+    </div>
+</main>
+{% endblock %}

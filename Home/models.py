@@ -45,6 +45,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    def get_full_name(self):
+        # Return full name by combining first and last name
+        return f"{self.first_name} {self.last_name}".strip()
     
   
 class EmployeeProfile(models.Model):

@@ -1,7 +1,6 @@
 {% extends './index.html' %}
 {% load static %}
 
-
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
@@ -23,7 +22,9 @@
         {% if messages %}
         <ul class="mt-3">
             {% for message in messages %}
-                <li class="alert alert-{{ message.tags }} mt-2">{{ message }}</li>
+                {% if 'error' in message.tags or 'warning' in message.tags %}
+                    <li class="alert alert-{{ message.tags }} mt-2">{{ message }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
         {% endif %}

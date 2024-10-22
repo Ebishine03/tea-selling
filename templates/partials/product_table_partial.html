@@ -1,0 +1,39 @@
+
+    {% for product in products %}
+    <tr>
+        <td>
+            {% if product.product_image %}
+                <img src="{{ product.product_image.url }}" alt="{{ product.title }}" width="50">
+            {% else %}
+                <img src="" alt="{{ product.title }}" width="50">
+            {% endif %}
+        </td>
+        <td>{{ product.title }}</td>
+        <td>{{ product.category.name }}</td>
+        <td>${{ product.price }}</td>
+        <td>{{ product.description|truncatechars:40 }}</td>
+        <td>{{ product.is_offer|yesno:"Yes,No" }}</td>
+        <td>{{ product.stock }}</td>
+        <td>{{ product.updated_at }}</td>
+        <td>{{ product.created_by.get_full_name }}</td>
+        <td>
+            {% if product.updated_by %}
+                {{ product.updated_by.get_full_name }}
+            {% else %}
+                Not Updated Yet
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'edit_product' product.id %}" class="btn m-2 btn-success prdct_table_btn">Edit</a>
+            <form action="{% url 'delete_product' product.id %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn m-2 btn-danger prdct_table_btn " onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="11" class="text-center">No products found.</td>
+    </tr>
+    {% endfor %}
+
