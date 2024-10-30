@@ -3,22 +3,12 @@ from django.utils import timezone
 from django.conf import settings
 from django.utils.text import slugify
 from django.core.validators import RegexValidator
+from django.utils.translation import gettext_lazy as _
 
 
-# Choices for product categories and order statuses
-CATEGORY_CHOICES = (
-    ('TEA', 'TEA PRODUCTS'),
-    ('SPICE', 'SPICE ITEMS'),
-)
 
-ORDER_STATUS_CHOICES = (
-    ('Pending', 'Pending'),
-    ('Processing', 'Processing'),
-    ('Shipped', 'Shipped'),
-    ('Delivered', 'Delivered'),
-    ('Completed', 'Completed'),
-    ('Cancelled', 'Cancelled'),
-)
+
+
 
 
 PAYMENT_METHOD_CHOICES = [
@@ -79,9 +69,18 @@ class Product(models.Model):
     
     def __str__(self):
         return self.title
+    def reduce_stock(self, quantity):
+        """
+        Reduces the stock of the product by the given quantity.
+        """
+        if self.stock >= quantity:
+            self.stock -= quantity
+            self.save()
+        else:
+            raise ValueError("Not enough stock available.")
     
-def save(self, *args, **kwargs):
-    if not self.slug:
+    def save(self, *args, **kwargs):
+       if not self.slug:
         base_slug = slugify(self.title)
         slug = base_slug
         counter = 1
@@ -93,100 +92,44 @@ def save(self, *args, **kwargs):
         
         self.slug = slug
 
-    super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+
+
 
 
 
 class Order(models.Model):
-    STATUS_CHOICES = (
+    STATUS_CHOICES = [
         ('pending', 'Pending'),
-        ('processing', 'Processing'),
+        ('processed', 'Processed'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('canceled', 'Canceled'),
-    )
-    
-    customer = models.ForeignKey(
-        settings.AUTH_USER_MODEL,  # Use CustomUser instead of Customer
-        on_delete=models.CASCADE, 
-        related_name='orders'
-    )
-    products = models.ManyToManyField(
-        Product, 
-        through='OrderItem', 
-        related_name='orders'
-    )
-    total_price = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2, 
-        default=0.00
-    )
-    status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES, 
-        default='pending'
-    )
-    ordered_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    assigned_delivery = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name='deliveries'
-    )  # Assuming delivery personnel are users with role 'staff' or 'admin'
-    
-    def __str__(self):
-        return f"Order #{self.id} by {self.customer.email}"
-    
-    def calculate_total_price(self):
-        """
-        Calculates and updates the total price of the order based on associated OrderItems.
-        """
-        total = sum(item.product.price * item.quantity for item in self.order_items.all())
-        self.total_price = total
-        self.save()
+    ]
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    delivery = models.ForeignKey('Delivery', on_delete=models.SET_NULL, null=True, blank=True, related_name="orders")
+    shipping_charge= models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    order_date = models.DateTimeField(auto_now_add=True)
+    tracking_number = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
+      
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    def get_delivery_charge(self):
+        from .utils import calculate_delivery_charge
+        return calculate_delivery_charge(self)
 
-class OrderItem(models.Model):
-    """
-    Represents the relationship between an Order and a Product, including quantity and price at the time of order.
-    """
-    order = models.ForeignKey(
-        Order, 
-        on_delete=models.CASCADE, 
-        related_name='order_items'
-    )
-    product = models.ForeignKey(
-        Product, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        related_name='order_items'
-    )
-    quantity = models.PositiveIntegerField(
-        default=1,
-        validators=[
-            RegexValidator(
-                regex=r'^[1-9]\d*$',
-                message="Quantity must be a positive integer."
-            )
-        ]
-    )
-    price = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2
-    )  # Price at the time of order
-    
     def __str__(self):
-        return f"{self.product.name} x {self.quantity} (Order #{self.order.id})"
-    
-    def save(self, *args, **kwargs):
-        """
-        Override save method to automatically set the price based on the product's current price if not set.
-        """
-        if not self.price and self.product:
-            self.price = self.product.price
-        super().save(*args, **kwargs)
- 
+        return f"Order {self.id} - {self.customer.email}"
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, null=True, blank=True)
+
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Price at the time of order
+
+    def __str__(self):
+        return f"{self.product.title} (x{self.quantity})"
 class ComboProduct(models.Model):
     title = models.CharField(max_length=200)
     products = models.ManyToManyField(Product, related_name='combos')
@@ -206,7 +149,32 @@ class ComboProduct(models.Model):
 
     def is_all_in_stock(self):
         return all(product.is_in_stock() for product in self.products.all())
+class Delivery(models.Model):
+    order = models.OneToOneField(Order, related_name="delivery_info", on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=20)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    pin_code = models.CharField(max_length=20)
+    country = models.CharField(max_length=100)
+    
+    delivery_status = models.CharField(
+        max_length=50,
+        choices=[
+            ('pending', 'Pending'),
+            ('dispatched', 'Dispatched'),
+            ('in_transit', 'In Transit'),
+            ('delivered', 'Delivered'),
+            ('returned', 'Returned'),
+        ],
+        default='pending'
+    )
+    delivery_date = models.DateTimeField(null=True, blank=True)
+    tracking_number = models.CharField(max_length=100, blank=True, null=True)
 
+    def __str__(self):
+        return f"Delivery for Order {self.order.order_number} - Status: {self.delivery_status}"
 
 class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
@@ -218,7 +186,10 @@ class Address(models.Model):
 
     def __str__(self):
         return f"{self.street}, {self.city}, {self.state}, {self.pin_code}, {self.country}"
-
+    
+    @staticmethod
+    def get_user_addresses(user):
+        return Address.objects.filter(user=user)
 
 class Cart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -254,21 +225,25 @@ class CartItem(models.Model):
         else:
             self.delete()
 
-
-
+    def get_total_price(self):
+        return self.product.price * self.quantity
 
 class Payment(models.Model):
-    PAYMENT_METHOD_CHOICES = [
-        ('Credit Card', 'Credit Card'),
-        ('PayPal', 'PayPal'),
-        ('Cash On Delivery', 'Cash On Delivery'),
-        ('UPI', 'UPI'),
-    ]
-    order = models.OneToOneField('Order', on_delete=models.CASCADE, related_name='payment')
-    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES)
-    payment_id = models.CharField(max_length=255)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments')
+    payment_date = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    paid_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=[
+        ('not_paid', 'Not Paid'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+    ], default='not_paid')
+    payment_method = models.CharField(max_length=50, choices=[
+        ('credit_card', 'Credit Card'),
+        ('paypal', 'PayPal'),
+        ('bank_transfer', 'Bank Transfer'),
+        ('cash_on_delivery', 'Cash on Delivery'),
+    ])
 
     def __str__(self):
-        return f"Payment {self.id} for Order {self.order.id}"
+        return f"Payment for Order {self.order.id} - {self.status}"

@@ -201,7 +201,7 @@
                     <div class="col text-right price">{{ cart_items|sum_price|floatformat:2  }} Rs</div>
                 </div>
                 <div class="row mt-3">
-                    <button class="checkout-btn">Proceed to Checkout</button>
+                    <a href="{% url 'cart_checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
                 </div>
             </div>
         </div>

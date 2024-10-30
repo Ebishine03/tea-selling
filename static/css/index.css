@@ -1,8 +1,5 @@
 
-html body{
-  font-family: "Work Sans", sans-serif;
-  font-weight: 500;
-}
+
 a {
   text-decoration: none;
 }
@@ -23,8 +20,8 @@ a {
 .btn {
   transition: .5s;
   font-weight: 500;
-  width: 100px;
-  height: 32px;
+
+ 
 
 
 }
@@ -261,7 +258,7 @@ background-color: transparent;
 /* Container to ensure consistent image size */
 .image-container {
     width: 100%;
-    height: 250px; /* Set a fixed height for all images */
+    height: 200px; /* Set a fixed height for all images */
     overflow: hidden;
 }
 
@@ -517,4 +514,501 @@ a .owl-carousel{
   color: var(--light);
   letter-spacing: 1px;
   box-shadow: none;
+}
+.container.address-info {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.address-info .form-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.address-info .form-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.address-info .section-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.address-info .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.address-info .form-group {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.address-info .col-md-6 {
+    flex: 1 1 48%;
+}
+
+.address-info .form-group label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.address-info .form-group input,
+.address-info .form-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+.address-info .form-group input:focus,
+.address-info .form-group select:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.address-info .submit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 20px;
+}
+
+.address-info .submit-btn:hover {
+    background-color: #45a049;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Parent Container */
+.orders-container {
+  padding: 20px 10%;
+  background-color: #f9f9f9;
+}
+
+/* Heading */
+.orders-container .orders-heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+/* Orders List */
+.orders-container .orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Order Card */
+.orders-container .order-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Order Info */
+.orders-container .order-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.orders-container .order-id {
+  font-weight: bold;
+  color: #333;
+}
+
+.orders-container .order-price {
+  font-weight: bold;
+  color: #555;
+}
+
+/* Status Badge */
+.orders-container .order-status {
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 12px;
+  color: #fff;
+  text-transform: capitalize;
+}
+.orders-container .order-status.pending { background-color: #f39c12; }
+.orders-container .order-status.processed { background-color: #3498db; }
+.orders-container .order-status.shipped { background-color: #e67e22; }
+.orders-container .order-status.delivered { background-color: #27ae60; }
+.orders-container .order-status.canceled { background-color: #e74c3c; }
+
+/* Action Buttons */
+.orders-container .order-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.orders-container .btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.orders-container .track-btn {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.orders-container .cancel-btn {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.orders-container .track-btn:hover {
+  background-color: #2980b9;
+}
+
+.orders-container .cancel-btn:hover {
+  background-color: #c0392b;
+}
+/* Parent Container */
+.cancel-order-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Heading */
+.cancel-order-container .cancel-heading {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 20px;
+}
+
+/* Message */
+.cancel-order-container .cancel-message {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* Form */
+.cancel-order-container .cancel-form {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Buttons */
+.cancel-order-container .btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-order-container .cancel-btn {
+  background-color: #a51e0e;
+  color: #fff;
+}
+
+.cancel-order-container .back-btn {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.cancel-order-container .cancel-btn:hover {
+  background-color: #a82416;
+}
+
+.cancel-order-container .back-btn:hover {
+  background-color: #2980b9;
+}
+.product-image{
+  height: 200px;
+  width: 500px;
+  background-size: cover;
+}
+/* Order Summary Container */
+.order-summary-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+ 
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+.order-summary-container .summary-title {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Product Details Layout */
+.order-summary-container .product-details {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Image Styling */
+.order-summary-container .image-container {
+  flex: 1 1 200px;
+  text-align: center;
+}
+
+.order-summary-container .image-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Product Info */
+.order-summary-container .product-info {
+  flex: 2;
+  padding: 10px;
+}
+
+.order-summary-container .product-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.order-summary-container .product-price,
+.order-summary-container .delivery-charge,
+.order-summary-container .total-price,
+.order-summary-container .delivery-date {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  margin: 10px 0;
+}
+
+/* Form Styling */
+.order-summary-container .quantity-form {
+  margin-top: 20px;
+}
+
+.order-summary-container .form-group {
+  margin-bottom: 15px;
+}
+
+.order-summary-container .form-group label {
+  font-weight: bold;
+  color: #555;
+}
+
+.order-summary-container .form-group select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 100px;
+}
+
+/* Button Styling */
+.order-summary-container .continue-btn {
+ 
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s;
+}
+
+.order-summary-container .continue-btn:hover {
+  background-color: #66ef84;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .order-summary-container .product-details {
+      flex-direction: column;
+  }
+
+  .order-summary-container .image-container, 
+  .order-summary-container .product-info {
+      text-align: center;
+  }
+}
+.cart-order-summary-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+   
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cart-order-summary-container .summary-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.cart-order-summary-container .product-list {
+    margin-bottom: 20px;
+}
+
+.cart-order-summary-container .product-details {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.cart-order-summary-container .image-container {
+    flex: 1;
+    padding-right: 15px;
+}
+
+.cart-order-summary-container .product-image {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.cart-order-summary-container .product-info {
+    flex: 2;
+    padding-left: 15px;
+}
+
+.cart-order-summary-container .product-title {
+    font-size: 1.25rem;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.cart-order-summary-container .cart-order-summary-container .product-price,
+.cart-order-summary-container .product-quantity,
+.cart-order-summary-container .product-total-price {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+
+
+.cart-order-summary-container .delivery-charge,
+.cart-order-summary-container .total-price,
+.cart-order-summary-container .delivery-date {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+.cart-order-summary-container .continue-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+}
+/* Order Confirmation Page Styling */
+.confirmation-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.confirmation-title {
+  font-size: 2rem;
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+.confirmation-message {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.order-details {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.order-id, .tracking-number {
+  font-weight: bold;
+  color: #333;
+}
+
+.email-notification {
+  color: #777;
+  margin-bottom: 25px;
+}
+
+.back-home-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.back-home-btn:hover {
+  background-color: #0056b3;
 }

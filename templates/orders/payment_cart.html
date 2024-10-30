@@ -1,0 +1,13 @@
+<!-- templates/orders/payment_cart.html -->
+{% extends 'base/index.html' %}
+{% block content %}
+<h2>Payment</h2>
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+<h3>Total Price: ${{ total_price }}</h3>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Confirm Payment</button>
+</form>
+{% endblock %}

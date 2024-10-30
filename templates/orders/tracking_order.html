@@ -1,0 +1,95 @@
+{% extends 'base/index.html' %}
+
+{% block content %}
+<div class="order-tracking-container mt-3">
+    <h2>Order Tracking</h2>
+    <p>Tracking Number: {{ order.tracking_number }}</p>
+
+    <div class="order-tracking">
+        <div class="step {% if order.status == 'pending' %}active{% endif %} {% if order.status in 'processed shipped delivered' %}completed{% endif %}">
+            <span>Pending</span>
+        </div>
+        <div class="step {% if order.status == 'processed' %}active{% endif %} {% if order.status in 'shipped delivered' %}completed{% endif %}">
+            <span>Processed</span>
+        </div>
+        <div class="step {% if order.status == 'shipped' %}active{% endif %} {% if order.status == 'delivered' %}completed{% endif %}">
+            <span>Shipped</span>
+        </div>
+        <div class="step {% if order.status == 'delivered' %}active{% endif %}">
+            <span>Delivered</span>
+        </div>
+    </div>
+
+    <p>Status: {{ order.status|title }}</p>
+
+    <style>
+        .order-tracking-container {
+            padding: 20px;
+            background-color: #ffffff; /* White background for better visibility */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            max-width: 600px; /* Max width for better layout */
+            margin: 0 auto; /* Centering the container */
+        }
+
+        .order-tracking {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding: 10px; /* Added padding for spacing */
+        }
+
+        .step span {
+            display: block;
+            margin-top: 10px;
+            color: #333; /* Dark text color for better readability */
+            font-weight: bold;
+        }
+
+        .order-tracking::before {
+            content: '';
+            position: absolute;
+            top: 20px; /* Aligning with steps */
+            left: 0;
+            right: 0;
+            height: 4px; /* Thickness of the line */
+            background: #ccc; /* Default color for the line */
+            z-index: 0; /* Behind the steps */
+        }
+
+        .step.active ~ .step::before {
+            background: #28a745; /* Change color to green for active */
+        }
+
+        .step.completed ~ .step::before {
+            background: #007bff; /* Change color to blue after completion */
+        }
+
+        .step.active {
+            color: #28a745; /* Color for active step */
+        }
+
+        .step.completed {
+            color: #007bff; /* Color for completed steps */
+        }
+
+        h2 {
+            color: #333; /* Darker color for heading */
+            text-align: center; /* Center heading */
+        }
+
+        p {
+            text-align: center; /* Center paragraph */
+            font-size: 16px; /* Readable font size */
+            color: #666; /* Slightly lighter color for secondary text */
+        }
+    </style>
+</div>
+{% endblock %}

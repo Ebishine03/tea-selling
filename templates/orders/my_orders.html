@@ -1,0 +1,23 @@
+{% extends 'base/index.html' %}
+
+{% block content %}
+<div class="orders-container">
+    <h2 class="orders-heading">My Orders</h2>
+    <div class="orders-list">
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-info">
+                <span class="order-id">Order ID: {{ order.id }}</span>
+                <span class="order-id">Tracking Number: {{ order.tracking_number }}</span>
+                <span class="order-price">Total Price: ${{ order.total_price }}</span>
+                <span class="order-status {{ order.status }}">{{ order.status|title }}</span>
+            </div>
+            <div class="order-actions">
+                <a href="{% url 'order_tracking' order.id %}" class="btn track-btn">Track Order</a>
+                <a href="{% url 'cancel_order' order.id %}" class="btn cancel-btn">Cancel Order</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

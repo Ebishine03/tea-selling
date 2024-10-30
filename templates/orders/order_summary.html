@@ -1,23 +1,45 @@
-{% extends "base/index.html" %}
+{% extends 'base/index.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Order Summary</h2>
-    
-    <h4>Order ID: {{ order.id }}</h4>
-    <p>Status: {{ order.status }}</p>
-    <p>Total Price: ${{ order.total_price }}</p>
-    <p>Order Date: {{ order.created_at }}</p>
-    
-    <h5>Items:</h5>
-    <ul class="list-group">
-        {% for item in order_items %}
-            <li class="list-group-item">
-                {{ item.product.title }} - Quantity: {{ item.quantity }} - Price: ${{ item.price }} each
-            </li>
-        {% endfor %}
-    </ul>
+<div class="order-summary-container">
+    <h2 class="summary-title">Order Summary</h2>
 
-    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+    <div class="product-details">
+        <div class="image-container">
+            <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
+        </div>
+
+        <div class="product-info">
+            <h3 class="product-title">{{ product.title }}</h3>
+            <p class="product-price fw-bold">Price: ${{ product.price }}</p>
+
+            <form method="post" class="quantity-form" id="orderForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_quantity">Quantity</label>
+                    <select name="quantity" id="id_quantity" onchange="updateTotal()">
+                        {% for i in quantity_options %}
+                            <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <p class="delivery-charge ">Delivery Charge: Rs. {{ delivery_charge }}</p>
+                <p class="total-price">Total Price: Rs. <span class="fw-bold" id="totalPrice">{{ total_price }}</span></p>
+                <p class="delivery-date">Expected Delivery Date: <span class="text-success fw-bold">{{ expected_delivery_date }}</span>  </p>
+                <button type="submit" class="continue-btn btn btn-primary">Continue to Payment</button>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+    function updateTotal() {
+        var productPrice = parseFloat("{{ product.price }}");
+        var deliveryCharge = parseFloat("{{ delivery_charge }}");
+        var quantity = parseInt(document.getElementById('id_quantity').value);
+        var totalPrice = (productPrice * quantity) + deliveryCharge;
+        document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
+    }
+    window.onload = updateTotal;
+</script>
 {% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base/index.html' %}
+
+{% block content %}
+<div class="container address-info">
+    <h2 class="form-title">Delivery Information</h2>
+    <p class="form-subtitle">Please provide your contact and delivery details.</p>
+    
+    <form method="post" class="delivery-form">
+        {% csrf_token %}
+
+        <!-- Step 1: Contact Information -->
+        <div class="section">
+            <h3 class="section-title">Step 1: Contact Information</h3>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    {{ form.full_name.label_tag }}
+                    {{ form.full_name }}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.phone_number.label_tag }}
+                    {{ form.phone_number }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 2: Delivery Address -->
+        <div class="section">
+            <h3 class="section-title">Step 2: Delivery Address</h3>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    {{ form.street.label_tag }}
+                    {{ form.street }}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.city.label_tag }}
+                    {{ form.city }}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.state.label_tag }}
+                    {{ form.state }}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.pin_code.label_tag }}
+                    {{ form.pin_code }}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.country.label_tag }}
+                    {{ form.country }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn">Continue to Order Summary</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import redirect, get_object_or_404, render
 from .models import Cart, CartItem, Product, ComboProduct, Address, Payment, Order, OrderItem
 from django.contrib.auth.decorators import login_required
@@ -9,11 +10,13 @@ from django.http import JsonResponse,HttpResponse
 from django.db import transaction
 from .constants import  PAYMENT_METHOD_CHOICES
 from django.utils import timezone
+from .forms import DeliveryInfoForm,QuantityForm
+from  .models import Delivery
+import uuid
 def chunked(iterable, size):
     it = iter(iterable)
     return iter(lambda: list(islice(it, size)), [])
 
-@login_required
 def list_products(request, category_slug):
     search_query = request.GET.get('search-query', '')
     sort_by = request.GET.get('sort-by', 'default')
@@ -21,8 +24,8 @@ def list_products(request, category_slug):
     # Filter products based on category_slug
     if category_slug == 'tea':
         products = Product.objects.filter(category__slug='tea')
-    elif category_slug == 'spice':
-        products = Product.objects.filter(category__slug='spice')
+    elif category_slug == 'spices':
+        products = Product.objects.filter(category__slug='spices')
     elif category_slug == 'combo':
         products = ComboProduct.objects.all()
     elif category_slug == 'offer':
@@ -161,81 +164,254 @@ def clear_cart(request):
     return redirect('view_cart')  
 
 
-def buy_now(request, product_slug):
-    if not request.user.addresses.exists():
-        messages.error(request, "Please add an address before making a purchase.")
-        return redirect('add_address')  # Redirect to address management page
+@login_required
+def delivery_info_view(request, product_slug):
+    product = get_object_or_404(Product, slug=product_slug)
+    
+    if request.method == 'POST':
+        form = DeliveryInfoForm(request.POST)
+        if form.is_valid():
+            # Save delivery information temporarily in session
+            request.session['delivery_info'] = form.cleaned_data
+            return redirect('order_summary', product_slug=product_slug)
+    else:
+        form = DeliveryInfoForm()
+    
+    return render(request, 'orders/delivery_info.html', {'form': form, 'product': product})
 
-    product = get_object_or_404(Product,slug=product_slug)
+@login_required
+def cart_checkout_view(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    cart_items = cart.items.all()
+    
+    if not cart_items:
+        # Redirect to a message or empty cart page
+        return redirect('view_cart')  # Adjust as needed
+
+    delivery_info = request.session.get('delivery_info')
+    
+    if not delivery_info:
+        return redirect('delivery_info_cart')
+
+    # Assuming a static delivery charge for simplicity; adjust as necessary
+    delivery_charge = Decimal('5.00')
+    total_price = sum(item.get_total_price() for item in cart_items) + delivery_charge
 
     if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))
+        # Process delivery info and confirm order
+        order_details = {
+            'total_price': str(total_price),
+            'delivery_charge': str(delivery_charge),
+        }
+        request.session['order_details'] = order_details
+        return redirect('payment_cart')
 
-        # Create an order
-        order = Order.objects.create(user=request.user)
-        order_item = OrderItem.objects.create(
+    return render(request, 'orders/cart_checkout.html', {
+        'cart_items': cart_items,
+        'delivery_info': delivery_info,
+        'total_price': total_price,
+        'delivery_charge': delivery_charge,
+    })
+
+@login_required
+def payment_cart_view(request):
+    delivery_info = request.session.get('delivery_info')
+    order_details = request.session.get('order_details')
+
+    if not order_details or not delivery_info:
+        return redirect('delivery_info_cart')
+
+    total_price = order_details['total_price']
+    cart = get_object_or_404(Cart, user=request.user)
+    cart_items = cart.items.all()
+
+    if request.method == 'POST':
+        # Check stock availability for all items
+        for item in cart_items:
+            if item.product.stock < item.quantity:
+                return render(request, 'orders/payment_cart.html', {
+                    'error': "Not enough stock available for one or more items."
+                })
+
+        # Deduct stock and create the order
+        order = Order.objects.create(
+            customer=request.user,
+            total_price=total_price,
+            status='pending',
+            tracking_number=str(uuid.uuid4())
+        )
+
+        for item in cart_items:
+            item.product.reduce_stock(item.quantity)
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+
+        Delivery.objects.create(
+            order=order,
+            **delivery_info
+        )
+
+        Payment.objects.create(
+            order=order,
+            amount=total_price,
+            payment_method='cash_on_delivery'  # This can be dynamically set
+        )
+
+        # Clear session data after order creation
+        del request.session['order_details']
+        del request.session['delivery_info']
+        cart.items.all().delete()  # Clear the cart items after successful payment
+
+        return render(request, 'orders/order_confirmation.html', {'order': order})
+
+    return render(request, 'orders/payment_cart.html', {
+        'total_price': total_price,
+        'cart_items': cart_items,
+    })
+
+@login_required
+def delivery_info_cart_view(request):
+    if request.method == 'POST':
+        form = DeliveryInfoForm(request.POST)
+        if form.is_valid():
+            # Save delivery information temporarily in session
+            request.session['delivery_info'] = form.cleaned_data
+            return redirect('cart_checkout')
+    else:
+        form = DeliveryInfoForm()
+
+    return render(request, 'orders/delivery_info.html', {'form': form})
+
+def order_summary_view(request, product_slug):
+    # Retrieve the product and delivery information from the session
+    product = get_object_or_404(Product, slug=product_slug)
+    delivery_info = request.session.get('delivery_info')
+
+    # Redirect to delivery info if delivery information is missing
+    if not delivery_info:
+        return redirect('buy_now', product_slug=product_slug)
+
+    # Define a static delivery charge or calculate dynamically as needed
+    delivery_charge = Decimal('5.00')
+
+    # Handle the POST request for setting quantity and calculating total price
+    if request.method == 'POST':
+        quantity_form = QuantityForm(request.POST)
+        if quantity_form.is_valid():
+            quantity = quantity_form.cleaned_data['quantity']
+            total_price = (Decimal(product.price) * Decimal(quantity)) + delivery_charge
+            quantity_options = list(range(1, 11))
+
+            # Store order details in the session
+            request.session['order_details'] = {
+                'product_id': product.id,
+                'quantity': quantity,
+                'total_price': str(total_price),  # Store as string for JSON compatibility
+                'delivery_charge': str(delivery_charge),
+                'quantity_options': quantity_options,
+            }
+            return redirect('payment', product_slug=product_slug)
+    else:
+        # Initial form setup for GET requests
+        quantity_form = QuantityForm(initial={'quantity': 1})
+
+    # Calculate expected delivery date and total price for initial display
+    expected_delivery_date = timezone.now() + timezone.timedelta(days=5)
+    default_quantity = 1
+    total_price = (Decimal(product.price) * Decimal(default_quantity)) + delivery_charge
+
+    # Render the template with all necessary data
+    return render(request, 'orders/order_summary.html', {
+        'product': product,
+        'quantity_form': quantity_form,
+        'delivery_info': delivery_info,
+        'expected_delivery_date': expected_delivery_date,
+        'delivery_charge': delivery_charge,
+        'quantity_options': list(range(1, 11)),
+        'total_price': total_price,
+    })
+def payment_view(request, product_slug):
+    product = get_object_or_404(Product, slug=product_slug)
+    order_details = request.session.get('order_details')
+    delivery_info = request.session.get('delivery_info')
+
+    # Check if session data exists; redirect if missing
+    if not order_details or not delivery_info:
+        return redirect('order_summary', product_slug=product_slug)
+
+    total_price = order_details.get('total_price')  # Access total_price after validation
+    tracking_number = str(uuid.uuid4())
+
+    if request.method == 'POST':
+        # Check stock availability
+        quantity = order_details['quantity']
+        if product.stock < int(quantity):
+            return render(request, 'orders/payment.html', {'product': product, 'error': "Not enough stock available."})
+
+        # Deduct stock
+        product.reduce_stock(int(quantity))
+
+        # Create Order and Delivery
+        order = Order.objects.create(
+            customer=request.user,
+            total_price=order_details['total_price'],
+            status='pending',
+            tracking_number=tracking_number
+        )
+
+        OrderItem.objects.create(
             order=order,
             product=product,
             quantity=quantity,
             price=product.price
         )
-        
-        # Reduce stock
-        product.reduce_stock(quantity)
 
-        messages.success(request, "Your order has been placed successfully.")
-        return redirect('order_summary', order_id=order.id)
+        Delivery.objects.create(
+            order=order,
+            **delivery_info
+        )
 
-    return render(request, 'orders/buy_now.html', {'product': product})
-@login_required
-def checkout_cart(request):
-    # Ensure the user has at least one address
-    if not request.user.addresses.exists():
-        messages.error(request, "Please add an address before checking out.")
-        return redirect('add_address')  # Redirect to address management page
+        # Create Payment (default status is 'not_paid')
+        Payment.objects.create(
+            order=order,
+            amount=order_details['total_price'],
+            payment_method='cash_on_delivery'  # This can be dynamically set
+        )
 
-    cart = get_object_or_404(Cart, user=request.user)
+        # Clear session data after order creation
+        request.session.pop('order_details', None)
+        request.session.pop('delivery_info', None)
+
+        print('Order Created')
+
+        return render(request, 'orders/order_confirmation.html', {'order': order})
+
+    return render(request, 'orders/payment.html', {'product': product, 'total_price': total_price})
+
+def order_tracking_view(request, order_id):
+    order = get_object_or_404(Order, id=order_id, customer=request.user)
+
+    return render(request, 'orders/tracking_order.html', {
+        'order': order,
+    })
+def cancel_order_view(request, order_id):
+    order = get_object_or_404(Order, id=order_id, customer=request.user)
 
     if request.method == 'POST':
-        if not cart.items.exists():
-            messages.error(request, "Your cart is empty.")
-            return redirect('cart')
-
-        # Create the order
-        order = Order.objects.create(user=request.user)
-        total_price = 0
-
-        for cart_item in cart.items.all():
-            order_item = OrderItem.objects.create(
-                order=order,
-                product=cart_item.product,
-                quantity=cart_item.quantity,
-                price=cart_item.product.price
-            )
-            total_price += order_item.price * order_item.quantity
-
-            # Reduce stock
-            cart_item.product.reduce_stock(cart_item.quantity)
-
-        order.total_price = total_price
+        order.status = 'canceled'
         order.save()
+        return redirect('my_orders')  # Redirect to My Orders page
 
-        # Clear the cart
-        cart.items.all().delete()
-
-        messages.success(request, "Your order has been placed successfully.")
-        return redirect('order_summary', order_id=order.id)
-
-    return render(request, 'orders/checkout_cart.html', {'cart': cart})
-@login_required
-def order_summary(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-
-    # Retrieve order items
-    order_items = order.items.all()
-
-    context = {
+    return render(request, 'orders/cancel_order.html', {
         'order': order,
-        'order_items': order_items,
-    }
-    return render(request, 'orders/order_summary.html', context)
+    })
+def my_orders_view(request):
+    orders = Order.objects.filter(customer=request.user)
+
+    return render(request, 'orders/my_orders.html', {
+        'orders': orders,
+    })

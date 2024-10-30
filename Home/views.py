@@ -4,6 +4,12 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib import messages
 from .forms import CustomUserRegistrationForm  
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.db.models import Q
+from django.utils import timezone
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 from  .models import CustomUser  
 from .forms import *
@@ -363,13 +369,12 @@ def update_order(request, pk):
 
 @employee_required
 
+
+@employee_required
 def dashboard(request):
     products = Product.objects.filter(is_active=True)
-    
     search_query = request.GET.get('search-query', '')
     sort_by = request.GET.get('sort-by', 'default')
-
-    
 
     # Apply search query if provided
     if search_query:
@@ -378,48 +383,71 @@ def dashboard(request):
         )
 
     # Apply sorting if selected
-    if sort_by == 'price-low-high':
-        products = products.order_by('price')
-    elif sort_by == 'price-high-low':
-        products = products.order_by('-price')
-    elif sort_by == 'rating-high-low':
-        products = products.order_by('-rating')  # Assuming you have a 'rating' field
-    elif sort_by == 'date-newest':
-        products = products.order_by('-created_at')  # Assuming a 'created_at' field
-    elif sort_by == 'date-oldest':
-        products = products.order_by('created_at')
-    elif sort_by == 'name-asc':
-        products = products.order_by('title')
-    elif sort_by == 'name-desc':
-        products = products.order_by('-title')
+    sort_options = {
+        'price-low-high': 'price',
+        'price-high-low': '-price',
+        'rating-high-low': '-rating',
+        'date-newest': '-created_at',
+        'date-oldest': 'created_at',
+        'name-asc': 'title',
+        'name-desc': '-title',
+    }
+    if sort_by in sort_options:
+        products = products.order_by(sort_options[sort_by])
 
+    # Product and Order statistics
     products_count = products.count()
     customers_count = CustomUser.objects.count()
     today = timezone.now().date()
-    today_orders_count = Order.objects.filter(ordered_at__date=today).count()
+    today_orders_count = Order.objects.filter(order_date=today).count()
     pending_orders_count = Order.objects.filter(status='pending').count()
 
-    # Filter low stock and out of stock products
-    low_stock_products = products.filter(stock__gt=0, stock__lt=10)
-    out_of_stock_products = products.filter(stock=0)  
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        html = render_to_string('partials/product_table_partial.html', {'products': products})
-        return JsonResponse({'html': html})
-    
+    # Fetch order details
+    total_orders = Order.objects.count()
+    completed_orders = Order.objects.filter(status='completed').count()
+    shipped_orders = Order.objects.filter(status='shipped').count()
+    canceled_orders = Order.objects.filter(status='canceled').count()
 
+    # Filter low stock and out-of-stock products
+    low_stock_products = products.filter(stock__gt=0, stock__lt=10)
+    out_of_stock_products = products.filter(stock=0)
+
+    # Handle order status updates
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        new_status = request.POST.get('status')
+        valid_status_choices = dict(Order._meta.get_field('status').choices)
+
+        order = get_object_or_404(Order, id=order_id)
+        if new_status in valid_status_choices:
+            order.status = new_status
+            order.save()
+            messages.success(request, f"Order #{order.id} status updated to {new_status}!")
+            return redirect('employee_dashboard')
+
+    orders = Order.objects.all()
+
+    # Add STATUS_CHOICES to the context
     context = {
         'products_count': products_count,
         'customers_count': customers_count,
         'today_orders_count': today_orders_count,
         'pending_orders_count': pending_orders_count,
         'low_stock_products': low_stock_products,
-        'out_of_stock_products': out_of_stock_products,  
-        'products': products,  
-        'search_query': search_query,  # Pass query back to the template
-        'sort_by': sort_by,  # Pass sort option back to the template
+        'out_of_stock_products': out_of_stock_products,
+        'products': products,
+        'total_orders': total_orders,
+        'completed_orders': completed_orders,
+        'shipped_orders': shipped_orders,
+        'canceled_orders': canceled_orders,
+        'orders': orders,
+        'STATUS_CHOICES': Order.STATUS_CHOICES,  # Add status choices here
+        'search_query': search_query,
+        'sort_by': sort_by,
     }
 
     return render(request, 'employee/inventory_emp.html', context)
+
 @employee_required
 def employee_profile(request):
     user = request.user  # Get the logged-in user
@@ -459,4 +487,5 @@ def employee_profile(request):
     }
 
     return render(request, 'employee/employee_profile.html', context)
+
 

@@ -2,23 +2,24 @@
     <div class="row mt-5 ms-1">
         {% for product in chunk %}
         <div class="col-lg-4 col-md-6 mb-4 mt-2">
-            <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
+            <div class="store-item card shadow-lg p-3 bg-light rounded h-70 text-center">
                 <!-- Product Image -->
                 <div class="image-container">
                     <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
                 </div>
         
                 <!-- Product Details -->
-                <div class="p-4">
+                <div class="p-1">
                     <!-- Product Title -->
-                    <h4 class="mb-3">{{ product.title }}</h4>
+                    <h5 class="mb-1 fw-bold">{{ product.title }}</h5>
                     <!-- Product Description -->
-                    <h4 class="mb-3">${{ product.description }}</h4>
+                    <p class="mb-1">{{ product.description }} </p>
                     <!-- Product Price -->
-                    <h4 class="fw-bold mb-0">${{ product.price }}</h4>
+                    <h5 class="fw-bold ">Rs {{ product.price }}</h5>
+                    <h6 class=" text-primary text-muted fw-bold">Only {{ product.stock }} available</h6>
 
                     <!-- Button Container -->
-                    <div class="mt-4">
+                    <div class="mt-2">
                         <!-- Add to Cart Button -->
                         <form method="POST" action="{% url 'add_to_cart' product.id %}" class="mb-2">
                             {% csrf_token %}

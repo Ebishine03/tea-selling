@@ -3,11 +3,12 @@ from django.conf.urls.static import static
 from django.conf import settings
 from .views import *
 from  . import views
+from Products .views import *
 urlpatterns = [
 path('',index,name='home'),
 path('profile/', profile_view, name='profile'),
 path('search/', search_products_home, name='search_products'),
-path('login/', custom_login_view, name='login'),
+path('accounts/login/', custom_login_view, name='login'),
 path('logout/',custom_logout,name='logout'),
 path('register/', register, name='register'),
 
@@ -29,5 +30,10 @@ path('register/', register, name='register'),
     path('employee/orders/', views.order_list, name='order_list'),
     path('employee/orders/<int:pk>/', views.order_detail, name='order_detail'),
     path('employee/orders/<int:pk>/update/', views.update_order, name='update_order'),
+
+
+    path('my-orders/', my_orders_view, name='my_orders'),
+    path('order/<int:order_id>/cancel/', cancel_order_view, name='cancel_order'),
+    path('order/<int:order_id>/tracking/', order_tracking_view, name='order_tracking'),
 
 ]

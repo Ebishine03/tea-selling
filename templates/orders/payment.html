@@ -1,0 +1,10 @@
+<!-- buy_now/payment.html -->
+<h2>Payment</h2>
+<p>Total Price: Rs {{ total_price }}</p>  <!-- Updated to show the total price -->
+{% if error %}
+    <p>{{ error }}</p>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirm Order</button>
+</form>

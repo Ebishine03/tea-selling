@@ -1,0 +1,14 @@
+{% extends 'base/index.html' %}
+
+{% block content %}
+<div class="confirmation-container">
+    <h2 class="confirmation-title">Order Confirmation</h2>
+    <p class="confirmation-message">Thank you for your purchase!</p>
+    <p class="order-details">
+        Your order ID is <span class="order-id">{{ order.id }}</span>. 
+        Tracking Number: <span class="tracking-number">{{ order.tracking_number }}</span> 
+    </p>
+    <p class="email-notification">You will receive a confirmation email shortly.</p>
+    <a href="{% url 'home' %}" class="back-home-btn">Back to Home</a>
+</div>
+{% endblock %}

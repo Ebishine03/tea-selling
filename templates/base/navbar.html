@@ -55,7 +55,7 @@
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='offer-products' %}">OFFER PRODUCTS</a></li>
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='combo' %}">COMBO PRODUCTS</a></li>
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='tea' %}">TEA</a></li>
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='spice' %}">SPICE</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='spices' %}">SPICE</a></li>
                 
                     </ul>
                 </div>
@@ -67,7 +67,8 @@
                             </div>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'profile'%}">My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                            <li><a  class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt text-danger"></i> Sign Out</a></li>
                         </ul>
                     </div>
@@ -79,10 +80,8 @@
                         </div>
                     </a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="nav-item nav-link">
-                        <div>
-                            <i class="fas fa-user text-success" style="font-size: 1.7rem;"></i>
-                        </div>
+                    <a href="{% url 'login' %}" class="nav-item nav-link mt-3">
+                        
                         <span class="text-dark">Login</span>
                     </a>
                 {% endif %}
@@ -116,7 +115,8 @@
                     <span class="text-dark">{{ user.first_name }} {{ user.last_name }}</span>
                 </a>
                 <ul class="ms-3">
-                    <a class="text-muted fw-bold" href="{% url 'profile'%} ">View Profile</a> <br><br>
+                    <a class="text-muted fw-bold" href="{% url 'profile'%} ">View Profile</a> <br> <br>
+                    <a class="text-muted fw-bold" href="{% url 'my_orders' %}">My Orders</a> <br> <br>
                     <a class="text-muted fw-bold" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt text-danger"></i> Sign Out</a>
                 </ul>
 

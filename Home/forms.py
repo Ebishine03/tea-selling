@@ -2,7 +2,7 @@ from django import forms
 
 from .models import CustomUser,EmployeeProfile
 from django.contrib.auth import get_user_model
-from Products .models import Product,Order
+from Products .models import Product,Order,Address
 class CustomUserRegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
@@ -68,10 +68,10 @@ class ProductForm(forms.ModelForm):
 class OrderStatusForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['status', 'assigned_delivery']
+        fields = ['status', ]
         widgets = {
             'status': forms.Select(attrs={'class': 'form-control'}),
-            'assigned_delivery': forms.Select(attrs={'class': 'form-control'}),
+           
         }
 
 class CustomUserForm(forms.ModelForm):
@@ -94,3 +94,7 @@ class EmployeeProfileForm(forms.ModelForm):
         model = EmployeeProfile
         fields = ['image', 'date_hired', 'employee_type']
 
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = [  'street', 'city', 'state', 'pin_code', 'country']

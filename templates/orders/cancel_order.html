@@ -1,0 +1,13 @@
+{% extends 'base/index.html' %}
+
+{% block content %}
+<div class="cancel-order-container">
+    <h2 class="cancel-heading text-dark">Cancel Order</h2>
+    <p class="cancel-message">Are you sure you want to cancel this order?</p>
+    <form method="post" class="cancel-form">
+        {% csrf_token %}
+        <button type="submit" class="btn cancel-btn">Yes, Cancel Order</button>
+        
+    </form>
+</div>
+{% endblock %}

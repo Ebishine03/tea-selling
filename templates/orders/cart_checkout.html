@@ -1,0 +1,35 @@
+{% extends 'base/index.html' %}
+
+{% block content %}
+<div class="cart-order-summary-container">
+    <h2 class="summary-title">Order Summary</h2>
+    
+    {% for item in cart_items %}
+    <div class="product-details">
+        <div class="image-container">
+            <img class="img-fluid" src="{{ item.product.product_image.url }}" alt="{{ item.product.title }}" class="product-image">
+        </div>
+
+        <div class="product-info">
+            <h3 class="product-title fw-bold">{{ item.product.title }}</h3>
+            <p class="product-price fw-bold">Price: ${{ item.product.price }}</p>
+            <p class="product-quantity fw-bold">Quantity: {{ item.quantity }}</p>
+            <p class="product-total-price fw-bold">Total Price: ${{ item.get_total_price }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="order-summary-footer">
+        <p class="delivery-charge">Delivery Charge: Rs. {{ delivery_charge }}</p>
+        <p class="total-price">Total Price:Rs. <span class="fw-bold" id="totalPrice"> {{ total_price }}</span></p>
+        <p class="delivery-date">Expected Delivery Date: <span class="text-success fw-bold ">{{ expected_delivery_date }}</span></p>
+        
+        <form method="post" id="orderForm">
+            {% csrf_token %}
+            <button type="submit" class="continue-btn btn btn-primary">Continue to Payment</button>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

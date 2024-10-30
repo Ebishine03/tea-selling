@@ -106,7 +106,7 @@
                             </form>
 
                             <!-- Buy Now Button -->
-                            <form method="POST" action="{% url 'checkout' %}">
+                            <form method="POST" action="{% url 'buy_now' product.slug %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
                                 <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
@@ -147,18 +147,12 @@
                     </div>
                     <!-- Product Info -->
                     <div class="p-4">
-                        <div class="text-center mb-3">
-                            {% for star in "★★★★★" %}
-                                {% if forloop.counter <= product.rating %}
-                                    <small class="fa fa-star text-warning"></small>
-                                {% else %}
-                                    <small class="fa fa-star text-secondary"></small>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
+                       
                         <h4 class="mb-3">{{ product.title }}</h4>
                         <p>{{ product.description }}</p>
-                        <h4 class="fw-bold">${{ product.price }}</h4>
+                        <h4 class="fw-bold">Rs.{{ product.price }}</h4>
+                        
+                        <p class="text-muted">Available {{ product.stock }} Packets</p>
 
                         <!-- Flex container for buttons -->
                         <div class="d-flex justify-content-center gap-3">
@@ -169,7 +163,7 @@
                             </form>
 
                             <!-- Buy Now Button -->
-                            <form method="POST" action="{% url 'checkout' %}">
+                            <form method="POST" action="{% url 'buy_now' product.slug %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
                                 <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
@@ -181,7 +175,7 @@
             </div>
             {% endfor %}
             <div class="text-center mt-5">
-                <a href="{% url 'view-products' category_slug='TEA' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                <a href="{% url 'view-products' category_slug='tea' %}" class="btn btn-primary rounded-pill py-3 px-5">
                     View More <i class="fa fa-arrow-right ms-2"></i>
                 </a>
             </div>
@@ -210,18 +204,11 @@
                     </div>
                     <!-- Product Info -->
                     <div class="p-4">
-                        <div class="text-center mb-3">
-                            {% for star in "★★★★★" %}
-                                {% if forloop.counter <= product.rating %}
-                                    <small class="fa fa-star text-warning"></small>
-                                {% else %}
-                                    <small class="fa fa-star text-secondary"></small>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
+                        
                         <h4 class="mb-3">{{ product.title }}</h4>
                         <p>{{ product.description }}</p>
                         <h4 class="fw-bold">${{ product.price }}</h4>
+                        <p class="text-muted">Available {{ product.stock }} Packets</p>
 
                         <!-- Flex container for buttons -->
                         <div class="d-flex justify-content-center gap-3">
@@ -232,7 +219,7 @@
                             </form>
 
                             <!-- Buy Now Button -->
-                            <form method="POST" action="{% url 'checkout' %}">
+                            <form method="POST" action="{% url 'buy_now' product.slug %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
                                 <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
@@ -244,7 +231,7 @@
             </div>
             {% endfor %}
             <div class="text-center mt-5">
-                <a href="{% url 'view-products' category_slug='SPICE' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                <a href="{% url 'view-products' category_slug='spices' %}" class="btn btn-primary rounded-pill py-3 px-5">
                     View More <i class="fa fa-arrow-right ms-2"></i>
                 </a>
             </div>

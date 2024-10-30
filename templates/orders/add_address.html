@@ -1,0 +1,57 @@
+<form method="post">
+    {% csrf_token %}
+    
+    <h2>Personal Info</h2>
+    
+    <label>First Name:</label>
+    <input type="text" name="first_name" value="{{ user.first_name }}" required>
+    
+    <label>Last Name:</label>
+    <input type="text" name="last_name" value="{{ user.last_name }}" required>
+    
+    <label>Phone Number:</label>
+    <input type="text" name="phone_number" value="{{ user.phone_number }}" required>
+    
+    <h3>Select Address</h3>
+    {% if addresses %}
+        <select name="selected_address">
+            <option value="">Select an address</option>
+            {% for address in addresses %}
+                <option value="{{ address.id }}">{{ address.street }}, {{ address.city }}</option>
+            {% endfor %}
+            <option value="new">Add New Address</option>
+        </select>
+    {% else %}
+        <p>No saved addresses. Please add a new one.</p>
+    {% endif %}
+    
+    <div id="new_address_form" style="display: none;">
+        <h3>Add New Address</h3>
+        <label>Street:</label>
+        <input type="text" name="street" required>
+        
+        <label>City:</label>
+        <input type="text" name="city" required>
+        
+        <label>State:</label>
+        <input type="text" name="state" required>
+        
+        <label>Zip Code:</label>
+        <input type="text" name="zip_code" required>
+        
+        <label>Country:</label>
+        <input type="text" name="country" required>
+    </div>
+
+    <button type="submit">Next: Order Summary</button>
+</form>
+
+<script>
+    // Toggle new address form based on selection
+    const selectAddress = document.querySelector('select[name="selected_address"]');
+    const newAddressForm = document.getElementById('new_address_form');
+    
+    selectAddress.addEventListener('change', function() {
+        newAddressForm.style.display = (this.value === 'new') ? 'block' : 'none';
+    });
+</script>

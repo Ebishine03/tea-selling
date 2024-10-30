@@ -1,0 +1,7 @@
+<h2>Order Successful!</h2>
+<p>Thank you for your purchase!</p>
+<p>Your order ID is: {{ order.id }}</p>
+<p>Total Price: {{ order.total_price }}</p>
+<p>Shipping Address: {{ order.shipping_address.street }}, {{ order.shipping_address.city }}</p>
+<!-- Optionally provide a link back to home or view orders -->
+<a href="{% url 'home' %}">Go to Home</a>

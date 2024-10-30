@@ -605,6 +605,119 @@
 
     </div>
   </section>
+
+
+
+  <div class="container mt-5">
+    <!-- Order Statistics -->
+    <div class="row">
+        <!-- Total Orders -->
+        <div class="col-md-3">
+            <div class="card text-center mb-4">
+                <div class="card-header bg-primary text-white">
+                    Total Orders
+                </div>
+                <div class="card-body">
+                    <h3>{{ total_orders }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Orders -->
+        <div class="col-md-3">
+            <div class="card text-center mb-4">
+                <div class="card-header bg-success text-white">
+                    Completed Orders
+                </div>
+                <div class="card-body">
+                    <h3>{{ completed_orders }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipped Orders -->
+        <div class="col-md-3">
+            <div class="card text-center mb-4">
+                <div class="card-header bg-info text-white">
+                    Shipped Orders
+                </div>
+                <div class="card-body">
+                    <h3>{{ shipped_orders }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canceled Orders -->
+        <div class="col-md-3">
+            <div class="card text-center mb-4">
+                <div class="card-header bg-danger text-white">
+                    Canceled Orders
+                </div>
+                <div class="card-body">
+                    <h3>{{ canceled_orders }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Order List -->
+    <div class="card mt-5">
+        <div class="card-header">
+            <h4>Order Details</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Date Ordered</th>
+                        <th>Total Price</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.customer.get_full_name }}</td>
+                        <td>{{ order.get_status_display }}</td>
+                        <td>{{ order.ordered_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ order.total_price }}</td>
+                        <td>
+                            <!-- Form for updating order status -->
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <select name="status" class="form-select form-select-sm d-inline w-auto">
+                                  {% for status, status_name in STATUS_CHOICES %}
+                                      <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>
+                                          {{ status_name }}
+                                      </option>
+                                  {% endfor %}
+                              </select>
+                              
+                              
+                              
+                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No orders found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+  
+  
 </main>
 <section class="products">
   <div class="col-12">
