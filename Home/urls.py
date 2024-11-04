@@ -13,10 +13,11 @@ path('logout/',custom_logout,name='logout'),
 path('register/', register, name='register'),
 
   # Employee 
-    path('employee/', dashboard, name='employee_dashboard'),
+    path('employee/', dashboard_employee, name='employee_dashboard'),
     path('employee/products/add/', views.add_product, name='add_product'),
     path('employee/products/edit/<int:pk>/', views.edit_product, name='edit_product'),
     path('employee/products/delete/<int:pk>/', views.delete_product, name='delete_product'),
+    path('add-category/', add_category, name='add_category'),
 
     # Customer Management
     path('employee/customers/', views.customer_list, name='customer_list'),
@@ -29,9 +30,13 @@ path('register/', register, name='register'),
     # Order Management
     path('employee/orders/', views.order_list, name='order_list'),
     path('employee/orders/<int:pk>/', views.order_detail, name='order_detail'),
-    path('employee/orders/<int:pk>/update/', views.update_order, name='update_order'),
+    
+    path('update-order-status/', update_order_status, name='update_order_status'),
 
-
+    path('notifications/', views.notifications_view, name='notifications_all'),
+    path('notifications/mark-as-read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
+    path('all-orders/', views.all_orders_view, name='all_orders'),
+    path('all-products/', views.all_products_view, name='all_products'),
     path('my-orders/', my_orders_view, name='my_orders'),
     path('order/<int:order_id>/cancel/', cancel_order_view, name='cancel_order'),
     path('order/<int:order_id>/tracking/', order_tracking_view, name='order_tracking'),

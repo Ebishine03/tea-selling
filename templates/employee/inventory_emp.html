@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Dashboard - NiceAdmin Bootstrap Template</title>
+  <title>Dashboard - Employee</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -38,7 +38,7 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{% url 'employee_dashboard' %}" class="logo d-flex align-items-center">
         <img src="assets/img/logo.png" alt="">
         <span class="d-none d-lg-block">Tea Wallet</span>
       </a>
@@ -47,6 +47,7 @@
 
     <div class="search-bar">
       <form class="search-form d-flex align-items-center" method="POST" action="#">
+        {% csrf_token  %}
         <input type="text" name="query" placeholder="Search" title="Enter search keyword">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
@@ -60,81 +61,45 @@
             <i class="bi bi-search"></i>
           </a>
         </li><!-- End Search Icon-->
-
         <li class="nav-item dropdown">
-
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
-          </a><!-- End Notification Icon -->
-
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-primary badge-number">{{ unread_notifications_count }}</span>
+          </a>
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            <li class="dropdown-header">
-              You have 4 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-exclamation-circle text-warning"></i>
-              <div>
-                <h4>Lorem Ipsum</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>30 min. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-x-circle text-danger"></i>
-              <div>
-                <h4>Atque rerum nesciunt</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>1 hr. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-check-circle text-success"></i>
-              <div>
-                <h4>Sit rerum fuga</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>2 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-info-circle text-primary"></i>
-              <div>
-                <h4>Dicta reprehenderit</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>4 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li class="dropdown-footer">
-              <a href="#">Show all notifications</a>
-            </li>
-
-          </ul><!-- End Notification Dropdown Items -->
-
-        </li><!-- End Notification Nav -->
+              <li class="dropdown-header">
+                  You have {{ unread_notifications_count }} new notifications
+                  <a href="{% url 'notifications_all' %}">
+                      <span class="badge rounded-pill bg-primary p-2 ms-2">View all</span>
+                  </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+      
+              {% for notification in notifications|slice:":5" %}
+                  <li class="notification-item">
+                      <i class="bi bi-circle"></i>
+                      <div>
+                          <h4>{{ notification.get_notification_type_display }}</h4>
+                          <p>{{ notification.message }}</p>
+                          <p>{{ notification.created_at|timesince }} ago</p>
+                      </div>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+              {% empty %}
+                  <li class="notification-item">
+                      <p>No new notifications.</p>
+                  </li>
+              {% endfor %}
+      
+              <li class="dropdown-footer">
+                  <a href="{% url 'notifications_all' %}">Show all notifications</a>
+              </li>
+          </ul>
+      </li>
+      
+      
+      
+      <!-- End Notification Nav -->
 
         <li class="nav-item dropdown">
 
@@ -268,9 +233,9 @@
   </header><!-- End Header -->
 
 <!-- ======= Sidebar ======= -->
-<!-- ======= Sidebar ======= -->
 <aside id="sidebar" class="sidebar">
   <ul class="sidebar-nav" id="sidebar-nav">
+    <!-- Existing Dashboard Nav -->
     <li class="nav-item">
       <a class="nav-link" href="{% url 'employee_dashboard' %}">
         <i class="bi bi-grid"></i>
@@ -285,70 +250,70 @@
       </a>
       <ul class="nav-content" data-bs-parent="#sidebar-nav">
         <li>
+          <a href="{% url 'add_category' %}">
+            <i class="bi bi-circle"></i><span>Add Category</span>
+          </a>
+        </li>
+        <li>
           <a href="{% url 'add_product' %}">
             <i class="bi bi-circle"></i><span>Add Products</span>
           </a>
         </li>
         <li>
-          <a href="components-accordion.html">
-            <i class="bi bi-circle"></i><span>Edit Existing Product</span>
+          <a href="{% url 'all_products' %}">
+            <i class="bi bi-circle"></i><span>All Products</span>
           </a>
         </li>
-        <li>
-          <a href="components-badges.html">
-            <i class="bi bi-circle"></i><span>Add Combo Product</span>
-          </a>
-        </li>
-        <li>
-          <a href="components-badges.html">
-            <i class="bi bi-circle"></i><span>Stock Info</span>
-          </a>
-        </li>
-        <li>
-          <a href="components-inventory.html">
-            <i class="bi bi-circle"></i><span>Inventory Overview</span>
-          </a>
-        </li>
-        <li>
-          <a href="components-stock-history.html">
-            <i class="bi bi-circle"></i><span>Stock History</span>
-          </a>
-        </li>
-        <li>
-          <a href="components-supplier-management.html">
-            <i class="bi bi-circle"></i><span>Supplier Management</span>
-          </a>
-        </li>
-        <li>
-          <a href="components-order-management.html">
-            <i class="bi bi-circle"></i><span>Order Management</span>
-          </a>
-        </li>
-        <li>
-          <a href="components-inventory-report.html">
-            <i class="bi bi-circle"></i><span>Inventory Reports</span>
-          </a>
-        </li>
+        <!-- Additional Product-related Links -->
+        <!-- ... -->
       </ul>
     </li><!-- End Products Section -->
 
-    <li class="nav-heading">Pages</li>
+    <!-- Orders Section -->
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="bi bi-basket"></i><span>Orders</span>
+      </a>
+      <ul class="nav-content" data-bs-parent="#sidebar-nav">
+        
+        <li>
+          <a href="{% url 'all_orders' %}">
+            <i class="bi bi-circle"></i><span>All Orders</span>
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <i class="bi bi-circle"></i><span>Pending Orders</span>
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <i class="bi bi-circle"></i><span>Completed Orders</span>
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <i class="bi bi-circle"></i><span>Order History</span>
+          </a>
+        </li>
+      </ul>
+    </li><!-- End Orders Section -->
 
+    <!-- Pages Section -->
+    <li class="nav-heading">Pages</li>
     <li class="nav-item">
       <a class="nav-link collapsed" href="users-profile.html">
-        <i class="bi bi-person"></i>
-        <span>Profile</span>
+        <i class="bi bi-person"></i><span>Profile</span>
       </a>
-    </li><!-- End Profile Page Nav -->
-
+    </li>
     <li class="nav-item">
       <a class="nav-link collapsed" href="pages-blank.html">
-        <i class="bi bi-file-earmark"></i>
-        <span>Blank</span>
+        <i class="bi bi-file-earmark"></i><span>Blank</span>
       </a>
-    </li><!-- End Blank Page Nav -->
+    </li>
   </ul>
-</aside><!-- End Sidebar-->
+</aside>
+<!-- End Sidebar-->
 {% block  content %}
 <main id="main" class="main">
 
@@ -433,7 +398,7 @@
                 </div>
               </div>
             </div>
-          </div><!-- End Revenue Card -->
+         </div><!-- End Revenue Card -->
 
 <!-- Stock Exhausted Card -->
 <div class="col-xxl-4 col-md-6">
@@ -552,13 +517,9 @@
               </div>
             </div>
     </div>
-<!-- End Customers Card -->
-
-       
         </div>
-      </div><!-- End Left side columns -->
+      </div>
 
-      <!-- Right side columns -->
       <div class="col-lg-4">
         <div class="card">
 
@@ -604,17 +565,16 @@
       </div><!-- End Right side columns -->
 
     </div>
-  </section>
 
 
 
   <div class="container mt-5">
     <!-- Order Statistics -->
     <div class="row">
-        <!-- Total Orders -->
+      
         <div class="col-md-3">
             <div class="card text-center mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-secondary text-white">
                     Total Orders
                 </div>
                 <div class="card-body">
@@ -623,26 +583,51 @@
             </div>
         </div>
 
-        <!-- Completed Orders -->
         <div class="col-md-3">
-            <div class="card text-center mb-4">
-                <div class="card-header bg-success text-white">
-                    Completed Orders
-                </div>
-                <div class="card-body">
-                    <h3>{{ completed_orders }}</h3>
-                </div>
+          <div class="card text-center mb-4">
+              <div class="card-header bg-secondary text-white">
+                  Today's Orders
+              </div>
+              <div class="card-body">
+                  <h3>{{  today_orders_count }}</h3>
+              </div>
+          </div>
+      </div>
+
+
+        <!-------Pending Orders -->
+        <div class="col-md-3">
+          <div class="card text-center mb-4">
+              <div class="card-header bg-secondary text-white">
+                  Pending Orders
+              </div>
+              <div class="card-body">
+                  <h3>{{  pending_orders_count}}</h3>
+              </div>
+          </div>
+      </div>
+
+       <!-- Processed Orders -->
+      <div class="col-md-3">
+        <div class="card text-center mb-4">
+            <div class="card-header bg-secondary text-white">
+                Processed Orders
+            </div>
+            <div class="card-body">
+                <h3>{{  processed_orders_count }}</h3>
             </div>
         </div>
-
+    </div>
+       
+        
         <!-- Shipped Orders -->
         <div class="col-md-3">
             <div class="card text-center mb-4">
-                <div class="card-header bg-info text-white">
+                <div class="card-header bg-secondary text-white">
                     Shipped Orders
                 </div>
                 <div class="card-body">
-                    <h3>{{ shipped_orders }}</h3>
+                    <h3>{{ shipped_orders_count }}</h3>
                 </div>
             </div>
         </div>
@@ -654,116 +639,90 @@
                     Canceled Orders
                 </div>
                 <div class="card-body">
-                    <h3>{{ canceled_orders }}</h3>
+                    <h3>{{ canceled_orders_count }}</h3>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Detailed Order List -->
-    <div class="card mt-5">
-        <div class="card-header">
-            <h4>Order Details</h4>
+       
+      <div class="col-md-3">
+        <div class="card text-center mb-4">
+            <div class="card-header bg-success text-white">
+                Delivered Orders
+            </div>
+            <div class="card-body">
+                <h3>{{ delivered_orders_count }}</h3>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-striped table-hover">
+    </div>
+    </div>
+    <section class="recent-orders">
+      <div class="card mt-5">
+          <div class="card-header">
+              <h4>Recent Orders</h4>
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-10 mt-2">
+                <div class="input-group">
+                    <input type="text" id="order_search_query" name="order_search_query" class="form-control"
+                           placeholder="Search in All Orders" value="{{ request.GET.order_search_query }}">
+                </div>
+              </div>
+            </div>
+            
+            <table class="table table-striped table-hover table-bordered"> <!-- Added table-bordered class -->
                 <thead>
                     <tr>
                         <th>Order ID</th>
-                        <th>Customer</th>
+                        <th>Customer Name</th>
+                        <th>Tracking Number</th>
                         <th>Status</th>
-                        <th>Date Ordered</th>
+                        <th>Delivery Address</th>
+                        <th>Pin Code</th>
+                        <th>Order Date</th>
+                        <th>Ordered Items</th>
+                        <th>Shipping Charge</th>
                         <th>Total Price</th>
-                        <th>Update Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for order in orders %}
-                    <tr>
-                        <td>{{ order.id }}</td>
-                        <td>{{ order.customer.get_full_name }}</td>
-                        <td>{{ order.get_status_display }}</td>
-                        <td>{{ order.ordered_at|date:"Y-m-d H:i" }}</td>
-                        <td>{{ order.total_price }}</td>
-                        <td>
-                            <!-- Form for updating order status -->
-                            <form method="POST" class="d-inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="order_id" value="{{ order.id }}">
-                                <select name="status" class="form-select form-select-sm d-inline w-auto">
-                                  {% for status, status_name in STATUS_CHOICES %}
-                                      <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>
-                                          {{ status_name }}
-                                      </option>
-                                  {% endfor %}
-                              </select>
-                              
-                              
-                              
-                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center">No orders found.</td>
-                    </tr>
-                    {% endfor %}
+                <tbody id='order-list'>
+                    {% if orders %}
+                        {% include 'partials/order_partial.html' %}
+                    {% else %}
+                        <tr>
+                          <td colspan="10" class="text-center">
+                              <p class="text-muted">No Orders found.</p>
+                          </td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
-        </div>
-    </div>
+             
+          </div>
+          <a href="{% url 'all_orders' %}" class="btn btn-primary">View All Orders</a>
+      </div>
+    </section>
+    
 </div>
-
-
-  
-  
 </main>
+
+
 <section class="products">
   <div class="col-12">
     <div class="card list_product overflow-auto">
       <div class="card-body">
-        <h5 class="card-title">Products</h5>
+        <h5 class="card-title">Recent Products</h5>
         <div class="row mb-4">
           <!-- Search within Category -->
-          <div class="col-md-6 mt-2">
+          <div class="col-md-10 mt-2">
               <div class="input-group">
-                  <input type="text" id="search-query" name="search-query" class="form-control"
-                         placeholder="Search within {{ selected_category_slug }}" value="{{ request.GET.search_query }}">
+                  <input type="text" id="product_search_query" name="product_search_query" class="form-control"
+                         placeholder="Search in All Products" value="{{ request.GET.product_search_query }}">
               </div>
           </div>
-  
-          <!-- Sort by -->
-          <div class="col-md-6 mt-2">
-              <div class="input-group justify-content-md-end">
-                  <label for="sort-by" class="input-group-text fw-bold">Sort by:</label>
-                  <select id="sort-by" name="sort-by" class="form-select">
-                      <option value="default">Select Options</option>
-                      <option value="price-low-high" {% if request.GET.sort_by == "price-low-high" %}selected{% endif %}>
-                          Price: Low to High
-                      </option>
-                      <option value="price-high-low" {% if request.GET.sort_by == "price-high-low" %}selected{% endif %}>
-                          Price: High to Low
-                      </option>
-                      <option value="rating-high-low" {% if request.GET.sort_by == "rating-high-low" %}selected{% endif %}>
-                          Rating: High to Low
-                      </option>
-                      <option value="date-newest" {% if request.GET.sort_by == "date-newest" %}selected{% endif %}>
-                          Date Newest First
-                      </option>
-                      <option value="date-oldest" {% if request.GET.sort_by == "date-oldest" %}selected{% endif %}>
-                          Date Oldest First
-                      </option>
-                      <option value="name-asc" {% if request.GET.sort_by == "name-asc" %}selected{% endif %}>
-                          Name: A-Z
-                      </option>
-                      <option value="name-desc" {% if request.GET.sort_by == "name-desc" %}selected{% endif %}>
-                          Name: Z-A
-                      </option>
-                  </select>
-              </div>
-          </div>                                 
       </div>
+      
       <table class="table table-bordered table-hover" id="product-table">
         <thead class="thead-light">
             <tr>
@@ -794,7 +753,10 @@
     </table>
     
       </div>
+      <a href="{% url 'all_products' %}" class="btn btn-primary">View All Products</a>
+
     </div>
+    
   </div>
 </section>
 
@@ -828,45 +790,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
   <script src="{% static 'js/main.js' %} "></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function () {
-        // Attach event listener for input in the search query
-        $('#search-query').on('input', function () {
-            var searchQuery = $(this).val();
-            var sortBy = $('#sort-by').val();
-
-            $.ajax({
-                url: "{% url 'employee_dashboard' %}",  // Use the slug in the URL
-                data: {
-                    'search-query': searchQuery,
-                    'sort-by': sortBy
-                },
-                dataType: 'json',
-                success: function (data) {
-                    $('#product-list').html(data.html); // Update the product list dynamically
-                }
-            });
-        });
-
-        // Attach event listener for sort selection
-        $('#sort-by').on('change', function () {
-            var searchQuery = $('#search-query').val();
-            var sortBy = $(this).val();
-
-            $.ajax({
-                url: "{% url 'employee_dashboard' %}",  // Use the slug in the URL
-                data: {
-                    'search-query': searchQuery,
-                    'sort-by': sortBy
-                },
-                dataType: 'json',
-                success: function (data) {
-                    $('#product-list').html(data.html); // Update the product list dynamically
-                }
-            });
-        });
-    });
-</script>
+  {% block scripts %}<script src="{% static 'js/filter_dashboard.js' %}"></script>{% endblock %}
+ 
 
 </body>
 

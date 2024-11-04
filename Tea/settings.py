@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+   
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,7 +51,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+     'Tea.middleware.RoleBasedRedirectMiddleware',
+    
+    
+    ]
 
 ROOT_URLCONF = 'Tea.urls'
 
@@ -65,12 +69,18 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'Tea.context_processors.add_user_role',
             ],
+            'builtins': [
+                
+                'Products.templatetags.custom_filters',
+                ]
         },
     },
 ]
 
 WSGI_APPLICATION = 'Tea.wsgi.application'
+
 
 
 # Database
@@ -122,7 +132,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-
+LOGIN_URL = 'accounts/login/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -132,6 +142,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 AUTH_USER_MODEL = 'Home.CustomUser'
 

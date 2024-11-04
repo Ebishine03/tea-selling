@@ -2,7 +2,7 @@ from django import forms
 
 from .models import CustomUser,EmployeeProfile
 from django.contrib.auth import get_user_model
-from Products .models import Product,Order,Address
+from Products .models import Product,Order,Address,Category
 class CustomUserRegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
@@ -98,3 +98,7 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = [  'street', 'city', 'state', 'pin_code', 'country']
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'description']

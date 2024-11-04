@@ -8,6 +8,7 @@
         <!-- Icons for profile and cart (always visible on small screens) -->
         <div class="d-lg-none d-flex ms-auto">
             <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="{% url 'search_products' %}" method="GET">
+                {% csrf_token  %}
                 <div class="input-group">
                     <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
                     <button class="input-group-text border-1 sr-sm" type="submit">
@@ -36,6 +37,7 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <!-- Search Bar -->
             <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
+                {% csrf_token  %}
                 <div class="input-group">
                     <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
                     <button class="input-group-text bg-white border-1 sr-btn" type="submit">

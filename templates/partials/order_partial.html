@@ -1,0 +1,43 @@
+{% for order in orders %}
+<tr>
+    <td>{{ order.id }}</td>
+    <td>{{ order.customer.get_full_name }}</td>
+    <td>{{ order.tracking_number }}</td>
+    <td>{{ order.get_status_display }}</td>
+    <td>{{ order.delivery_info.street }}, {{ order.delivery_info.city }}, {{ order.delivery_info.state }}</td>
+    <td>{{ order.delivery_info.pin_code }}</td>
+    <td>{{ order.order_date|date:"F j, Y, g:i A" }}</td>
+    <td>
+        <ul class="list-unstyled">
+            {% for item in order.items.all %}
+          
+                <li class="d-flex align-items-center mb-2">
+                    <img src="{{ item.product.product_image.url }}" alt="{{ item.product.name }}" style="width: 50px; height: auto; margin-right: 10px;">
+                    {{ item.product.title }} - Price: {{ item.price|currency }} - Quantity: {{ item.quantity }} 
+                </li>
+            {% endfor %}
+        </ul>
+    </td>
+    <td>{{ order.shipping_charge|currency }}</td>
+    <td>{{ order.total_price|currency }}</td>
+    <td>
+        <!-- Form for updating order status -->
+        <form action="{% url 'update_order_status' %}" method="POST" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="order_id" value="{{ order.id }}">
+            <select name="status" class="form-select form-select-sm d-inline w-auto">
+                {% for status, status_name in statuses %}
+                    <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>
+                        {{ status_name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-sm btn-block  btn-success">Update</button>
+        </form>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="8" class="text-center">No orders found.</td>
+</tr>
+{% endfor %}

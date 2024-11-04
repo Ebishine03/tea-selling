@@ -1,74 +1,114 @@
 {% extends 'employee/inventory_emp.html' %}
 
-
-{% block content %}"
-
+{% block content %}
 <main id="main" class="main">
     <div class="col-12">
-      <div class="card top-selling overflow-auto">
-          <div class="card-body">
-              <h5 class="card-title">Add New Product</h5>
-  
-              <!-- Product Form for Adding New Products -->
-              <form method="POST" enctype="multipart/form-data">
-                  {% csrf_token %}
-                  
-                  <!-- Render form fields dynamically -->
-                  <div class="mb-3">
-                      {{ form.title.label_tag }}
-                      {{ form.title }}
-                  </div>
-                  <div class="mb-3">
-                      {{ form.category.label_tag }}
-                      {{ form.category }}
-                  </div>
-                  <div class="mb-3">
-                      {{ form.price.label_tag }}
-                      {{ form.price }}
-                  </div>
-                  <div class="mb-3">
-                    {{ form.description.label_tag }}
-                    {{ form.description }}
-                </div>
-                <div class="mb-3">
-                  {{ form.stock.label_tag }}
-                  {{ form.stock }}
-              </div>
-              
-               
-                <div class="mb-3">
-                  <label for="{{ form.is_offer.id_for_label }}" class="col-md-4 col-form-label">Is Offer</label>
-                    <div class="form-check">
-                        {{ form.is_offer }}  <!-- This will render the checkbox -->
+        <div class="card top-selling overflow-auto">
+            <div class="card-body">
+                <h5 class="card-title">Edit Product</h5>
+                
+                <!-- Display non-field errors once at the top -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>Please fix the following errors:</strong>
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                </div>
-          
-            
-            
-                  <!-- Custom File Input for Image Upload -->
-                  <div class="row mb-3">
-                    <label for="{{ form.product_image.id_for_label }}" class="col-md-4 col-lg-3 col-form-label">Product Image</label>
-                    <div class="col-md-8 col-lg-9">
-                        <div class="custom-file">
-                            {{ form.product_image }}  <!-- This will only render the input -->
-                            <label class="custom-file-label" for="{{ form.product_image.id_for_label }}">Choose Image</label>
-                        </div>
-                        {% if form.product_image.value %}  <!-- If an image is uploaded -->
-                            <div class="mt-2">
-                                <img src="{{ form.product_image.value.url }}" alt="Uploaded Image" style="max-width: 100px;"/>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Render form fields dynamically -->
+                    <div class="mb-3">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
                             </div>
                         {% endif %}
                     </div>
-                </div>
-                
-                  <div class=" text-center bg-light " >
-                      <button type="submit" class="btn btn-success">Save  Product</button>
-                  </div>
-              </form>
-  
-          </div>
-      </div>
-  </div>
-  </main><!-- End #main -->
-  
-  {% endblock %}
+                    <div class="mb-3">
+                        {{ form.category.label_tag }}
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="text-danger">
+                                {% for error in form.category.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.price.label_tag }}
+                        {{ form.price }}
+                        {% if form.price.errors %}
+                            <div class="text-danger">
+                                {% for error in form.price.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.description.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.stock.label_tag }}
+                        {{ form.stock }}
+                        {% if form.stock.errors %}
+                            <div class="text-danger">
+                                {% for error in form.stock.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.is_offer.id_for_label }}" class="col-md-4 col-form-label">Is Offer</label>
+                        <div class="form-check">
+                            {{ form.is_offer }} <!-- This will render the checkbox -->
+                        </div>
+                    </div>
+
+                    <!-- Custom File Input for Image Upload -->
+                    <div class="row mb-3">
+                        <label for="{{ form.product_image.id_for_label }}" class="col-md-4 col-lg-3 col-form-label">Product Image</label>
+                        <div class="col-md-8 col-lg-9">
+                            <div class="custom-file">
+                                {{ form.product_image }}  <!-- This will only render the input -->
+                                <label class="custom-file-label" for="{{ form.product_image.id_for_label }}">Choose Image</label>
+                            </div>
+                            {% if form.product_image.value %}  <!-- If an image is uploaded -->
+                                <div class="mt-2">
+                                    <img src="{{ form.product_image.value.url }}" alt="Uploaded Image" style="max-width: 100px;"/>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="text-center bg-light">
+                        <button type="submit" class="btn btn-success">Save Product</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</main><!-- End #main -->
+
+{% endblock %}

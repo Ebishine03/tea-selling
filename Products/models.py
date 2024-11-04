@@ -80,21 +80,31 @@ class Product(models.Model):
             raise ValueError("Not enough stock available.")
     
     def save(self, *args, **kwargs):
-       if not self.slug:
-        base_slug = slugify(self.title)
-        slug = base_slug
-        counter = 1
-        
-        # Ensure slug is unique within the Product model
-        while Product.objects.filter(slug=slug).exists():
-            slug = f"{base_slug}-{counter}"
-            counter += 1
-        
-        self.slug = slug
+        # Only set the slug if it's not already set
+        if not self.slug:
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            
+            # Ensure slug is unique within the Product model
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            
+            self.slug = slug
 
         super().save(*args, **kwargs)
 
-
+    def title_has_changed(self):
+        """Check if the title has changed since the last save."""
+        if self.pk:  # Ensure the product has been saved
+            original = Product.objects.get(pk=self.pk)
+            return original.title != self.title
+        return False
+@property
+def title_has_changed(self):
+    # Check if the title has changed by comparing the current title to the original
+    return self.pk and Product.objects.get(pk=self.pk).title != self.title
 
 
 
@@ -174,8 +184,11 @@ class Delivery(models.Model):
     tracking_number = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return f"Delivery for Order {self.order.order_number} - Status: {self.delivery_status}"
+        return f"{self.full_name} - {self.street}, {self.city}, {self.state}, {self.pin_code}, {self.country}"
 
+    @staticmethod
+    def get_delivery_addresses(user):
+        return Delivery.objects.filter(order__customer=user)
 class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
     street = models.CharField(max_length=255)
