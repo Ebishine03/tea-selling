@@ -410,8 +410,26 @@ def cancel_order_view(request, order_id):
         'order': order,
     })
 def my_orders_view(request):
-    orders = Order.objects.filter(customer=request.user)
+    orders= Order.objects.filter(customer=request.user)
+    print(request.user)
+    print(orders)
+    for order in orders:
+        can_cancel, cancel_message = order.can_be_canceled()  # Get the cancel status and message
+        order.can_cancel = can_cancel
+        order.cancel_message = cancel_message  # Attach these values to the order object
 
     return render(request, 'orders/my_orders.html', {
         'orders': orders,
     })
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    # Check if the order status allows cancellation
+    if order.status in ['pending', 'processing']:
+        order.status = 'canceled'
+        order.save()
+        messages.success(request, "Order canceled successfully.")
+    else:
+        messages.error(request, f"Order cannot be canceled as it is already {order.status}.")
+
+    return redirect('order_summary')

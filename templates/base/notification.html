@@ -1,0 +1,49 @@
+<nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
+        <!-- Notification Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                <i class="bi bi-bell"></i>
+                {% if unread_notifications_count > 0 %}
+                    <span class="badge bg-primary badge-number">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                <!-- Dropdown Header -->
+                <li class="dropdown-header">
+                    You have {{ unread_notifications_count }} new notifications
+                    <a href="{% url 'notifications_all' %}">
+                        <span class="badge rounded-pill bg-primary p-2 ms-2">View all</span>
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+
+                <!-- Notification Items (Limit to 5) -->
+                {% for notification in notifications|slice:":5" %}
+                    <li class="notification-item d-flex align-items-start" data-id="{{ notification.id }}">
+                        <i class="bi bi-circle text-primary me-2"></i>
+                        <div>
+                            <h4 class="mb-1">{{ notification.get_notification_type_display }}</h4>
+                            <p class="mb-0">{{ notification.message }}</p>
+                            <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                        </div>
+                        <!-- "Mark as Read" link for each notification -->
+                        <a href="#" class="mark-as-read ms-3 text-primary" data-id="{{ notification.id }}">Mark as Read</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                {% empty %}
+                    <!-- No Notifications Message -->
+                    <li class="notification-item text-center">
+                        <p class="mb-0">No new notifications.</p>
+                    </li>
+                {% endfor %}
+
+                <!-- Dropdown Footer -->
+                <li class="dropdown-footer text-center">
+                    <a href="{% url 'notifications_all' %}">Show all notifications</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>

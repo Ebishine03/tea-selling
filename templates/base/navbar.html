@@ -1,6 +1,6 @@
 {% load static %}
-<div class="sticky-top shadow">
-    <nav class="navbar navbar-expand-lg py-2">
+<div class="fixed-top ">
+    <nav id="navbar"  class="navbar navbar-expand-lg py-2">
         <a href="index.html" class="navbar-brand">
             <img class="logo m-2" src="{% static 'img/logo.png' %}" alt="Site Logo">
         </a>
@@ -10,8 +10,8 @@
             <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="{% url 'search_products' %}" method="GET">
                 {% csrf_token  %}
                 <div class="input-group">
-                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
-                    <button class="input-group-text border-1 sr-sm" type="submit">
+                    <input id="nav-search" class="form-control"  type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text text-ligt border-1 sr-sm" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -19,7 +19,7 @@
 
             {% if user.is_authenticated %}
                 <a>
-                    <div>
+                    <div class="p-1">
                         <i class="fas fa-shopping-cart text-warning" style="font-size: 1.7rem;"></i>
                         <span class="badge bg-danger">{{ request.user.cartitem_set.count }}</span>  <!-- Count of items in cart -->
                     </div>
@@ -29,8 +29,8 @@
         </div>
 
         <!-- Toggler for offcanvas menu -->
-        <button class="navbar-toggler ms-2 shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler  ms-2 shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+            <span class="navbar-toggler-icon "></span>
         </button>
 
         <!-- Navbar Links and Search Bar for larger screens -->
@@ -39,8 +39,8 @@
             <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
                 {% csrf_token  %}
                 <div class="input-group">
-                    <input class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
-                    <button class="input-group-text bg-white border-1 sr-btn" type="submit">
+                    <input id="nav-search" class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                    <button class="input-group-text border-1 sr-btn" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -57,7 +57,8 @@
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='offer-products' %}">OFFER PRODUCTS</a></li>
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='combo' %}">COMBO PRODUCTS</a></li>
                         <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='tea' %}">TEA</a></li>
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='spices' %}">SPICE</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='spice' %}">SPICE</a></li>
+                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='herbs' %}">HERBS</a></li>
                 
                     </ul>
                 </div>
@@ -65,7 +66,7 @@
                     <div class="nav-item dropdown">
                         <a href="{% url 'profile'%}" class="nav-link dropdown-toggle text-dark mt-3" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div>
-                                <span class="text-dark">{{ user.first_name }} {{ user.last_name }}</span>
+                                <span class="">{{ user.first_name }} {{ user.last_name }}</span>
                             </div>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -84,58 +85,68 @@
                 {% else %}
                     <a href="{% url 'login' %}" class="nav-item nav-link mt-3">
                         
-                        <span class="text-dark">Login</span>
+                        <span class="">Login</span>
                     </a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Offcanvas Menu for smaller screens -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <a href="{% url 'home' %}" class="nav-item nav-link text-muted fw-bold text-dark">Home</a>
-            <a href="about.html" class="nav-item nav-link ml-2 mt-2 text-muted fw-bold">About</a>
-            <p class="nav-item nav-link mt-2 ms-3 text-muted fw-bold">Products</p>
-            <ul class="ms-4">
-                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='offer-products' %}">OFFER PRODUCTS</a></li>
-                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='combo' %}">COMBO PRODUCTS</a></li>
-                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='tea' %}">TEA</a></li>
-                <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='spice' %}">SPICE</a></li>
-            </ul>
-
-            <!-- Profile and Cart Icons in offcanvas menu -->
-            {% if user.is_authenticated %}
-                <a href="{% url 'profile'%}" class="nav-item nav-link">
-                    <div>
-                        <i class="fas fa-user text-success" style="font-size: 1.3rem;"></i>
-                    </div>
-                    <span class="text-dark">{{ user.first_name }} {{ user.last_name }}</span>
-                </a>
-                <ul class="ms-3">
-                    <a class="text-muted fw-bold" href="{% url 'profile'%} ">View Profile</a> <br> <br>
-                    <a class="text-muted fw-bold" href="{% url 'my_orders' %}">My Orders</a> <br> <br>
-                    <a class="text-muted fw-bold" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt text-danger"></i> Sign Out</a>
-                </ul>
-
-                <a href="{% url 'view_cart' %}" class="nav-item nav-link mt-3">
-                    <div>
-                        <i class="fas fa-shopping-cart text-warning" style="font-size: 1.5rem;"></i>
-                        <span class="badge bg-danger">{{ request.user.cartitem_set.count }}</span>  <!-- Count of items in cart -->
-                    </div>
-                </a>
-            {% else %}
-                <a href="{% url 'login' %}" class="nav-item nav-link">
-                    <div>
-                        <i class="fas fa-user text-success" style="font-size: 1.7rem;"></i>
-                    </div>
-                    <span class="text-dark">Login</span>
-                </a>
-            {% endif %}
-        </div>
+   <!-- Offcanvas Menu for smaller screens -->
+<!-- Offcanvas Menu -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title fw-bold" id="offcanvasMenuLabel">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <div class="offcanvas-body">
+        <!-- Main Navigation Links -->
+        <a href="{% url 'home' %}" class="d-block mb-3 text-dark fw-bold">Home</a>
+        <a href="about.html" class="d-block mb-3 text-dark fw-bold">About</a>
+        <hr>
+
+        <!-- Product Categories -->
+        <p class="fw-bold text-uppercase mb-2">Products</p>
+        <ul class="list-unstyled mb-4">
+            <li class="mb-2">
+                <a href="{% url 'view-products' category_slug='offer-products' %}" class="text-muted fw-bold">Offer Products</a>
+            </li>
+            <li class="mb-2">
+                <a href="{% url 'view-products' category_slug='combo' %}" class="text-muted fw-bold">Combo Products</a>
+            </li>
+            <li class="mb-2">
+                <a href="{% url 'view-products' category_slug='tea' %}" class="text-muted fw-bold">Tea</a>
+            </li>
+            <li>
+                <a href="{% url 'view-products' category_slug='spices' %}" class="text-muted fw-bold">Spices</a>
+
+            </li>
+
+            <li>
+                <a href="{% url 'view-products' category_slug='herbs' %}" class="text-muted fw-bold">Herbs</a>
+            </li>
+        </ul>
+        <hr>
+
+        <!-- User Profile Links -->
+        {% if user.is_authenticated %}
+        <p class="fw-bold text-uppercase mb-2">Welcome, {{ user.first_name }}</p>
+        <ul class="list-unstyled mb-4">
+            <li class="mb-2">
+                <a href="{% url 'profile' %}" class="text-muted fw-bold">My Profile</a>
+            </li>
+            <li class="mb-2">
+                <a href="{% url 'my_orders' %}" class="text-muted fw-bold">My Orders</a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}" class="text-danger fw-bold">Sign Out</a>
+            </li>
+        </ul>
+        {% else %}
+        <a href="{% url 'login' %}" class="d-block text-dark fw-bold">Login</a>
+        {% endif %}
+    </div>
+</div>
+
+
 </div>

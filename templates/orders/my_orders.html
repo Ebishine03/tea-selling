@@ -1,23 +1,103 @@
 {% extends 'base/index.html' %}
 
 {% block content %}
-<div class="orders-container">
-    <h2 class="orders-heading">My Orders</h2>
-    <div class="orders-list">
-        {% for order in orders %}
-        <div class="order-card">
-            <div class="order-info">
-                <span class="order-id">Order ID: {{ order.id }}</span>
-                <span class="order-id">Tracking Number: {{ order.tracking_number }}</span>
-                <span class="order-price">Total Price: ${{ order.total_price }}</span>
-                <span class="order-status {{ order.status }}">{{ order.status|title }}</span>
-            </div>
-            <div class="order-actions">
-                <a href="{% url 'order_tracking' order.id %}" class="btn track-btn">Track Order</a>
-                <a href="{% url 'cancel_order' order.id %}" class="btn cancel-btn">Cancel Order</a>
-            </div>
-        </div>
-        {% endfor %}
+<div class="container">
+  <div class="order-container mx-auto p-4">
+    <!-- Order Header -->
+    <div class="order-header text-center mb-4">
+      <h2>My Orders</h2>
     </div>
+
+    <!-- Order List -->
+    {% for order in orders %}
+    <div class="order-item mb-4">
+      <div class="row">
+        <div class="col-md-6">
+          <p>Order Number : {{ order.id }}</p>
+          <p>Date : {{ order.order_date|date:"F d, Y" }}</p>
+          
+    <p>Tracking Number : {{ order.tracking_number }}</p>
+         
+        </div>
+
+        <!-- Product Card -->
+        <div class="col-md-12 product-card">
+          <div class="row align-items-center">
+            <!-- Product Image -->
+            <div class="col-md-2 text-center">
+              <img src="{{ order.items.first.product.product_image.url }}" alt="Product Image" class="img-fluid" />
+            </div>
+
+            <!-- Product Info  -->
+            <div class="col-md-3 text-center">
+              <h6 class="text-center fw-bold">Product Info</h6>
+              {% for item in order.items.all %}
+         
+          <p>Item : {{ item.product.title }}  </p>
+
+            <p>Quantity: {{ item.quantity }} </p>  
+        
+    {% endfor %}
+             
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="col-md-3 text-center">
+              <h6 class="text-center fw-bold">Shipping Info</h6>
+              <p class="mb-0">{{ order.delivery_info.full_name }}</p>
+              <p class="mb-0">{{ order.delivery_info.phone_number }}</p>
+
+              <p class="mb-0">{{ order.delivery_info.city }}, {{ order.delivery_info.state }} {{ order.delivery_infodelivery_info.pin_code }}</p>
+              <p class="mb-0">{{ order.delivery.country }}</p>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="col-md-3 text-center ">
+              <h6 class="text-center fw-bold">Price</h6>
+              <p class="mb-0 fw-bold">Rs. {{ order.total_price }}</p>
+              <p class="mb-0">{{ order.payment_set.first.payment_method }}</p>
+            </div>
+          </div>
+
+          <!-- Order Status Progress Bar -->
+          <div class="mb-4 mt-3 text-center">
+            <p>Order Status: {{ order.status|capfirst }}</p>
+            <div class="progress-bar-custom">
+              <div class="progress" style="height: var(--progress-height);">
+                <div class="progress-bar bg-info" role="progressbar"
+                  style="width: {% if order.status == 'shipped' %} 50% {% elif order.status == 'delivered' %} 100% {% else %} 0% {% endif %};"
+                  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                  {{ order.status|capfirst }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cancel Order Option -->
+          {% if order.can_cancel %}
+          <form action="{% url 'cancel_order' order.id %}" method="POST" style="display: inline;">
+            {% csrf_token %}
+            <a href="#" class="fw-bold cancel-link" 
+               onclick="event.preventDefault(); this.closest('form').submit();">
+               Cancel Order
+            </a>
+        </form>
+          {% else %}
+            <!-- If order can't be canceled, fade the cancel button and display a message -->
+            <a  class="fw-bold cancel-link disabled" >Cancel Order</a>
+            <p class="text-muted">{{ order.cancel_message }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>No orders found.</p>
+    {% endfor %}
+
+    <!-- Back to Shopping Button -->
+    <div class="text-center mt-4">
+      <a href="{% url 'home' %}" class="">Go Back Shopping</a>
+    </div>
+  </div>
 </div>
 {% endblock %}

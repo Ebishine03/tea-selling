@@ -4,8 +4,13 @@
         <div class="col-lg-4 col-md-6 mb-4 mt-2">
             <div class="store-item card shadow-lg p-3 bg-light rounded h-70 text-center">
                 <!-- Product Image -->
+                 
                 <div class="image-container">
+                    {% if  product.product_image %}
                     <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
+                    {% else %}
+                    <img class="img-fluid"  alt="{{ product.title }}">
+                    {% endif %}
                 </div>
         
                 <!-- Product Details -->

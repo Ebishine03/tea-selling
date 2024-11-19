@@ -4,9 +4,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
-
-
-
+from django.utils.timezone import timedelta
 
 
 
@@ -128,6 +126,24 @@ class Order(models.Model):
     def get_delivery_charge(self):
         from .utils import calculate_delivery_charge
         return calculate_delivery_charge(self)
+    
+    def can_be_canceled(self):
+        cancelable_time = timedelta(hours=10)  # 10-hour window
+        time_diff = timezone.now() - self.order_date
+
+        if self.status == 'cancelled':
+           return False, "This order has already been cancelled."
+        elif self.status == 'delivered':
+           return False, "Delivered."
+        elif time_diff <= cancelable_time:
+            remaining_time = cancelable_time - time_diff
+            hours_left = int(remaining_time.total_seconds() // 3600)
+            return True, f"You can cancel this order. Time remaining: {hours_left} hours left."
+        else:
+          return False, "You cannot cancel this order as more than 10 hours have passed."
+    def time_diff_in_hours(self):
+        time_diff = timezone.now() - self.order_date
+        return time_diff.total_seconds() // 3600  # Returns time in hours
 
     def __str__(self):
         return f"Order {self.id} - {self.customer.email}"

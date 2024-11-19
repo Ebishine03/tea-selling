@@ -42,7 +42,6 @@ a {
   height: 48px;
 }
 
-.btn-square,
 .btn-sm-square,
 .btn-lg-square {
   padding: 0;
@@ -54,18 +53,22 @@ a {
 
 
 /*** Navbar ***/
-.sticky-top {
-  top: -150px;
-  transition: .5s;
+
+
+
+/* Targeting the placeholder text color */
+.navbar ::placeholder {
+  color: aliceblue;
+  opacity: 1; /* Ensures color is as defined, some browsers set default opacity */
 }
-.container-fluid{
-  background-color: aliceblue;
+
+
+.navbar.scrolled {
+  background-color:#fff; /* Background color when scrolled */
+  box-shadow: rgba(225, 234, 229, 0.619) 0px 0px 0px 3px;
   
 }
-.navbar{
-  background-color: aliceblue;
-  
-}
+
 .navbar .navbar-brand {
   position: absolute;
   padding: 0;
@@ -73,32 +76,64 @@ a {
   height: 135px;
   top: 0;
   left: 0;
-  color: #000000;
+  font-size: small;
 }
 
-.navbar-expand-lg { 
-  
+.navbar-expand-lg {
   height: 80px;
-
-
 }
-
 
 .navbar .navbar-nav .nav-link {
   margin-right: 35px;
   padding: 25px 0;
-  
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  outline: none;
-  color:white;
+ 
+  transition: color 0.3s ease;
 }
 
-.navbar .navbar-nav .nav-link:hover,
-.navbar .navbar-nav .nav-link.active {
-  color: var(--primary);
+.navbar .nav-link, .navbar .navbar-brand,
+.navbar{
+  color: white !important; /* Lighter color initially */
+  border-color: white !important;
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
+
+.navbar.scrolled .navbar-nav .nav-link {
+  
+  color: rgb(9, 9, 9) !important; /* Initial text color for transparent navbar */
+
+}
+
+
+
+
+.navbar-nav{
+  margin-bottom: 10px;
+  font-size: small;
+}
+
+#nav-search{
+  background: transparent;
+}
+.navbar.scrolled #nav-search{
+  background: initial;
+}
+
+/* Style for the search bar on the scrolled navbar */
+.navbar.scrolled .form-control {
+  background-color: #f8f9fa;
+  color: #333; /* Darker text color */
+  border-color: #ced4da;
+}
+
+/* Update placeholder color when navbar is scrolled */
+.navbar.scrolled .form-control::placeholder {
+  color: #6c757d;
+}
+
+/* Dropdown arrow styling */
 .navbar .dropdown-toggle::after {
   border: none;
   content: "\f107";
@@ -106,6 +141,16 @@ a {
   font-weight: 900;
   vertical-align: middle;
   margin-left: 8px;
+}
+.navbar .input-group-text{
+  color: aliceblue;
+}
+
+.navbar.scrolled .input-group-text{
+  color: black;
+}
+.navbar-toggler{
+  margin-top: 6px;
 }
 
 @media (max-width: 991.98px) {
@@ -124,6 +169,37 @@ a {
       border-top: 1px solid #930e0e;
   }
 }
+.navbar .navbar-toggler{
+  border: 1px solid aliceblue;
+
+}
+
+/* Default (transparent) navbar state */
+.navbar .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='white' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Scrolled or solid navbar state */
+.navbar.scrolled .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='black' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+.position-relative {
+  position: relative;
+}
+
+.carousel-caption.overlay-caption {
+  position: absolute;
+  bottom: 20px; /* Position near the bottom of the video */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  width: 90%; /* Optional: Adjusts width of caption */
+  text-align: center;
+}
+
 
 @media (min-width: 992px) {
   .navbar .nav-item .dropdown-menu {
@@ -143,6 +219,15 @@ a {
       opacity: 1;
   }
 }
+.transparent-navbar {
+  background-color: transparent;
+  color: white; /* Example styles */
+}
+
+.solid-navbar {
+  background-color: aliceblue;
+  color: black; /* Example styles */
+}
 .sr-btn{
 background-color: transparent;
 }
@@ -151,17 +236,14 @@ background-color: transparent;
 }
 
 #offcanvasMenu {
-  width: 250px; 
-  background-color: aliceblue;
+  width: 350px; 
+  background-color:white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
   box-shadow: rgba(4, 128, 66, 0.3) 0px 0px 0px 3px;
   border-radius: 4px;
 } 
-.offcanvas-body a.nav-item {
-  padding: 12px 16px; 
-  font-size: 1.1rem; 
-}
+
 
 .offcanvas-body i {
   margin-right: 10px; 
@@ -171,9 +253,79 @@ background-color: transparent;
   border-bottom: 2px solid #ddd;
   margin-bottom: 15px;
 }
-.offcanvas-body {
-  padding-top: 0; 
+
+
+
+
+.offcanvas-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
 }
+
+.offcanvas-body {
+    padding: 1.5rem;
+    font-family: Arial, sans-serif;
+}
+
+/* Menu Links */
+.offcanvas-body a.nav-link {
+    font-size: 1rem;
+    color: #555;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+
+
+
+.offcanvas-body ul {
+    list-style-type: none;
+    padding-left: 1rem;
+    margin: 0;
+}
+
+.offcanvas-body ul li a {
+    font-size: 1rem;
+    color: #666;
+    text-decoration: none;
+}
+
+.offcanvas-body ul li a:hover {
+    color: #28a745;
+}
+
+/* Icons */
+.offcanvas-body .fas {
+    margin-right: 10px;
+}
+
+.offcanvas-body .badge {
+    font-size: 0.9rem;
+}
+
+/* Profile Section */
+.offcanvas-body .nav-item .text-muted {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.offcanvas-body .text-danger {
+    font-weight: bold;
+}
+
+/* Button Close Icon */
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .offcanvas-body a.nav-link {
+        font-size: 1rem;
+    }
+}
+
 .p-sr {
   width: 450px;
   height: 38px;
@@ -201,6 +353,10 @@ background-color: transparent;
   
   z-index: 1; 
 }
+.carousel-media {
+    object-fit: cover;
+    height: 550px; /* Set desired height for all media */
+  }
 
 .carousel-caption {
   position: relative;
@@ -519,7 +675,8 @@ a .owl-carousel{
     max-width: 800px;
     margin: 40px auto;
     padding: 30px;
-    background-color:aliceblue;
+    background-color:#FFFFFF;
+    margin-top: 100px;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -1012,4 +1169,126 @@ a .owl-carousel{
 .back-home-btn:hover {
   background-color: #0056b3;
 }
-/* Main Container Styling */
+:root {
+  --main-bg-color: #f8f9fa;
+  --card-bg-color: #fff;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --summary-bg-color: #f2f6fc;
+  --btn-invoice-bg: #e9f1fc;
+  --btn-invoice-text: #007bff;
+  --btn-shopping-bg: #ff9f43;
+  --btn-shopping-hover-bg: #e88e3d;
+  --progress-bg: #d1ecf1;
+  --progress-height: 15px;
+}
+
+/* Order Container */
+.order-container {
+  background-color: var(--card-bg-color);
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0px 4px 10px var(--shadow-color);
+  margin-top: 100px;
+}
+
+/* Order Header */
+.order-header h2 {
+  font-weight: bold;
+}
+
+/* Invoice Button */
+.btn-invoice {
+  background-color: var(--btn-invoice-bg);
+  color: var(--btn-invoice-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+ 
+}
+/* Product Card */
+.product-card {
+  padding: 15px;
+  
+  border-radius: 5px;
+   border-bottom: 3px solid #92df9a;
+ 
+  margin-bottom: 0px; /* Added consistent spacing between cards */
+}
+
+.product-card img {
+  width: 200px;
+  height: 200px;
+  border-radius: 3px;
+}
+
+.product-card strong {
+  color: #333;
+}
+
+.product-card p {
+  color: #666;
+  margin-bottom: 5px; /* Consistent spacing between lines */
+}
+
+/* Progress Bar */
+.progress-bar-custom {
+  --progress-height: 12px; /* Reusable height variable */
+  background-color: var(--progress-bg);
+  border-radius: 50px;
+  overflow: hidden;
+  height: var(--progress-height);
+}
+
+.progress-bar-custom .progress {
+  background-color: #e9ecef;
+  border-radius: 8px;
+}
+
+.progress-bar-custom .progress-bar {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  line-height: var(--progress-height);
+}
+
+/* Summary Container */
+.summary-container {
+  background-color: var(--summary-bg-color);
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 30px; /* Space above summary section */
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.summary-total {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Shopping Button */
+.btn-shopping {
+  background-color: var(--btn-shopping-bg);
+  color: #fff;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.btn-shopping:hover {
+  background-color: var(--btn-shopping-hover-bg);
+}

@@ -2,132 +2,158 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm rounded">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Your Profile</h4>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="update_profile" value="1">
+    <div class="row justify-content-center gy-4">
 
-                        <div class="form-group mb-3">
-                            <label for="first_name" class="form-label"><i class="fas fa-user"></i> First Name</label>
-                            <input type="text" class="form-control rounded-pill" name="first_name" value="{{ user.first_name }}" required>
-                        </div>
+        <!-- Profile Section -->
+        <div class="col-lg-6">
+            <div class="profile-section px-4 py-5 shadow-sm rounded bg-white">
+                <h4 class="section-title">Profile Information</h4>
+                <form method="POST" class="mt-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_profile" value="1">
 
-                        <div class="form-group mb-3">
-                            <label for="last_name" class="form-label"><i class="fas fa-user"></i> Last Name</label>
-                            <input type="text" class="form-control rounded-pill" name="last_name" value="{{ user.last_name }}" required>
-                        </div>
+                    <div class="form-group mb-4">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-input" name="first_name" value="{{ user.first_name }}" required>
+                    </div>
 
-                        <div class="form-group mb-3">
-                            <label for="phone_number" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
-                            <input type="text" class="form-control rounded-pill" name="phone_number" value="{{ user.phone_number }}" required>
-                        </div>
+                    <div class="form-group mb-4">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-input" name="last_name" value="{{ user.last_name }}" required>
+                    </div>
 
-                        <button type="submit" class="btn btn-gradient-primary w-100 rounded-pill">Update Profile</button>
-                    </form>
-                </div>
+                    <div class="form-group mb-4">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        <input type="text" class="form-input" name="phone_number" value="{{ user.phone_number }}" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                </form>
             </div>
         </div>
 
         <!-- Address Section -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm rounded">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Your Addresses</h4>
-                </div>
-                <div class="card-body">
-                    {% if addresses %}
-                        <ul class="list-group list-group-flush mb-3">
-                            {% for address in addresses %}
-                                <li class="list-group-item">
+        <div class="col-lg-6">
+            <div class="address-section px-4 py-5 shadow-sm rounded bg-white">
+                <h4 class="section-title">Saved Addresses</h4>
+                {% if addresses %}
+                    <div class="address-list mt-4">
+                        {% for address in addresses %}
+                            <div class="address-item d-flex justify-content-between align-items-center p-3 mb-3 rounded shadow-sm">
+                                <div>
                                     <strong>{{ address.street }}</strong>, {{ address.city }}, {{ address.state }} - {{ address.pin_code }}<br>
                                     {{ address.country }}
-                                    <!-- Remove Address Button -->
-                                    <form method="POST" action="{% url 'profile' %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove this address?');">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="remove_address" value="1">
-                                        <input type="hidden" name="address_id" value="{{ address.id }}">
-                                        <button type="submit" class="btn btn-danger btn-sm float-end">Remove</button>
-                                    </form>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <div class="alert alert-warning" role="alert">
-                            No addresses added yet.
+                                </div>
+                                <form method="POST" action="{% url 'profile' %}" onsubmit="return confirm('Are you sure you want to remove this address?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="remove_address" value="1">
+                                    <input type="hidden" name="address_id" value="{{ address.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mt-3">No addresses added yet.</p>
+                {% endif %}
+
+                <h5 class="mt-5">Add New Address</h5>
+                <form method="POST" class="mt-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_address" value="1">
+
+                    <div class="form-group mb-3">
+                        <label for="street" class="form-label">Street</label>
+                        <input type="text" class="form-input" name="street" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-input" name="city" required>
                         </div>
-                    {% endif %}
-        
-                    <h5 class="mb-3">Add New Address</h5>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="add_address" value="1">
-        
-                        <div class="form-group mb-3">
-                            <label for="street" class="form-label"><i class="fas fa-home"></i> Street</label>
-                            <input type="text" class="form-control rounded-pill" name="street" required>
+                        <div class="col-md-6 mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-input" name="state" required>
                         </div>
-        
-                        <div class="form-group mb-3">
-                            <label for="city" class="form-label"><i class="fas fa-city"></i> City</label>
-                            <input type="text" class="form-control rounded-pill" name="city" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="pin_code" class="form-label">Pin Code</label>
+                            <input type="text" class="form-input" name="pin_code" required>
                         </div>
-        
-                        <div class="form-group mb-3">
-                            <label for="state" class="form-label"><i class="fas fa-map-marker-alt"></i> State</label>
-                            <input type="text" class="form-control rounded-pill" name="state" required>
+                        <div class="col-md-6 mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" class="form-input" name="country" required>
                         </div>
-        
-                        <div class="form-group mb-3">
-                            <label for="pin_code" class="form-label"><i class="fas fa-envelope"></i> Pin Code</label>
-                            <input type="text" class="form-control rounded-pill" name="pin_code" required> <!-- Updated name -->
-                        </div>
-        
-                        <div class="form-group mb-3">
-                            <label for="country" class="form-label"><i class="fas fa-globe"></i> Country</label>
-                            <input type="text" class="form-control rounded-pill" name="country" required>
-                        </div>
-        
-                        <button type="submit" class="btn btn-gradient-primary w-100 rounded-pill">Add Address</button>
-                    </form>
-                </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Add Address</button>
+                </form>
             </div>
         </div>
+
     </div>
 </div>
 
 <style>
-    .btn-gradient-primary {
-        background: linear-gradient(45deg, #1e90ff, #00bfff);
-        border: none;
-        color: white;
-        padding: 10px;
+    body {
+        background-color: #f9fafb;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
         font-weight: bold;
-        transition: background 0.3s ease;
+        color: #333;
     }
 
-    .btn-gradient-primary:hover {
-        background: linear-gradient(45deg, #00bfff, #1e90ff);
+    .profile-section, .address-section {
+        background: #fff;
+        border-radius: 8px;
     }
 
-    .form-control {
-        padding-left: 2.5rem;
-        position: relative;
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+        color: #444;
     }
 
-    .form-control::before {
-        content: '';
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        width: 16px;
-        height: 16px;
+    .form-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        transition: border-color 0.3s;
+    }
+
+    .form-input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        font-size: 1rem;
+        padding: 10px 15px;
+        border-radius: 6px;
+        color: #fff;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .address-item {
+        background:white;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 </style>
 {% endblock %}

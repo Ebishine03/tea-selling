@@ -13,9 +13,10 @@ from .forms import *
 from .decorators import employee_required
 from django.utils import timezone
 from django.db.models import Q
+from  .notifications import send_notification
 from .models import CustomUser
 from django.template.loader import render_to_string
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse
 from Tea.context_processors import add_user_role
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -24,23 +25,23 @@ from .models import Notification
 
 def index(request):
    
-    
-        
-   
-
 
     tea_category = get_object_or_404(Category, slug='tea')
-    spice_category = get_object_or_404(Category, slug='spices')
+    spice_category = get_object_or_404(Category, slug='spice')
+    herbs_category=get_object_or_404(Category,slug='herbs')
 
 
     recent_tea = Product.objects.filter(category=tea_category).order_by('-created_at')[:3]
     recent_spice = Product.objects.filter(category=spice_category).order_by('-created_at')[:3]
     recent_offer = Product.objects.filter(is_offer=True).order_by('-created_at')[:3]
     recent_combo = ComboProduct.objects.order_by('-created_at')[:3]
+    recent_herbs=Product.objects.filter(category=herbs_category).order_by('-created_at')[:3]
 
     context = {
         'recent_tea': recent_tea,
         'recent_spice': recent_spice,
+        
+
         'recent_offer': recent_offer,
         'recent_combo': recent_combo,
     }
@@ -105,144 +106,9 @@ def custom_login_view(request):
     
     return render(request, 'base/login.html', {'form': form})
 @login_required  
-
-  
-def profile_view(request):
-    user = get_object_or_404(CustomUser, id=request.user.id)
-    addresses = Address.objects.filter(user=user)
-
-    if request.method == "POST":
-        
-        if "update_profile" in request.POST:
-            first_name = request.POST.get("first_name")
-            last_name = request.POST.get("last_name")
-            phone_number = request.POST.get("phone_number")
-
-            if not all([first_name, last_name, phone_number]):
-                messages.error(request, "All profile fields are required.")
-            else:
-                user.first_name = first_name
-                user.last_name = last_name
-                user.phone_number = phone_number
-                user.save()
-                messages.success(request, "Profile updated successfully.")
-            return redirect('profile')
-
-        elif "add_address" in request.POST:
-            street = request.POST.get("street")
-            city = request.POST.get("city")
-            state = request.POST.get("state")
-            pin_code = request.POST.get("pin_code")  # Updated to match the form field
-            country = request.POST.get("country")
-
-            # Log values for debugging
-            print(f"Street: {street}, City: {city}, State: {state}, Pin Code: {pin_code}, Country: {country}")
-
-            if not all([street, city, state, pin_code, country]):
-                messages.error(request, "All address fields are required.")
-            else:
-                Address.objects.create(user=user, street=street, city=city, state=state, pin_code=pin_code, country=country)
-                messages.success(request, "Address added successfully.")
-            return redirect('profile')  
-
-        elif "remove_address" in request.POST:
-            address_id = request.POST.get("address_id")
-            address = get_object_or_404(Address, id=address_id, user=user)
-            address.delete()
-            messages.success(request, "Address removed successfully.")
-            return redirect('profile')  
-
-    context = {
-        'user': user,
-        'addresses': addresses
-    }
-    return render(request, 'base/profile.html', context)
-
-@employee_required
-def add_product(request):
-    """
-    Allow employees to add a new product.
-    """
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.created_by = request.user
-            
-            product.is_active=True
-            product.save()
-            form.save_m2m()  # If there are ManyToMany fields
-            messages.success(request, 'Product added successfully.')
-            return redirect('employee_dashboard')
-    else:
-        form = ProductForm()
-    
-    context = {
-        'form': form,
-        'title': 'Add New Product',
-    }
-    return render(request, 'products/add_products.html', context)
-
-@employee_required
-def edit_product(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES, instance=product)
-        
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.updated_by = request.user
-            print("Updated product data before saving:", product.__dict__)  # Debugging line
-            product.save()
-            form.save_m2m()
-            messages.success(request, 'Product updated successfully.')
-            return redirect('all_products')
-        else:
-            print("Form errors:", form.errors)  # Check for form errors if invalid
-
-    else:
-        form = ProductForm(instance=product)
-
-    context = {
-        'form': form,
-        'title': 'Edit Product',
-        'product': product,
-    }
-    return render(request, 'products/edit_products.html', context)
-
-@employee_required
-
-def delete_product(request, pk):
-    """
-    Allow employees to delete a product.
-    """
-    product = get_object_or_404(Product, pk=pk)
-    
-    if request.method == 'POST':
-        product.is_active =False  
-        product.save() 
-        messages.success(request, 'Product deleted successfully.')
-    return redirect('employee_dashboard')
-    
-
-
-@employee_required
-def add_category(request):
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Category added successfully!')
-            return redirect('employee_dashboard')  # Redirect to category list or any other page
-    else:
-        form = CategoryForm()
-    return render(request, 'employee/add_category.html', {'form': form})
     
 def customer_list(request):
-    """
-    Display a list of all customers with optional search.
-    """
+   
     search_query = request.GET.get('q', '')
     customers = CustomUser.objects.all().order_by('-user__date_joined')
 
@@ -255,9 +121,8 @@ def customer_list(request):
     }
     return render(request, 'customer_list.html', context)
 def customer_detail(request, pk):
-    """
-    Display detailed information about a specific customer.
-    """
+   
+   
     customer = get_object_or_404(CustomUser, pk=pk)
     orders = customer.orders.all().order_by('-ordered_at')
     
@@ -269,9 +134,7 @@ def customer_detail(request, pk):
 
 @employee_required
 def edit_customer(request, pk):
-    """
-    Allow employees to edit customer information.
-    """
+  
     customer = get_object_or_404(CustomUser, pk=pk)
     user = customer.user
     
@@ -355,6 +218,7 @@ def order_detail(request, pk):
     }
     return render(request, 'order_detail.html', context)
 
+
 @employee_required
 def dashboard_employee(request):
     add_user_role(request)
@@ -363,17 +227,13 @@ def dashboard_employee(request):
     all_products = Product.objects.filter(is_active=True)
     all_orders = Order.objects.all().order_by('-order_date')
  # Fetch employee-specific notifications
-    unread_notifications_count = request.user.notifications.filter(
-        is_read=False, 
-        target_role='employee'
-    ).count()
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
 
-    notifications = request.user.notifications.filter(
-        target_role='employee'
-    ).order_by('-created_at')
-    print(notifications) # Fetch all notifications for display
+    # Count unread notifications
+    unread_notifications_count = notifications.filter(is_read=False).count()
+    
+   
 
-    # Fetch recent products and orders for default display
     recent_products = all_products.order_by('-created_at')[:5]
     recent_orders = all_orders[:10]
     categories = Category.objects.all()
@@ -423,8 +283,11 @@ def dashboard_employee(request):
         'categories': categories,
         'products_count': all_products.count(),
         'customers_count': CustomUser.objects.count(),
+        
         'today_orders_count': all_orders.filter(order_date=timezone.now().date()).count(),
         'pending_orders_count': all_orders.filter(status='pending').count(),
+        'processed_orders_count': all_orders.filter(status='processed').count(),
+
         'canceled_orders_count': all_orders.filter(status='canceled').count(),
          'delivered_orders_count': all_orders.filter(status='delivered').count(),
         'shipped_orders_count': all_orders.filter(status='shipped').count(),
@@ -434,10 +297,9 @@ def dashboard_employee(request):
         'statuses': Order.STATUS_CHOICES,
         'product_search_query': product_search_query,
         'order_search_query': order_search_query,
-        'unread_notifications_count': unread_notifications_count,
         'notifications': notifications,
-
-
+        'unread_notifications_count': unread_notifications_count
+       
     }
     
     print()
@@ -486,38 +348,158 @@ def employee_profile(request):
     return render(request, 'employee/employee_profile.html', context)
 
 
+  
+def profile_view(request):
+    user = get_object_or_404(CustomUser, id=request.user.id)
+    addresses = Address.objects.filter(user=user)
+
+    if request.method == "POST":
+        
+        if "update_profile" in request.POST:
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            phone_number = request.POST.get("phone_number")
+
+            if not all([first_name, last_name, phone_number]):
+                messages.error(request, "All profile fields are required.")
+            else:
+                user.first_name = first_name
+                user.last_name = last_name
+                user.phone_number = phone_number
+                user.save()
+                messages.success(request, "Profile updated successfully.")
+            return redirect('profile')
+
+        elif "add_address" in request.POST:
+            street = request.POST.get("street")
+            city = request.POST.get("city")
+            state = request.POST.get("state")
+            pin_code = request.POST.get("pin_code")  # Updated to match the form field
+            country = request.POST.get("country")
+
+            # Log values for debugging
+            print(f"Street: {street}, City: {city}, State: {state}, Pin Code: {pin_code}, Country: {country}")
+
+            if not all([street, city, state, pin_code, country]):
+                messages.error(request, "All address fields are required.")
+            else:
+                Address.objects.create(user=user, street=street, city=city, state=state, pin_code=pin_code, country=country)
+                messages.success(request, "Address added successfully.")
+            return redirect('profile')  
+
+        elif "remove_address" in request.POST:
+            address_id = request.POST.get("address_id")
+            address = get_object_or_404(Address, id=address_id, user=user)
+            address.delete()
+            messages.success(request, "Address removed successfully.")
+            return redirect('profile')  
+
+    context = {
+        'user': user,
+        'addresses': addresses
+    }
+    return render(request, 'base/profile.html', context)
+
+@employee_required
+
+@employee_required
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.created_by = request.user
+            product.is_active = True
+            product.save()
+            form.save_m2m()
+            
+            # Notify relevant users (e.g., admin, inventory managers)
+           
+            
+            messages.success(request, 'Product added successfully.')
+            return redirect('employee_dashboard')
+    else:
+        form = ProductForm()
+    
+    context = {'form': form, 'title': 'Add New Product'}
+    return render(request, 'products/add_products.html', context)
+
+@employee_required
+def edit_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.updated_by = request.user
+            product.save()
+            form.save_m2m()
+
+            # Notify for product update
+            
+            messages.success(request, 'Product updated successfully.')
+            return redirect('all_products')
+    else:
+        form = ProductForm(instance=product)
+
+    context = {'form': form, 'title': 'Edit Product', 'product': product}
+    return render(request, 'products/edit_products.html', context)
+
+@employee_required
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    
+    if request.method == 'POST':
+        product.is_active = False
+        product.save()
+
+ 
+        
+
+        messages.success(request, 'Product deleted successfully.')
+    return redirect('employee_dashboard')
+
+@employee_required
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save()
+
+          
+            messages.success(request, 'Category added successfully!')
+            return redirect('employee_dashboard')
+    else:
+        form = CategoryForm()
+    
+    return render(request, 'employee/add_category.html', {'form': form})
+
+@employee_required
 def update_order_status(request):
-    # Check if the request contains an order ID and a status
     order_id = request.POST.get("order_id")
     status = request.POST.get("status")
 
-    # Retrieve the order and update the status
     if order_id and status:
         order = get_object_or_404(Order, id=order_id)
         order.status = status
-        notification = Notification.objects.create(
-        user=order.customer,  # or the relevant user
-        message=f'Your order #{order_id} has been updated to "{status}".',
-        is_read=False)
         order.save()
+        
+
         messages.success(request, "Order status updated successfully.")
     else:
         messages.error(request, "Failed to update order status. Missing data.")
     
-    # Redirect to the same page or dashboard after updating
     return redirect('employee_dashboard')
 
 @employee_required
 def all_orders_view(request):
-    # Extract search query parameters from GET request
     search_query = request.GET.get('order_search_query', '')
     selected_status = request.GET.get('order_status', '')
-    selected_category = request.GET.get('order_category', '')  # New category filter parameter
+    selected_category = request.GET.get('order_category', '')
 
-    # Start with all active orders and prefetch related delivery info
     orders = Order.objects.select_related('delivery_info').all().order_by('-order_date')
 
-    # Apply filters based on input values
     if search_query:
         orders = orders.filter(
             Q(customer__first_name__icontains=search_query) |
@@ -535,26 +517,17 @@ def all_orders_view(request):
     if selected_category:
         orders = orders.filter(items__product__category__name=selected_category).distinct()
 
-    # Pagination
-    paginator = Paginator(orders, 10)  # Show 10 orders per page
+    paginator = Paginator(orders, 10)
     page_number = request.GET.get('page')
     orders_page = paginator.get_page(page_number)
 
-    # Check if the request is an AJAX request
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         orders_html = render_to_string('partials/order_partial.html', {'orders': orders_page})
         return JsonResponse({'orders_html': orders_html, 'has_next': orders_page.has_next()})
 
-    # Render the full page for initial load or non-AJAX requests
-    categories = Category.objects.all()  # Retrieve all categories for dropdown options
-    context = {
-        'orders': orders_page,
-        'statuses': Order.STATUS_CHOICES,  # Assuming you have a list of order status choices
-        'categories': categories,
-        'paginator': paginator,
-    }
+    categories = Category.objects.all()
+    context = {'orders': orders_page, 'statuses': Order.STATUS_CHOICES, 'categories': categories, 'paginator': paginator}
     return render(request, 'employee/all_orders.html', context)
-
 
 @employee_required
 def all_products_view(request):
@@ -565,75 +538,43 @@ def all_products_view(request):
 
     products = Product.objects.filter(is_active=True)
 
-    # Apply search query if provided
     if search_query:
         products = products.filter(
             Q(title__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    # Apply category filter if provided
     if category_id:
         products = products.filter(category_id=category_id)
 
-    # Apply price range filter if provided
     if price_range:
-        price_ranges = {
-            '0-50': (0, 50),
-            '50-100': (50, 100),
-            '100-150': (100, 150),
-            '150-200': (150, 200),
-            '200-250': (200, 250),
-            '250-300': (250, 300),
-            '300+': (300, None)
-        }
+        price_ranges = {'0-50': (0, 50), '50-100': (50, 100), '100-150': (100, 150),
+                        '150-200': (150, 200), '200-250': (200, 250), '250-300': (300, None)}
         min_price, max_price = price_ranges.get(price_range, (None, None))
         if min_price is not None:
             products = products.filter(price__gte=min_price)
         if max_price is not None:
             products = products.filter(price__lte=max_price)
 
-    # Apply sorting if selected
-    sort_options = {
-        'price-low-high': 'price',
-        'price-high-low': '-price',
-        'date-newest': '-created_at',
-        'date-oldest': 'created_at',
-        'name-asc': 'title',
-        'name-desc': '-title',
-    }
+    sort_options = {'price-low-high': 'price', 'price-high-low': '-price', 'date-newest': '-created_at',
+                    'date-oldest': 'created_at', 'name-asc': 'title', 'name-desc': '-title'}
     if sort_by in sort_options:
         products = products.order_by(sort_options[sort_by])
 
-    # Pagination
-    paginator = Paginator(products, 10)  # Show 10 products per page
+    paginator = Paginator(products, 10)
     page_number = request.GET.get('page')
     products_page = paginator.get_page(page_number)
 
-    # Check if the request is an AJAX request
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         products_html = render_to_string('partials/product_table_partial.html', {'products': products_page})
         return JsonResponse({'products_html': products_html, 'has_next': products_page.has_next()})
 
-    # Get categories for the full page load
     categories = Category.objects.all()
-    
-    context = {
-        'search_query': search_query,
-        'sort_by': sort_by,
-        'products': products_page,
-        'categories': categories,
-        'paginator': paginator,
-    }
-
+    context = {'search_query': search_query, 'sort_by': sort_by, 'products': products_page,
+               'categories': categories, 'paginator': paginator}
     return render(request, 'employee/all_products.html', context)
+
 @employee_required
 def notifications_view(request):
     notifications = request.user.notifications.filter(is_read=False)
     return render(request, 'employee/notifications.html', {'notifications': notifications})
 
-@employee_required
-def mark_notification_as_read(request, notification_id):
-    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
-    notification.is_read = True
-    notification.save()
-    return redirect('notifications')

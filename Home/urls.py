@@ -34,11 +34,11 @@ path('register/', register, name='register'),
     path('update-order-status/', update_order_status, name='update_order_status'),
 
     path('notifications/', views.notifications_view, name='notifications_all'),
-    path('notifications/mark-as-read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
+
     path('all-orders/', views.all_orders_view, name='all_orders'),
     path('all-products/', views.all_products_view, name='all_products'),
     path('my-orders/', my_orders_view, name='my_orders'),
     path('order/<int:order_id>/cancel/', cancel_order_view, name='cancel_order'),
     path('order/<int:order_id>/tracking/', order_tracking_view, name='order_tracking'),
-
+  
 ]

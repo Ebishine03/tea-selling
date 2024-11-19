@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels' ,
     'Home',
     'Products',
-    
+  
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,17 @@ MIDDLEWARE = [
     
     
     ]
+
+ASGI_APPLICATION = 'Tea.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
+
 
 ROOT_URLCONF = 'Tea.urls'
 

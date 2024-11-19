@@ -188,7 +188,7 @@
 <div class="container-xxl py-5">
     <div class="container">
         <div class="section-title text-center mx-auto" style="max-width: 500px;">
-            <h1 class="display-6 fw-bold text-muted">Spices Products</h1>
+            <h1 class="display-6 fw-bold text-muted">Spices </h1>
         </div>
         <div class="row g-4">
             {% for product in recent_spice %}
@@ -240,4 +240,59 @@
 </div>
 <!-- Spices Products End -->
 
+<!-- Herbs Products Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="section-title text-center mx-auto" style="max-width: 500px;">
+            <h1 class="display-6 fw-bold text-muted">Herbs</h1>
+        </div>
+        <div class="row g-4">
+            {% for product in recent_spice %}
+            <div class="col-lg-4 col-md-6">
+                <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
+                    <!-- Product Image -->
+                    <div class="image-container">
+                        {% if product.product_image %}
+                            <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}" />
+                        {% else %}
+                            <img class="img-fluid" src="{% static 'default-image.jpg' %}" alt="No Image Available">
+                        {% endif %}
+                    </div>
+                    <!-- Product Info -->
+                    <div class="p-4">
+                        
+                        <h4 class="mb-3">{{ product.title }}</h4>
+                        <p>{{ product.description }}</p>
+                        <h4 class="fw-bold">${{ product.price }}</h4>
+                        <p class="text-muted">Available {{ product.stock }} Packets</p>
+
+                        <!-- Flex container for buttons -->
+                        <div class="d-flex justify-content-center gap-3">
+                            <!-- Add to Cart Button -->
+                            <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-3">Add to Cart</button>
+                            </form>
+
+                            <!-- Buy Now Button -->
+                            <form method="POST" action="{% url 'buy_now' product.slug %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
+                                <button type="submit" class="btn btn-success mt-3">Buy Now</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="text-center mt-5">
+                <a href="{% url 'view-products' category_slug='spices' %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Herbs Products End -->
 {% endblock %}

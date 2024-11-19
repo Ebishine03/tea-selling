@@ -84,3 +84,51 @@
   
 })(jQuery);
 
+document.addEventListener("DOMContentLoaded", function() {
+    var navbar = document.querySelector('.navbar');
+
+    // Check if the current page is the homepage or another page
+    if (window.location.pathname !== '/') {
+        // If it's not the homepage, add the `scrolled` class immediately
+        navbar.classList.add('scrolled');
+    }
+
+    // Add scroll listener to dynamically add or remove `scrolled` class on scroll
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 200) {
+            navbar.classList.add('scrolled');
+        } else if (window.location.pathname === '/') {
+            // Only remove `scrolled` class on the homepage when scrolling up
+            navbar.classList.remove('scrolled');
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const navbar = document.getElementById('navbar');
+    
+    function updateNavbarClass() {
+        if (window.location.pathname === '/') {
+            console.log('loaded');
+            
+            navbar.classList.add('transparent-navbar');
+            
+            
+            navbar.classList.remove('solid-navbar');
+        } else {
+            console.log('diffff');
+            
+            navbar.classList.add('solid-navbar');
+            navbar.classList.remove('transparent-navbar');
+        }
+    }
+
+    // Initial check when page loads
+    updateNavbarClass();
+
+    // Listen for URL changes if using history navigation (like in single-page apps)
+    window.addEventListener('popstate', updateNavbarClass);
+    window.addEventListener('pushstate', updateNavbarClass);
+    window.addEventListener('replacestate', updateNavbarClass);
+});
+

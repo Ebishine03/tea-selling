@@ -66,17 +66,19 @@ class EmployeeProfile(models.Model):
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}'s profile"
 class Notification(models.Model):
+    
+
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    target_role = models.CharField(max_length=50, default='employee')  # or any default role you prefer
+    message_type = models.CharField(max_length=50)
+    target_role = models.CharField(max_length=50, choices=[('customer', 'Customer'), ('employee', 'Employee')])
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,  # Reference to the custom user model
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='notifications',
-        null=True,
-        blank=True
+        
     )
 
     def __str__(self):
-        return f"Notification for {self.user}: {self.message[:20]}"
+        return f"{self.message_type} for {self.user}: {self.message[:20]}"

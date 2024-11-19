@@ -7,12 +7,19 @@
 <div class="container">
     <div class="section-title text-center mx-auto" style="max-width: 500px;">
         <h1 class="display-6 fw-bold text-muted">
-            {% if selected_category_slug == 'TEA' or selected_category_slug == 'SPICE' %}
-                {{ selected_category_slug }} ITEMS
-            {% elif selected_category_slug == 'combo'  %}
-                COMBO PRODUCTS
+            {% if selected_category_slug == 'combo'%}
+                Combo Products
+            {% elif selected_category_slug == 'offer'  %}
+             Offer Products
+             {% elif selected_category_slug == 'spice'  %}
+             Spices
+             {% elif selected_category_slug == 'tea'  %}
+             Tea
+             {% elif selected_category_slug == 'herbs'  %}
+              Herbs
+
             {% else %}
-            OFFER PRODUCTS
+           Offer Products
             {% endif %}
         </h1>
     </div>
