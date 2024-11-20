@@ -19,8 +19,9 @@ class CheckoutForm(forms.Form):
 class DeliveryInfoForm(forms.ModelForm):
     class Meta:
         model = Delivery
-        fields = ['full_name', 'phone_number', 'street', 'city', 'state', 'pin_code', 'country']
+        fields = ['full_name', 'phone_number','home', 'street', 'city', 'state', 'pin_code', 'country']
         widgets = {
+             'home': forms.TextInput(attrs={'placeholder': 'Home '}),
             'street': forms.TextInput(attrs={'placeholder': 'Street Address'}),
             'city': forms.TextInput(attrs={'placeholder': 'City'}),
             'state': forms.TextInput(attrs={'placeholder': 'State'}),

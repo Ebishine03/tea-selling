@@ -1,17 +1,17 @@
 [
     {
         "model": "Products.product",
-        "pk": 10,
+        "pk": 21,
         "fields": {
-            "category": 4,
-            "title": "Green Tea",
-            "slug": "green-tea",
-            "description": "A refreshing beverage known for its health benefits.",
-            "is_offer": false,
+            "category": 3,
+            "title": "Dried Basil",
+            "slug": "dried-basil",
+            "description": "A versatile herb with a sweet and savory flavor.",
+            "is_offer": true,
             "is_active": true,
             "created_by": null,
             "updated_by": null,
-            "price": "15.00",
+            "price": "7.00",
             "stock": 100,
             "product_image": "product_images/product3.jpg",
             "created_at": "2024-10-21T12:00:00Z",
@@ -20,169 +20,17 @@
     },
     {
         "model": "Products.product",
-        "pk": 2,
-        "fields": {
-            "category": 1,
-            "title": "Black Tea",
-            "slug": "black-tea",
-            "description": "A robust and flavorful tea that is enjoyed around the world.",
-            "is_offer": true,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "20.00",
-            "stock": 50,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 3,
-        "fields": {
-            "category": 1,
-            "title": "Oolong Tea",
-            "slug": "oolong-tea",
-            "description": "A traditional Chinese tea with a distinctive taste.",
-            "is_offer": false,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "25.00",
-            "stock": 75,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 4,
-        "fields": {
-            "category": 2,
-            "title": "Cinnamon Spice",
-            "slug": "cinnamon-spice",
-            "description": "A flavorful spice that adds warmth to dishes.",
-            "is_offer": false,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "10.00",
-            "stock": 150,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 5,
-        "fields": {
-            "category": 2,
-            "title": "Ginger Powder",
-            "slug": "ginger-powder",
-            "description": "A versatile spice known for its medicinal properties.",
-            "is_offer": true,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "12.00",
-            "stock": 120,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 6,
-        "fields": {
-            "category": 2,
-            "title": "Turmeric Powder",
-            "slug": "turmeric-powder",
-            "description": "A bright yellow spice with anti-inflammatory benefits.",
-            "is_offer": false,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "8.00",
-            "stock": 200,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 7,
+        "pk": 22,
         "fields": {
             "category": 3,
-            "title": "Herbal Blend",
-            "slug": "herbal-blend",
-            "description": "A soothing blend of herbs perfect for relaxation.",
-            "is_offer": true,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "18.00",
-            "stock": 90,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 8,
-        "fields": {
-            "category": 3,
-            "title": "Peppermint Tea",
-            "slug": "peppermint-tea",
-            "description": "A refreshing tea with a cool minty flavor.",
+            "title": "Rosemary Leaves",
+            "slug": "rosemary-leaves",
+            "description": "An aromatic herb perfect for roasts and stews.",
             "is_offer": false,
             "is_active": true,
             "created_by": null,
             "updated_by": null,
-            "price": "22.00",
-            "stock": 60,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 9,
-        "fields": {
-            "category": 3,
-            "title": "Chamomile Tea",
-            "slug": "chamomile-tea",
-            "description": "A calming tea made from chamomile flowers.",
-            "is_offer": true,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "16.00",
-            "stock": 110,
-            "product_image": "product_images/product3.jpg",
-            "created_at": "2024-10-21T12:00:00Z",
-            "updated_at": "2024-10-21T12:00:00Z"
-        }
-    },
-    {
-        "model": "Products.product",
-        "pk": 10,
-        "fields": {
-            "category": 4,
-            "title": "Cardamom Pods",
-            "slug": "cardamom-pods",
-            "description": "A fragrant spice used in both sweet and savory dishes.",
-            "is_offer": false,
-            "is_active": true,
-            "created_by": null,
-            "updated_by": null,
-            "price": "14.00",
+            "price": "9.00",
             "stock": 80,
             "product_image": "product_images/product3.jpg",
             "created_at": "2024-10-21T12:00:00Z",
@@ -191,18 +39,18 @@
     },
     {
         "model": "Products.product",
-        "pk": 11,
+        "pk": 23,
         "fields": {
-            "category": 4,
-            "title": "Clove Buds",
-            "slug": "clove-buds",
-            "description": "A strong spice that adds depth to recipes.",
+            "category": 3,
+            "title": "Thyme",
+            "slug": "thyme",
+            "description": "A herb with earthy flavors ideal for seasoning meats and soups.",
             "is_offer": true,
             "is_active": true,
             "created_by": null,
             "updated_by": null,
-            "price": "11.00",
-            "stock": 140,
+            "price": "8.00",
+            "stock": 90,
             "product_image": "product_images/product3.jpg",
             "created_at": "2024-10-21T12:00:00Z",
             "updated_at": "2024-10-21T12:00:00Z"
@@ -210,20 +58,135 @@
     },
     {
         "model": "Products.product",
-        "pk": 12,
+        "pk": 24,
         "fields": {
-            "category": 4,
-            "title": "Nutmeg",
-            "slug": "nutmeg",
-            "description": "A warm spice perfect for baking and cooking.",
+            "category": 3,
+            "title": "Sage",
+            "slug": "sage",
+            "description": "A robust herb ideal for stuffing and meats.",
             "is_offer": false,
             "is_active": true,
             "created_by": null,
             "updated_by": null,
-            "price": "9.00",
+            "price": "6.00",
+            "stock": 85,
+            "product_image": "product_images/product3.jpg",
+            "created_at": "2024-10-21T12:00:00Z",
+            "updated_at": "2024-10-21T12:00:00Z"
+        }
+    },
+    {
+        "model": "Products.product",
+        "pk": 25,
+        "fields": {
+            "category": 3,
+            "title": "Parsley",
+            "slug": "parsley",
+            "description": "A fresh herb often used as a garnish or seasoning.",
+            "is_offer": true,
+            "is_active": true,
+            "created_by": null,
+            "updated_by": null,
+            "price": "5.00",
+            "stock": 110,
+            "product_image": "product_images/product3.jpg",
+            "created_at": "2024-10-21T12:00:00Z",
+            "updated_at": "2024-10-21T12:00:00Z"
+        }
+    },
+    {
+        "model": "Products.product",
+        "pk": 26,
+        "fields": {
+            "category": 3,
+            "title": "Mint Leaves",
+            "slug": "mint-leaves",
+            "description": "A cooling herb great for teas and desserts.",
+            "is_offer": false,
+            "is_active": true,
+            "created_by": null,
+            "updated_by": null,
+            "price": "8.00",
+            "stock": 95,
+            "product_image": "product_images/product3.jpg",
+            "created_at": "2024-10-21T12:00:00Z",
+            "updated_at": "2024-10-21T12:00:00Z"
+        }
+    },
+    {
+        "model": "Products.product",
+        "pk": 27,
+        "fields": {
+            "category": 3,
+            "title": "Lavender",
+            "slug": "lavender",
+            "description": "A fragrant herb often used in teas and desserts.",
+            "is_offer": true,
+            "is_active": true,
+            "created_by": null,
+            "updated_by": null,
+            "price": "10.00",
+            "stock": 70,
+            "product_image": "product_images/product3.jpg",
+            "created_at": "2024-10-21T12:00:00Z",
+            "updated_at": "2024-10-21T12:00:00Z"
+        }
+    },
+    {
+        "model": "Products.product",
+        "pk": 28,
+        "fields": {
+            "category": 3,
+            "title": "Dill",
+            "slug": "dill",
+            "description": "A tangy herb often used in pickling.",
+            "is_offer": false,
+            "is_active": true,
+            "created_by": null,
+            "updated_by": null,
+            "price": "4.00",
             "stock": 150,
             "product_image": "product_images/product3.jpg",
             "created_at": "2024-10-21T12:00:00Z",
             "updated_at": "2024-10-21T12:00:00Z"
         }
-    }]
+    },
+    {
+        "model": "Products.product",
+        "pk": 29,
+        "fields": {
+            "category": 3,
+            "title": "Chives",
+            "slug": "chives",
+            "description": "A mild onion-flavored herb perfect for garnishing.",
+            "is_offer": true,
+            "is_active": true,
+            "created_by": null,
+            "updated_by": null,
+            "price": "6.00",
+            "stock": 120,
+            "product_image": "product_images/product3.jpg",
+            "created_at": "2024-10-21T12:00:00Z",
+            "updated_at": "2024-10-21T12:00:00Z"
+        }
+    },
+    {
+        "model": "Products.product",
+        "pk": 30,
+        "fields": {
+            "category": 3,
+            "title": "Cilantro",
+            "slug": "cilantro",
+            "description": "A fresh herb often used in Mexican and Indian cuisine.",
+            "is_offer": false,
+            "is_active": true,
+            "created_by": null,
+            "updated_by": null,
+            "price": "5.00",
+            "stock": 135,
+            "product_image": "product_images/product3.jpg",
+            "created_at": "2024-10-21T12:00:00Z",
+            "updated_at": "2024-10-21T12:00:00Z"
+        }
+    }
+]

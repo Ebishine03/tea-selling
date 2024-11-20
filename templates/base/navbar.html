@@ -1,10 +1,7 @@
 {% load static %}
 <div class="fixed-top ">
     <nav id="navbar"  class="navbar navbar-expand-lg py-2">
-        <a href="index.html" class="navbar-brand">
-            <img class="logo m-2" src="{% static 'img/logo.png' %}" alt="Site Logo">
-        </a>
-
+        <a href="{% url 'home' %}" class="navbar-brand"><img class="logo mt-2 " src="{% static 'img/logo.png' %}" alt="Site Logo">CZEM AGROWALLET</a>
         <!-- Icons for profile and cart (always visible on small screens) -->
         <div class="d-lg-none d-flex ms-auto">
             <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="{% url 'search_products' %}" method="GET">
@@ -35,6 +32,7 @@
 
         <!-- Navbar Links and Search Bar for larger screens -->
         <div class="collapse navbar-collapse" id="navbarCollapse">
+            <a href="{% url 'home' %}" class="navbar-brand"><img class="logo mt-2 " src="{% static 'img/logo.png' %}" alt="Site Logo"></a>
             <!-- Search Bar -->
             <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
                 {% csrf_token  %}

@@ -15,9 +15,7 @@
         <div class="col-md-6">
           <p>Order Number : {{ order.id }}</p>
           <p>Date : {{ order.order_date|date:"F d, Y" }}</p>
-          
-    <p>Tracking Number : {{ order.tracking_number }}</p>
-         
+          <p>Tracking Number : {{ order.tracking_number }}</p>
         </div>
 
         <!-- Product Card -->
@@ -32,13 +30,9 @@
             <div class="col-md-3 text-center">
               <h6 class="text-center fw-bold">Product Info</h6>
               {% for item in order.items.all %}
-         
-          <p>Item : {{ item.product.title }}  </p>
-
-            <p>Quantity: {{ item.quantity }} </p>  
-        
-    {% endfor %}
-             
+                <p>Item : {{ item.product.title }}</p>
+                <p>Quantity: {{ item.quantity }}</p>  
+              {% endfor %}
             </div>
 
             <!-- Shipping Information -->
@@ -46,9 +40,8 @@
               <h6 class="text-center fw-bold">Shipping Info</h6>
               <p class="mb-0">{{ order.delivery_info.full_name }}</p>
               <p class="mb-0">{{ order.delivery_info.phone_number }}</p>
-
-              <p class="mb-0">{{ order.delivery_info.city }}, {{ order.delivery_info.state }} {{ order.delivery_infodelivery_info.pin_code }}</p>
-              <p class="mb-0">{{ order.delivery.country }}</p>
+              <p class="mb-0">{{ order.delivery_info.home }}{{ order.delivery_info.street }} <br>{{ order.delivery_info.city }}, {{ order.delivery_info.state }} {{ order.delivery_info.pin_code }}</p>
+              <p class="mb-0">{{ order.delivery_info.country }}</p>
             </div>
 
             <!-- Payment Information -->
@@ -74,18 +67,23 @@
           </div>
 
           <!-- Cancel Order Option -->
-          {% if order.can_cancel %}
-          <form action="{% url 'cancel_order' order.id %}" method="POST" style="display: inline;">
-            {% csrf_token %}
-            <a href="#" class="fw-bold cancel-link" 
-               onclick="event.preventDefault(); this.closest('form').submit();">
-               Cancel Order
-            </a>
-        </form>
+          {% if order.status != 'canceled' %}
+            {% if order.can_cancel %}
+              <form action="{% url 'cancel_order' order.id %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <a href="#" class="fw-bold cancel-link" 
+                   onclick="event.preventDefault(); this.closest('form').submit();">
+                   Cancel Order
+                </a>
+              </form>
+            {% else %}
+              <!-- If order can't be canceled, display a message -->
+              <a class="fw-bold cancel-link disabled">Cancel Order</a>
+              <p class="text-muted">{{ order.cancel_message }}</p>
+            {% endif %}
           {% else %}
-            <!-- If order can't be canceled, fade the cancel button and display a message -->
-            <a  class="fw-bold cancel-link disabled" >Cancel Order</a>
-            <p class="text-muted">{{ order.cancel_message }}</p>
+            <!-- If the order is canceled, hide the cancel option -->
+            <a class="fw-bold cancel-link disabled">Order Canceled</a>
           {% endif %}
         </div>
       </div>

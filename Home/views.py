@@ -29,14 +29,16 @@ def index(request):
     tea_category = get_object_or_404(Category, slug='tea')
     spice_category = get_object_or_404(Category, slug='spice')
     herbs_category=get_object_or_404(Category,slug='herbs')
+ 
+   
 
 
-    recent_tea = Product.objects.filter(category=tea_category).order_by('-created_at')[:3]
-    recent_spice = Product.objects.filter(category=spice_category).order_by('-created_at')[:3]
-    recent_offer = Product.objects.filter(is_offer=True).order_by('-created_at')[:3]
-    recent_combo = ComboProduct.objects.order_by('-created_at')[:3]
+    recent_tea = Product.objects.filter(category=tea_category,is_active=True).order_by('-created_at')[:3]
+    recent_spice = Product.objects.filter(category=spice_category,is_active=True).order_by('-created_at')[:3]
+    recent_offer = Product.objects.filter(is_offer=True,is_active=True).order_by('-created_at')[:3]
+    recent_combo = ComboProduct.objects.filter(is_combo=True,is_active=True).order_by('-created_at')[:3]
     recent_herbs=Product.objects.filter(category=herbs_category).order_by('-created_at')[:3]
-
+ 
     context = {
         'recent_tea': recent_tea,
         'recent_spice': recent_spice,
@@ -44,6 +46,7 @@ def index(request):
 
         'recent_offer': recent_offer,
         'recent_combo': recent_combo,
+        'recent_herbs':recent_herbs
     }
 
     return render(request, 'base/home.html', context)
@@ -63,8 +66,6 @@ def search_products_home(request):
 
 
     return render(request,'sign_in_up.html')
-@login_required
-
 
 def register(request):
     if request.method == 'POST':
@@ -371,6 +372,8 @@ def profile_view(request):
             return redirect('profile')
 
         elif "add_address" in request.POST:
+            
+            home=request.POST.get("home")
             street = request.POST.get("street")
             city = request.POST.get("city")
             state = request.POST.get("state")
@@ -378,12 +381,12 @@ def profile_view(request):
             country = request.POST.get("country")
 
             # Log values for debugging
-            print(f"Street: {street}, City: {city}, State: {state}, Pin Code: {pin_code}, Country: {country}")
+            print(f" Home:{home}, Street: {street}, City: {city}, State: {state}, Pin Code: {pin_code}, Country: {country}")
 
-            if not all([street, city, state, pin_code, country]):
+            if not all([home,street, city, state, pin_code, country]):
                 messages.error(request, "All address fields are required.")
             else:
-                Address.objects.create(user=user, street=street, city=city, state=state, pin_code=pin_code, country=country)
+                Address.objects.create(user=user,home=home, street=street, city=city, state=state, pin_code=pin_code, country=country)
                 messages.success(request, "Address added successfully.")
             return redirect('profile')  
 

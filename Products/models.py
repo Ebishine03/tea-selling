@@ -158,13 +158,16 @@ class OrderItem(models.Model):
         return f"{self.product.title} (x{self.quantity})"
 class ComboProduct(models.Model):
     title = models.CharField(max_length=200)
-    products = models.ManyToManyField(Product, related_name='combos')
+    products = models.ManyToManyField(Product, related_name='combo')
     price = models.FloatField()
+    is_combo=models.BooleanField(default=False)
     is_offer = models.BooleanField(default=False)
     image = models.ImageField(upload_to='combo_products/', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
+    is_active= is_active=models.BooleanField(default=True)
+    slug = models.SlugField(max_length=250, unique=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -172,13 +175,27 @@ class ComboProduct(models.Model):
     def check_stock_availability(self):
         unavailable_products = [product.title for product in self.products.all() if not product.is_in_stock()]
         return unavailable_products
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
 
+            # Ensure slug is unique within the ComboProduct model
+            while ComboProduct.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
+        super().save(*args, **kwargs)
     def is_all_in_stock(self):
         return all(product.is_in_stock() for product in self.products.all())
 class Delivery(models.Model):
     order = models.OneToOneField(Order, related_name="delivery_info", on_delete=models.CASCADE)
     full_name = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=20)
+    home=models.CharField(max_length=255,default='')
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
@@ -207,6 +224,7 @@ class Delivery(models.Model):
         return Delivery.objects.filter(order__customer=user)
 class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
+    home=models.CharField(max_length=255,default='')
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
@@ -214,7 +232,7 @@ class Address(models.Model):
     country = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.street}, {self.city}, {self.state}, {self.pin_code}, {self.country}"
+        return f"{self.home}{self.street}, {self.city}, {self.state}, {self.pin_code}, {self.country}"
     
     @staticmethod
     def get_user_addresses(user):

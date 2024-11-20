@@ -77,6 +77,7 @@ a {
   top: 0;
   left: 0;
   font-size: small;
+  color: #FFFFFF;
 }
 
 .navbar-expand-lg {
@@ -105,7 +106,9 @@ a {
   color: rgb(9, 9, 9) !important; /* Initial text color for transparent navbar */
 
 }
-
+.navbar.navbar.scrolled .navbar-brand{
+  color: rgb(9, 9, 9) !important;
+}
 
 
 

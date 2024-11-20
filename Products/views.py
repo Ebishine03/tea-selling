@@ -23,13 +23,15 @@ def list_products(request, category_slug):
 
     # Filter products based on category_slug
     if category_slug == 'tea':
-        products = Product.objects.filter(category__slug='tea')
-    elif category_slug == 'spices':
-        products = Product.objects.filter(category__slug='spices')
+        products = Product.objects.filter(category__slug='tea',is_active=True)
+    elif category_slug == 'spice':
+        products = Product.objects.filter(category__slug='spice',is_active=True)
     elif category_slug == 'combo':
-        products = ComboProduct.objects.all()
+        products = ComboProduct.objects.filter(is_combo=True,is_active=True)
     elif category_slug == 'offer':
-        products = Product.objects.filter(is_offer=True)
+        products = Product.objects.filter(is_offer=True,is_active=True)
+    elif category_slug == 'herbs':
+        products = Product.objects.filter(category__slug='herbs',is_active=True)
     else:
         products = []  # Empty list for invalid types
 
@@ -107,7 +109,8 @@ def add_to_cart(request, product_id):
 
 @login_required
 def view_cart(request):
-    cart = get_object_or_404(Cart, user=request.user)
+    # Ensure the cart exists for the user
+    cart, created = Cart.objects.get_or_create(user=request.user)
     cart_items = cart.items.all()
 
     if request.method == 'POST':
@@ -166,18 +169,57 @@ def clear_cart(request):
 
 @login_required
 def delivery_info_view(request, product_slug):
+    # Get the product based on the slug
     product = get_object_or_404(Product, slug=product_slug)
     
+    # Fetch all saved addresses for the logged-in user
+    saved_addresses = Address.objects.filter(user=request.user)
+
     if request.method == 'POST':
-        form = DeliveryInfoForm(request.POST)
-        if form.is_valid():
-            # Save delivery information temporarily in session
-            request.session['delivery_info'] = form.cleaned_data
+            # Get the address selected by the user from the dropdown
+        selected_address = request.POST.get('selected_address')
+        print(selected_address)
+
+        if selected_address and selected_address != "manual":
+            # If the user selected an existing address
+            address = get_object_or_404(Address, id=selected_address)
+            
+            # Store selected address and user details in the session
+            request.session['delivery_info'] = {
+                'full_name': request.user.get_full_name(),
+                'phone_number': request.user.phone_number,
+                'home': address.home,
+                'street': address.street,
+                'city': address.city,
+                'state': address.state,
+                'pin_code': address.pin_code,
+                'country': address.country,
+               
+            }
+            print('fcgvhbjknlm,')
+            print("Delivery Info Stored:", request.session['delivery_info']) 
+            # Redirect to the order summary page after selecting the address
             return redirect('order_summary', product_slug=product_slug)
-    else:
-        form = DeliveryInfoForm()
-    
-    return render(request, 'orders/delivery_info.html', {'form': form, 'product': product})
+
+        elif selected_address == "manual":
+            # If the user chose to enter a new address manually
+            form = DeliveryInfoForm(request.POST)
+            if form.is_valid():
+                # Save the new address information in the session
+                request.session['delivery_info'] = form.cleaned_data
+
+                # Redirect to the order summary page after entering the new address
+                return redirect('order_summary', product_slug=product_slug)
+
+    # If it's a GET request, create a new form for manual entry
+    form = DeliveryInfoForm()
+
+    # Render the delivery_info page with the form and the saved addresses
+    return render(request, 'orders/delivery_info.html', {
+        'form': form,
+        'product': product,
+        'saved_addresses': saved_addresses,
+    })
 
 @login_required
 def cart_checkout_view(request):
@@ -410,8 +452,7 @@ def cancel_order_view(request, order_id):
         'order': order,
     })
 def my_orders_view(request):
-    orders= Order.objects.filter(customer=request.user)
-    print(request.user)
+    orders= Order.objects.filter(customer=request.user).order_by('-order_date')
     print(orders)
     for order in orders:
         can_cancel, cancel_message = order.can_be_canceled()  # Get the cancel status and message
