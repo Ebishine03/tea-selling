@@ -5,21 +5,16 @@ from django.utils.text import slugify
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import timedelta
+from decimal import Decimal
+from django.utils.timezone import now
 
 
 
-
-PAYMENT_METHOD_CHOICES = [
-    ('Credit Card', 'Credit Card'),
-    ('PayPal', 'PayPal'),
-    ('Cash On Delivery', 'Cash On Delivery'),
-    ('UPI', 'UPI'),
-]
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     description = models.TextField(blank=True)
-    
+    is_active=models.BooleanField(default=True)
     class Meta:
         verbose_name_plural = "Categories"
     
@@ -30,7 +25,7 @@ class Category(models.Model):
         if not self.slug:
             base_slug = slugify(self.name)
             slug = base_slug
-            counter = 1
+            counter = 1  
             # Ensure slug is unique across both categories and products
             while Category.objects.filter(slug=slug).exists() or Product.objects.filter(slug=slug).exists():
                 slug = f"{base_slug}-{counter}"
@@ -38,73 +33,147 @@ class Category(models.Model):
             self.slug = slug
         super().save(*args, **kwargs)
 
+
 class Product(models.Model):
     category = models.ForeignKey(
-        Category, 
-        on_delete=models.SET_NULL, 
-        null=True, 
+        'Category',
+        on_delete=models.SET_NULL,
+        null=True,
         related_name='products'
     )
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=270, unique=True, blank=True)
     description = models.TextField(blank=True)
-    is_offer=models.BooleanField(default=False)
-    is_active=models.BooleanField(default=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='products_created', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='products_updated', on_delete=models.SET_NULL, null=True, blank=True)
-    price = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='products_created',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='products_updated',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
     )
     stock = models.PositiveIntegerField()
     product_image = models.ImageField(
-        upload_to='product_images/', 
-        blank=True, 
+        upload_to='product_images/',
+        blank=True,
         null=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+    offers = models.ManyToManyField('Offer', related_name='products', blank=True)
+
     def __str__(self):
         return self.title
-    def reduce_stock(self, quantity):
-        """
-        Reduces the stock of the product by the given quantity.
-        """
-        if self.stock >= quantity:
-            self.stock -= quantity
-            self.save()
-        else:
-            raise ValueError("Not enough stock available.")
-    
+
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews.exists():
+            return round(sum(review.rating for review in reviews) / reviews.count(), 2)
+        return 0
+
+    def review_count(self):
+        return self.reviews.count()
+
+    def get_variants(self):
+        """Retrieve all active variants."""
+        return self.variants.filter(stock__gt=0)
+    def linked_offers(self):
+        return ", ".join(offer.offer_title for offer in self.offers.all())
+
+    def get_discounted_price(self, offer=None):
+        """Calculate the minimum discounted price across all variants."""
+        variants = self.get_variants()
+        if not variants.exists():
+            return None
+        if offer and offer.is_valid:
+            return min(variant.get_discounted_price(offer) for variant in variants)
+        return min(variant.calculate_base_price() for variant in variants)
+
     def save(self, *args, **kwargs):
-        # Only set the slug if it's not already set
         if not self.slug:
             base_slug = slugify(self.title)
             slug = base_slug
             counter = 1
-            
-            # Ensure slug is unique within the Product model
             while Product.objects.filter(slug=slug).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1
-            
             self.slug = slug
-
         super().save(*args, **kwargs)
 
-    def title_has_changed(self):
-        """Check if the title has changed since the last save."""
-        if self.pk:  # Ensure the product has been saved
-            original = Product.objects.get(pk=self.pk)
-            return original.title != self.title
-        return False
-@property
-def title_has_changed(self):
-    # Check if the title has changed by comparing the current title to the original
-    return self.pk and Product.objects.get(pk=self.pk).title != self.title
+
+class Offer(models.Model):
+    OFFER_TYPE_CHOICES = [
+        ('new_year', 'New Year Sale'),
+        ('christmas', 'Christmas Sale'),
+        ('black_friday', 'Black Friday'),
+        ('clearance', 'Clearance Sale'),
+        ('seasonal', 'Seasonal Offer'),
+        ('other', 'Other'),
+    ]
+
+    offer_title = models.CharField(max_length=200)
+    discount_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        help_text="Discount percentage (e.g., 10.00 for 10%)"
+    )
+    type_of_offer = models.CharField(
+        max_length=50,
+        choices=OFFER_TYPE_CHOICES,
+        default='other',
+        help_text="Select the type of offer for marketing purposes."
+    )
+    start_date = models.DateTimeField(default=now)
+    end_date = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+   
+    @property
+    def is_valid(self):
+        current_time = now()
+        return (
+            self.is_active and
+            self.start_date <= current_time and
+            (self.end_date is None or self.end_date >= current_time)
+        )
+    def __str__(self):
+        return f"{self.get_type_of_offer_display()} - {self.discount_percentage}% off"
 
 
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
+    variant_name = models.CharField(max_length=255)
+    weight = models.DecimalField(max_digits=10, decimal_places=2)  # weight in kilograms (or grams)
+    price_per_kg = models.DecimalField(max_digits=10, decimal_places=2)  # price per unit weight
+    stock = models.PositiveIntegerField()
+
+    def calculate_base_price(self):
+        """Calculates the base price of the variant based on weight."""
+        return self.price_per_kg * self.weight
+
+    def get_discounted_price(self, offer=None):
+        """Calculates the discounted price for the variant."""
+        base_price = self.calculate_base_price()
+        if offer and offer.is_valid:
+            discount = (offer.discount_percentage / Decimal(100)) * base_price
+            discounted_price = max(base_price - discount, Decimal(0))  # Prevent negative price
+            return discounted_price
+        return None  
+
+    def __str__(self):
+        return f"{self.variant_name} - {self.weight} kg"
+PAYMENT_METHOD_CHOICES = [
+    ('Credit Card', 'Credit Card'),
+    ('PayPal', 'PayPal'),
+    ('Cash On Delivery', 'Cash On Delivery'),
+    ('UPI', 'UPI'),
+]
 
 
 class Order(models.Model):
@@ -294,3 +363,21 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment for Order {self.order.id} - {self.status}"
+
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reviews")
+    rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    comment = models.TextField(null=True, blank=True)
+    media = models.ImageField(upload_to='reviews/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)    
+    is_active=models.BooleanField(default=True)
+    
+    
+    class Meta:
+        unique_together = ('product', 'customer')
+
+
+    def __str__(self):
+        return f"Review for {self.product.title} by {self.customer.username}"

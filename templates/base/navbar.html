@@ -1,96 +1,151 @@
 {% load static %}
-<div class="fixed-top ">
-    <nav id="navbar"  class="navbar navbar-expand-lg py-2">
-        <a href="{% url 'home' %}" class="navbar-brand"><img class="logo mt-2 " src="{% static 'img/logo.png' %}" alt="Site Logo">CZEM AGROWALLET</a>
-        <!-- Icons for profile and cart (always visible on small screens) -->
-        <div class="d-lg-none d-flex ms-auto">
-            <form class="d-flex ms-auto me-3 p-sr-sr" role="search" action="{% url 'search_products' %}" method="GET">
-                {% csrf_token  %}
-                <div class="input-group">
-                    <input id="nav-search" class="form-control"  type="search" name="q" placeholder="Search products" aria-label="Search">
-                    <button class="input-group-text text-ligt border-1 sr-sm" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
 
-            {% if user.is_authenticated %}
-                <a>
-                    <div class="p-1">
-                        <i class="fas fa-shopping-cart text-warning" style="font-size: 1.7rem;"></i>
-                        <span class="badge bg-danger">{{ request.user.cartitem_set.count }}</span>  <!-- Count of items in cart -->
-                    </div>
-                </a>
-            {% else %}
-            {% endif %}
-        </div>
 
-        <!-- Toggler for offcanvas menu -->
-        <button class="navbar-toggler  ms-2 shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-            <span class="navbar-toggler-icon "></span>
+<nav id="navbar"  class="navbar navbar-expand-lg  fixed-top ">
+
+
+ 
+
+ 
+     
+
+
+<div class="d-flex justify-content-start d-lg-none justify-content-sm-start py-0 -mct" >
+     <button class="navbar-toggler shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+    <span class="navbar-toggler-icon"></span>
+</button>
+</div>
+
+<div class="d-flex justify-content-center d-lg-none justify-content-sm-center logo-sm -m ">
+    <img src="{% static 'img/Alps_text.png' %}" alt="" srcset="">
+    </div>
+ {% if user.is_authenticated %}
+<div class="d-flex justify-content-end d-lg-none justify-content-sm-end cart-i -mct">
+    <a href="{% url 'view_cart' %}" class="nav-link d-flex align-items-center position-relative">
+        
+        <!-- Cart Count -->
+        <span class="cart_count position-absolute top-0 start-100 translate-middle   ">
+            {{ cart_item_count }}
+           
+        </span>
+    </a>
+    
+</div>
+{% else %}
+<a href="{% url 'login' %}" class="nav-item nav-link  d-lg-none ">
+    <div class="login text-center -l">
+        <!-- Icon as background image -->
+        <span class="icon" aria-hidden="true"></span>
+        
+    </div>
+</a>
+
+ {% endif %}
+      
+    
+<div class="col d-lg-none -mns"> 
+    <form class="d-flex psr-l" role="search" action="/search/" method="GET">
+    {% csrf_token  %}
+    <div class="input-group">
+        <input id="nav-search" class="form-control" type="search" name="q" placeholder="Search products " aria-label="Search">
+        <button class="input-group-text border-1 sr-btn" type="submit">
+            <i class="fas fa-search"></i>
         </button>
+    </div>
+</form>
+</div>
 
-        <!-- Navbar Links and Search Bar for larger screens -->
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <a href="{% url 'home' %}" class="navbar-brand"><img class="logo mt-2 " src="{% static 'img/logo.png' %}" alt="Site Logo"></a>
-            <!-- Search Bar -->
-            <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
-                {% csrf_token  %}
-                <div class="input-group">
-                    <input id="nav-search" class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
-                    <button class="input-group-text border-1 sr-btn" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
 
-            <div class="navbar-nav">
-                <a href="{% url 'home' %}" class="nav-item nav-link text-dark mt-3">Home</a>
-                <a href="about.html" class="nav-item nav-link mt-3 text-dark">About</a>
+    
+
+   
+
+    <!-- Navbar Links and Search Bar for larger screens -->
+
+
+
+
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        
+        <a  href="{% url 'home' %}" class="collapse navbar-collapse"><img class=" logo " src="{% static 'img/Alps_text.png' %}" alt="Site Logo"></a>
+
+        <!-- Search Bar -->
+        <form class="d-flex ms-auto me-3 p-sr" role="search" action="/search/" method="GET">
+            {% csrf_token  %}
+            <div class="input-group">
+                <input id="nav-search" class="form-control" type="search" name="q" placeholder="Search products " aria-label="Search">
+                <button class="input-group-text border-1 sr-btn" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="navbar-nav">
+            <a href="{% url 'home' %}" class="nav-item nav-link text-dark mt-3">Home</a>
+            <a href="about.html" class="nav-item nav-link mt-3 text-dark">About</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle text-dark mt-3" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Products
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <!-- Static links for Offer and Combo -->
+                    <li><a class="dropdown-item" href="{% url 'view-products' category_slug='offer-products' %}">Offer Products</a></li>
+                    <li><a class="dropdown-item" href="{% url 'view-products' category_slug='combo' %}">Combo Products</a></li>
+                    
+                    <!-- Dynamic links for other categories -->
+                    {% for category in global_categories %}
+                    {% if category.slug not in 'offer-products' and category.slug not in 'combo' %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'view-products' category_slug=category.slug %}">
+                                {{ category.name }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
+            
+            {% if user.is_authenticated %}
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle text-dark mt-3" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Products
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='offer-products' %}">OFFER PRODUCTS</a></li>
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='combo' %}">COMBO PRODUCTS</a></li>
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='tea' %}">TEA</a></li>
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='spice' %}">SPICE</a></li>
-                        <li><a class="dropdown-item text-muted fw-bold" href="{% url 'view-products' category_slug='herbs' %}">HERBS</a></li>
-                
-                    </ul>
-                </div>
-                {% if user.is_authenticated %}
-                    <div class="nav-item dropdown">
-                        <a href="{% url 'profile'%}" class="nav-link dropdown-toggle text-dark mt-3" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div>
-                                <span class="">{{ user.first_name }} {{ user.last_name }}</span>
-                            </div>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
-                            <li><a  class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt text-danger"></i> Sign Out</a></li>
-                        </ul>
-                    </div>
-
-                    <a href="{% url 'view_cart' %}" class="nav-item nav-link mt-3">
+                    <a href="{% url 'profile'%}" class="nav-link dropdown-toggle text-dark mt-3" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <div>
-                            <i class="fas fa-shopping-cart text-warning" style="font-size: 1.5rem;"></i>
-                            <span class="badge bg-danger">{{ request.user.cartitem_set.count }}</span>  <!-- Count of items in cart -->
+                            <span class="">{{ user.first_name }} {{ user.last_name }}</span>
                         </div>
                     </a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="nav-item nav-link mt-3">
-                        
-                        <span class="">Login</span>
-                    </a>
-                {% endif %}
-            </div>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                        <li><a  class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt text-danger"></i> Sign Out</a></li>
+                    </ul>
+                </div>
+                <a href="{% url 'view_cart' %}" class="nav-item nav-link  d-flex align-items-center justify-content-center">
+                    <div class="position-relative d-flex align-items-center cart-i-l">
+                        <!-- Cart Icon -->
+                      <span class=""><i class="bi bi-cart"></i></span>
+                        <!-- Cart Count -->
+                        <span class=" cart_count position-absolute top-0 start-100 translate-middle">
+                            {{cart_item_count }}
+                        </span>
+                    </div>
+                    <!-- Cart Text -->
+                    
+                </a>
+                
+            {% else %}
+            <a href="{% url 'login' %}" class="nav-item nav-link">
+                <div class="login-l">
+                    <span class="icon-l" aria-hidden="true"></span>
+                    <span class="text-l">Login</span>
+                </div>
+            </a>
+            
+            
+            {% endif %}
         </div>
-    </nav>
+    </div>
+</nav>
 
-   <!-- Offcanvas Menu for smaller screens -->
+ 
 <!-- Offcanvas Menu -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
     <div class="offcanvas-header">
@@ -99,31 +154,39 @@
     </div>
     <div class="offcanvas-body">
         <!-- Main Navigation Links -->
-        <a href="{% url 'home' %}" class="d-block mb-3 text-dark fw-bold">Home</a>
-        <a href="about.html" class="d-block mb-3 text-dark fw-bold">About</a>
+        <a href="{% url 'home' %}" class="d-block mb-3  " style="color: #054811;  text-transform: uppercase;">Home</a>
+    
+        <a href="about.html" class="d-block mb-3    " style="color: #054811;  text-transform: uppercase;">About</a>
         <hr>
 
         <!-- Product Categories -->
-        <p class="fw-bold text-uppercase mb-2">Products</p>
+        <p class=" text-uppercase mb-2 ">Products</p>
         <ul class="list-unstyled mb-4">
+            <!-- Static links for Offer and Combo -->
             <li class="mb-2">
-                <a href="{% url 'view-products' category_slug='offer-products' %}" class="text-muted fw-bold">Offer Products</a>
+                <a href="{% url 'view-products' category_slug='offer-products' %}" class="">
+                    <i class="bi bi-circle"></i><span>Offer Products</span>
+                </a>
             </li>
             <li class="mb-2">
-                <a href="{% url 'view-products' category_slug='combo' %}" class="text-muted fw-bold">Combo Products</a>
+                <a href="{% url 'view-products' category_slug='combo' %}" class="">
+                    <i class="bi bi-circle"></i>Combo Products
+                </a>
             </li>
-            <li class="mb-2">
-                <a href="{% url 'view-products' category_slug='tea' %}" class="text-muted fw-bold">Tea</a>
-            </li>
-            <li>
-                <a href="{% url 'view-products' category_slug='spices' %}" class="text-muted fw-bold">Spices</a>
-
-            </li>
-
-            <li>
-                <a href="{% url 'view-products' category_slug='herbs' %}" class="text-muted fw-bold">Herbs</a>
-            </li>
+        
+            <!-- Dynamic links for other categories -->
+            {% for category in global_categories %}
+            {% if category.slug not in 'offer-products' and category.slug not in 'combo' %}
+                <li>
+                    <a class="dropdown-item" href="{% url 'view-products' category_slug=category.slug %}">
+                        <i class="bi bi-circle"></i>  {{ category.name }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+            
         </ul>
+        
         <hr>
 
         <!-- User Profile Links -->
@@ -141,10 +204,12 @@
             </li>
         </ul>
         {% else %}
-        <a href="{% url 'login' %}" class="d-block text-dark fw-bold">Login</a>
+        <a href="{% url 'login' %}" class="nav-item nav-link">
+            <div class="login-t">
+                <span class="icon-t" aria-hidden="true"></span>
+                <span class="text-t">Login</span>
+            </div>
+        </a>
         {% endif %}
     </div>
-</div>
-
-
 </div>

@@ -20,7 +20,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Bootstrap Icons -->
     <link
       rel="stylesheet"
@@ -46,7 +46,8 @@
       href="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.css"
       rel="stylesheet"
     />
-    
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <!-- Animate.css -->
     <link
       rel="stylesheet"
@@ -61,10 +62,15 @@
 
   <body>
     <!-- Navbar -->
+   
     {% include 'base/navbar.html' %}
-
     <!-- Main Content -->
-    <div class="content">{% block content %}{% endblock %}</div>
+    <div class="content  ">
+     
+      <div class="">{% block content %}{% endblock %}</div>
+      
+    
+    </div>
 
     <!-- Footer -->
     <footer>{% include 'base/footer.html' %}</footer>
@@ -84,6 +90,8 @@
     ></script>
 
     <!-- AOS Animation JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
     <script src="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
@@ -94,6 +102,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
 
     <!-- Custom JS -->
+    <script>
+      AOS.init();
+    </script>
     <script src="{% static 'js/index.js' %}"></script>
    
   </body>

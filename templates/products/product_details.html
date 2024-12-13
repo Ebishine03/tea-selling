@@ -1,0 +1,57 @@
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-lg-12 mb-4">
+            <!-- Product Card -->
+            <div class="card shadow-sm">
+                <!-- Product Image -->
+                {% if product.product_image %}
+                <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.title }}">
+                {% else %}
+                {% endif %}
+                
+                <div class="card-body">
+                    <!-- Product Title -->
+                    <h2 class="card-title text-center">{{ product.title }}</h2>
+                    
+                    <!-- Product Description -->
+                    <p class="card-text text-muted">{{ product.description }}</p>
+                    
+                    <!-- Product Price -->
+                    <h3 class="text-primary">Rs {{ product.price }}</h3>
+                    
+                    <!-- Stock Info -->
+                    <h6 class="text-muted">Only {{ product.stock }} available</h6>
+                    
+                    <!-- Star Rating -->
+                    
+<div class="rating mb-3">
+    <span class="text-warning">
+        {% for i in product.average_rating|floatformat:0 %}
+            &#9733;  <!-- Filled Star -->
+        {% endfor %}
+        {% for i in 5|add:"-product.average_rating|floatformat:0" %}
+            &#9734;  <!-- Empty Star -->
+        {% endfor %}
+    </span>
+    <small>({{ product.review_count }} reviews)</small>
+</div>
+
+
+                    <!-- Add to Cart Form -->
+                    <form method="POST" action="{% url 'add_to_cart' product.slug %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary w-100 mb-2">Add to Cart</button>
+                    </form>
+
+                    <!-- Buy Now Form -->
+                    <form method="POST" action="{% url 'buy_now' product.slug %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-success w-100">Buy Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

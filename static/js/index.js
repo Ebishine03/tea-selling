@@ -1,134 +1,79 @@
-(function ($) {
-  "use strict";
+document.addEventListener('DOMContentLoaded', function () {
+    const navbar = document.querySelector('.navbar');
+    const cartIcon = document.querySelector('.cart-i');
+    const cartIconLarge = document.querySelector('.cart-i-l');
+    const loginIcon = document.querySelector('.login');
+    const loginIconLarge = document.querySelector('.login-l .icon-l');
 
-  // Spinner
-  var spinner = function () {
-      setTimeout(function () {
-          if ($('#spinner').length > 0) {
-              $('#spinner').removeClass('show');
-          }
-      }, 1);
-  };
-  spinner();
-  
-  
-  // Initiate the wowjs
-  new WOW().init();
-
-
-  // Sticky Navbar
-  $(window).scroll(function () {
-      if ($(this).scrollTop() > 300) {
-          $('.sticky-top').addClass('shadow-sm').css('top', '0px');
-      } else {
-          $('.sticky-top').removeClass('shadow-sm').css('top', '-150px');
-      }
-  });
-  
-  
-  // Back to top button
-  $(window).scroll(function () {
-      if ($(this).scrollTop() > 300) {
-          $('.back-to-top').fadeIn('slow');
-      } else {
-          $('.back-to-top').fadeOut('slow');
-      }
-  });
-  $('.back-to-top').click(function () {
-      $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
-      return false;
-  });
-
-
-  // Modal Video
- 
-  // Product carousel
-  $(".product-carousel").owlCarousel({
-      autoplay: true,
-      smartSpeed: 1000,
-      margin: 25,
-      loop: true,
-      center: true,
-      dots: false,
-      nav: true,
-      navText : [
-          '<i class="bi bi-chevron-left"></i>',
-          '<i class="bi bi-chevron-right"></i>'
-      ],
-      responsive: {
-    0:{
-              items:1
-          },
-          576:{
-              items:1
-          },
-          768:{
-              items:2
-          },
-          992:{
-              items:3
-          }
-      }
-  });
-
-
-  // Testimonial carousel
-  $(".testimonial-carousel").owlCarousel({
-      autoplay: true,
-      smartSpeed: 1000,
-      items: 1,
-      loop: true,
-      dots: true,
-      nav: false,
-  });
-  
-})(jQuery);
-
-document.addEventListener("DOMContentLoaded", function() {
-    var navbar = document.querySelector('.navbar');
-
-    // Check if the current page is the homepage or another page
-    if (window.location.pathname !== '/') {
-        // If it's not the homepage, add the `scrolled` class immediately
-        navbar.classList.add('scrolled');
+    if (!navbar) {
+        console.error('Navbar not found!');
+        return;
     }
 
-    // Add scroll listener to dynamically add or remove `scrolled` class on scroll
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 200) {
+    // Base path for static assets
+    const staticBasePath = '/static/img/';
+
+    // Function to update navbar and icon styles
+    const updateNavbar = () => {
+        const isHomepage = window.location.pathname === '/';
+        const isScrolled = window.scrollY > 200;
+
+        if (!isHomepage) {
+            // For non-homepage, always solid
+            navbar.classList.add('solid');
+            updateIcons('solid');
+        } else if (isScrolled) {
+            // Homepage scrolled
             navbar.classList.add('scrolled');
-        } else if (window.location.pathname === '/') {
-            // Only remove `scrolled` class on the homepage when scrolling up
-            navbar.classList.remove('scrolled');
-        }
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const navbar = document.getElementById('navbar');
-    
-    function updateNavbarClass() {
-        if (window.location.pathname === '/') {
-            console.log('loaded');
-            
-            navbar.classList.add('transparent-navbar');
-            
-            
-            navbar.classList.remove('solid-navbar');
+            navbar.classList.remove('solid');
+            updateIcons('scrolled');
         } else {
-            console.log('diffff');
-            
-            navbar.classList.add('solid-navbar');
-            navbar.classList.remove('transparent-navbar');
+            // Homepage at the top
+            navbar.classList.remove('scrolled', 'solid');
+            updateIcons('default');
         }
-    }
+    };
 
-    // Initial check when page loads
-    updateNavbarClass();
+    // Function to update icons based on class
+    const updateIcons = (state) => {
+        if (state === 'solid' || state === 'scrolled') {
+            if (cartIcon) cartIcon.style.backgroundImage = `url('${staticBasePath}header_cart-eed150 _green.svg')`;
+            if (loginIcon) loginIcon.style.backgroundImage = `url('${staticBasePath}user-question-alt-1-svgrepo-com_green.svg')`;
+            if (loginIconLarge) loginIconLarge.style.backgroundImage = `url('${staticBasePath}user-question-alt-1-svgrepo-com_green.svg')`;
+            if (cartIconLarge) cartIcon.style.backgroundImage = `url('${staticBasePath}header_cart-eed150 _green.svg')`;
+        } else {
+            // Default (homepage top)
+            if (cartIcon) cartIcon.style.backgroundImage = `url('${staticBasePath}cart.svg')`;
+            if (loginIcon) loginIcon.style.backgroundImage = `url('${staticBasePath}user-question-alt-1-svgrepo-com_white.svg')`;
+            if (loginIconLarge) loginIconLarge.style.backgroundImage = `url('${staticBasePath}user-question-alt-1-svgrepo-com_white.svg')`;
+            if (cartIconLarge) cartIcon.style.backgroundImage = `url('${staticBasePath}cart.svg')`;
+        }
+    };
 
-    // Listen for URL changes if using history navigation (like in single-page apps)
-    window.addEventListener('popstate', updateNavbarClass);
-    window.addEventListener('pushstate', updateNavbarClass);
-    window.addEventListener('replacestate', updateNavbarClass);
+    // Event listener for scroll updates
+    window.addEventListener('scroll', updateNavbar);
+
+    // Initial check on page load
+    updateNavbar();
 });
-
+// $(document).ready(function () {
+//     $('#itemslider').carousel({ interval: 3000 });
+  
+//     $('.carousel-showmanymoveone .carousel-item').each(function () {
+//       let itemToClone = $(this);
+  
+//       for (let i = 1; i < 6; i++) {
+//         itemToClone = itemToClone.next();
+  
+//         // Wrap around to the first item if no more siblings exist
+//         if (!itemToClone.length) {
+//           itemToClone = $(this).siblings(':first');
+//         }
+  
+//         itemToClone.children(':first-child').clone()
+//           .addClass(`cloneditem-${i}`)
+//           .appendTo($(this));
+//       }
+// //     });
+//   });
+  

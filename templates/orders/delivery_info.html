@@ -1,10 +1,10 @@
 {% extends 'base/index.html' %}
 
 {% block content %}
-<div class="container address-info">
+<div class="container address-info" style="margin-top: 100px;">
     <h2 class="form-title">Delivery Information</h2>
     <p class="form-subtitle">Please provide your contact and delivery details.</p>
-    
+
     <form method="post" class="delivery-form">
         {% csrf_token %}
 
@@ -24,19 +24,21 @@
             </div>
         </div>
 
-        <!-- Step 2: Contact Information (Only shown if adding a new address) -->
+        <!-- Full Name and Phone Number (Always Visible) -->
+        <div class="row">
+            <div class="form-group col-md-6">
+                {{ form.full_name.label_tag }}
+                {{ form.full_name }}
+            </div>
+            <div class="form-group col-md-6">
+                {{ form.phone_number.label_tag }}
+                {{ form.phone_number }}
+            </div>
+        </div>
+
+        <!-- Step 2: Add Manual Address -->
         <div id="manual-address-form" class="section" style="display:none;">
             <h3 class="section-title">Step 2: Add New Address</h3>
-            <div class="row">
-                <div class="form-group col-md-6">
-                    {{ form.full_name.label_tag }}
-                    {{ form.full_name }}
-                </div>
-                <div class="form-group col-md-6">
-                    {{ form.phone_number.label_tag }}
-                    {{ form.phone_number }}
-                </div>
-            </div>
             <div class="row">
                 <div class="form-group col-md-6">
                     {{ form.home.label_tag }}
@@ -71,29 +73,45 @@
 </div>
 
 <script>
-    // Function to toggle the manual address form and handle field attributes
     function toggleManualAddressForm() {
         const selectedAddress = document.getElementById('selected_address');
         const manualForm = document.getElementById('manual-address-form');
-        const manualFields = manualForm.querySelectorAll('input');
+        const manualFields = manualForm ? manualForm.querySelectorAll('input') : [];
+        const nameField = document.querySelector('input[name="full_name"]');
+        const phoneField = document.querySelector('input[name="phone_number"]');
 
-        if (selectedAddress.value === 'manual') {
-            manualForm.style.display = 'block'; // Show the manual address form
-            manualFields.forEach(input => input.disabled = false); // Enable manual fields
-            manualFields.forEach(input => input.setAttribute('required', 'true')); // Make fields required
+        // Show manual address fields only when 'manual' is selected
+        if (selectedAddress && selectedAddress.value === 'manual') {
+            if (manualForm) manualForm.style.display = 'block'; // Show manual address form
+            manualFields.forEach(input => {
+                input.disabled = false;
+                input.setAttribute('required', 'true');
+            });
         } else {
-            manualForm.style.display = 'none'; // Hide the manual address form
-            manualFields.forEach(input => input.disabled = true); // Disable manual fields
-            manualFields.forEach(input => input.removeAttribute('required')); // Remove required attribute
+            if (manualForm) manualForm.style.display = 'none'; // Hide manual address form
+            manualFields.forEach(input => {
+                input.disabled = true;
+                input.removeAttribute('required');
+            });
+        }
+
+        // Ensure full_name and phone_number are always enabled and required
+        if (nameField) {
+            nameField.disabled = false;
+            nameField.setAttribute('required', 'true');
+        }
+        if (phoneField) {
+            phoneField.disabled = false;
+            phoneField.setAttribute('required', 'true');
         }
     }
 
-    // Event listener to handle address selection changes
+    // Attach event listener
     document.getElementById('selected_address').addEventListener('change', toggleManualAddressForm);
 
-    // On page load, check if "manual" is pre-selected and toggle accordingly
+    // Ensure the correct state is applied on page load
     window.onload = function () {
-        toggleManualAddressForm(); // Ensure proper form visibility on load
+        toggleManualAddressForm();
     };
 </script>
 

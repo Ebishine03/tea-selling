@@ -1,0 +1,46 @@
+<!-- all_categories.html -->
+
+
+  <div class="categories-container">
+    <h1>All Categories</h1>
+    
+    <!-- Loop through all categories -->
+    <div class="categories-grid">
+      {% for category in categories %}
+        <div class="category-card">
+          <h2>{{ category.name }}</h2>
+          <p>{{ category.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="products-container">
+    <h2>All Products</h2>
+    
+    <!-- Loop through all products -->
+    <div class="products-grid">
+      {% for product in products %}
+        <div class="product-card">
+          <img src="{{ product.product_image.url }}" alt="{{ product.title }}" class="product-image">
+          <h3>{{ product.title }}</h3>
+          
+          <p>{{ product.description }}</p>
+          
+          <div class="product-price">
+            {% if product.discounted_price %}
+              <span class="original-price">${{ product.get_variants.first.calculate_base_price }}</span>
+              <span class="discounted-price">${{ product.discounted_price }}</span>
+              
+              <!-- Discount badge -->
+              <div class="offer-badge">
+                -{{ product.offers.first.discount_percentage }}%
+              </div>
+            {% else %}
+              <span class="price">${{ product.get_variants.first.calculate_base_price }}</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>

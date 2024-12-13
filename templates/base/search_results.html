@@ -26,3 +26,37 @@
     </div>
 </div>
 {% endblock %}
+
+<div class="row d-lg-none p-0 m-0 ">
+       
+    <!-- Toggler Button -->
+    <div class="col-3 ">
+        <button class="navbar-toggler shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+
+    
+    <div class="col-3 ">
+        <form class="t-p-sr" role="search" action="/search/" method="GET">
+            {% csrf_token %}
+            <div class="input-group  ">
+                <input id="nav-search" class="form-control" type="search" name="q" placeholder="Search products" aria-label="Search">
+                <button class="input-group-text border-1 sr-btn" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- Cart Section -->
+    <div class="col-3  cart-i">
+        <a href="{% url 'view_cart' %}" class="nav-link d-flex align-items-center position-relative">
+        
+            <!-- Cart Count -->
+            <span class="cart_count position-absolute top-0 start-100 translate-middle badge bg-success">
+                {{ request.user.cartitem_set.count }}
+            </span>
+        </a>
+    </div>
+   
+</div>

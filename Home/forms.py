@@ -2,7 +2,7 @@ from django import forms
 
 from .models import CustomUser,EmployeeProfile
 from django.contrib.auth import get_user_model
-from Products .models import Product,Order,Address,Category
+from Products .models import Product,Order,Address,Category,ProductVariant
 class CustomUserRegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
@@ -54,16 +54,23 @@ class LoginForm(forms.Form):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['category', 'title', 'description', 'price', 'stock', 'product_image','is_offer']
+        fields = ['category', 'title', 'description', 'product_image',]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'price': forms.NumberInput(attrs={'class': 'form-control'}),
-            'stock': forms.NumberInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
-            'is_offer': forms.CheckboxInput(attrs={'class': 'form-check-input'}),  # Correct Checkbox widget
-
             'product_image': forms.ClearableFileInput(attrs={'class': 'custom-file-input'}),  # Updated class
+        }
+
+class ProductVariantForm(forms.ModelForm):
+    class Meta:
+        model = ProductVariant
+        fields = ['product', 'weight', 'price_per_kg', 'stock']
+        widgets = {
+            'weight': forms.NumberInput(attrs={'class': 'form-control'}),
+            'price_per_kg': forms.NumberInput(attrs={'class': 'form-control'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control'}),
+            'product': forms.HiddenInput(),  # Hidden field to associate variant with the product
         }
 class OrderStatusForm(forms.ModelForm):
     class Meta:

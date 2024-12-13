@@ -1,48 +1,106 @@
-{% for chunk in chunked_products %}
-    <div class="row mt-5 ms-1">
-        {% for product in chunk %}
-        <div class="col-lg-4 col-md-6 mb-4 mt-2">
-            <div class="store-item card shadow-lg p-3 bg-light rounded h-70 text-center">
+{% for product in page_obj %}
+    <div class="col-lg-4 col-md-6 mb-4 mt-2">
+        <div class="store-item card shadow-lg p-3 bg-light rounded h-70 text-center">
+            <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark">
                 <!-- Product Image -->
-                 
                 <div class="image-container">
-                    {% if  product.product_image %}
+                    {% if product.product_image %}
                     <img class="img-fluid" src="{{ product.product_image.url }}" alt="{{ product.title }}">
                     {% else %}
-                    <img class="img-fluid"  alt="{{ product.title }}">
+                    <img class="img-fluid" alt="{{ product.title }}">
                     {% endif %}
                 </div>
-        
+
                 <!-- Product Details -->
                 <div class="p-1">
                     <!-- Product Title -->
-                    <h5 class="mb-1 fw-bold">{{ product.title }}</h5>
-                    <!-- Product Description -->
-                    <p class="mb-1">{{ product.description }} </p>
-                    <!-- Product Price -->
-                    <h5 class="fw-bold ">Rs {{ product.price }}</h5>
-                    <h6 class=" text-primary text-muted fw-bold">Only {{ product.stock }} available</h6>
+                    <h5 class="mb-1" style="font-family: 'Roboto', sans-serif;">
+                        {{ product.title }}  - 
 
-                    <!-- Button Container -->
-                    <div class="mt-2">
-                        <!-- Add to Cart Button -->
-                        <form method="POST" action="{% url 'add_to_cart' product.id %}" class="mb-2">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
-                        </form>
-                        
-                        <!-- Buy Now Button -->
-                        <form method="POST" action="{% url 'buy_now' product.slug %}">  <!-- Use slug instead of id -->
-                            {% csrf_token %}
-                            <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
-                            <button type="submit" class="btn btn-success w-100">Buy Now</button>
-                        </form>
+                    {%if product.variants %}
+                    {%for variant in product.variants.all %}
+                    {{ variant.weight|format_weight  }}
+                    {% endfor %}
+                    {% endif %}
+                      
+                    </h5>
+                    <!-- Product Description -->
+                    <p class="mb-1">{{ product.description }}</p>
+                    
+                   
+    {% for variant in product.variants.all %}
+        {% if product.valid_offer %}
+            <!-- Display Discount Badge -->
+            <div class="discount-badge position-absolute top-0 start-0 bg-danger text-white px-2 py-1 small">
+                {{ product.valid_offer.discount_percentage|floatformat:0 }}% OFF
+            </div>
+        {% endif %}
+        {% endfor %}
+
+
+        <!-- Price Display -->
+        {% if product.valid_offer %}
+        {% for variant in product.variants.all %}
+           
+            <h6 class="text-danger mb-1" style="font-family: 'Roboto', sans-serif;">
+                <i class="bi bi-currency-rupee"></i>{{ product.discounted_price|floatformat:2 }}
+            </h6>
+            
+            
+            <h6 class="text-muted text-decoration-line-through mb-2" style="font-family: 'Roboto', sans-serif;">
+                <i class="bi bi-currency-rupee"></i>{{ variant.calculate_base_price|floatformat:2 }}
+            </h6>
+            
+            {% endfor %}
+        {% else %}
+
+            {% for variant in product.variants.all %}
+           
+            
+            
+            
+            <h6 class=" mb-2" style="font-family: 'Roboto', sans-serif;">
+                <i class="bi bi-currency-rupee"></i>{{ variant.calculate_base_price|floatformat:2 }}
+            </h6>
+            
+            {% endfor %}
+        {% endif %}
+ 
+
+
+                    
+                    <!-- Star Rating -->
+                    <div class="rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.average_rating %}
+                            <i class="fas fa-star text-warning"></i>
+                            {% else %}
+                            <i class="far fa-star text-muted"></i>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
+            </a>
+
+            <!-- Button Container: Add to Cart & Buy Now -->
+            <div class="mt-2">
+                <!-- Add to Cart Button -->
+                <form method="POST" action="{% url 'add_to_cart' product.id %}" class="mb-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                </form>
+
+                <!-- Buy Now Button -->
+                <form method="POST" action="{% url 'buy_now' product.slug %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1"> <!-- Adjust quantity as needed -->
+                    <button type="submit" class="btn btn-success w-100">Buy Now</button>
+                </form>
             </div>
         </div>
-        {% endfor %}
     </div>
 {% empty %}
-    <p class="text-center">No products available.</p>
+    <div class="col-12 text-center">
+        <p class="text-muted">No products found.</p>
+    </div>
 {% endfor %}

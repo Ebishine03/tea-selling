@@ -1,5 +1,5 @@
 from django import forms
-from .models import Address, Payment
+from .models import Address, Payment,Review
 from Home .models import CustomUser
 from Products .models import Delivery
 class CheckoutForm(forms.Form):
@@ -30,3 +30,28 @@ class DeliveryInfoForm(forms.ModelForm):
         }
 class QuantityForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, label="Quantity")
+
+from django import forms
+from .models import Review
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(
+                choices=[(i, str(i)) for i in range(1, 6)],  
+                attrs={'class': 'form-select'}
+            ),
+            'comment': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 4,
+                    'placeholder': 'Write your review here...'
+                }
+            ),
+        }
+        labels = {
+            'rating': 'Rate the Product',
+            'comments': 'Your Review',
+        }

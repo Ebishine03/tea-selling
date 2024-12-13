@@ -1,56 +1,117 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from Products.models import Product,ComboProduct,Address,Category,Order
-from django.contrib.auth import authenticate, login,logout
+# Standard Library Imports
+from collections import defaultdict
+from itertools import chain, zip_longest
+
+# Django Core Imports
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.db.models import Q
-from django.utils import timezone
+from django.db.models import Prefetch, Q
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
-from  .models import CustomUser  
-from .forms import *
-from .decorators import employee_required
-from django.utils import timezone
-from django.db.models import Q
-from  .notifications import send_notification
-from .models import CustomUser
-from django.template.loader import render_to_string
-from django.http import JsonResponse
-from Tea.context_processors import add_user_role
 from django.urls import reverse
-from django.core.paginator import Paginator
-from .models import Notification
+from django.utils import timezone
+from django.utils.timezone import now
+
+# App-specific Imports
+from Products.models import (
+    Address, 
+    Category, 
+    ComboProduct, 
+   
+    Offer, 
+    Order, 
+    Product,
+)
+from Tea.context_processors import add_user_role
+from .decorators import employee_required
+from .forms import *
+from .models import CustomUser
+from .notifications import send_notification
+
 # Create your views here.
+def group_into_chunks(iterable, chunk_size):
+    """Groups an iterable into chunks of a specified size."""
+    args = [iter(iterable)] * chunk_size
+    return zip_longest(*args)
+
 
 def index(request):
-   
+    # Fetch all categories and their products
+    categories = Category.objects.prefetch_related(
+        Prefetch(
+            'products', 
+            queryset=Product.objects.filter(is_active=True).prefetch_related('variants', 'offers')
+        )
+    )
 
-    tea_category = get_object_or_404(Category, slug='tea')
-    spice_category = get_object_or_404(Category, slug='spice')
-    herbs_category=get_object_or_404(Category,slug='herbs')
- 
-   
+    # Dictionary to hold categorized products
+    categorized_products = defaultdict(list)
+    products_with_valid_offers = []
 
+    # Process each category and its products
+    for category in categories:
+        category_products = []
+        for product in category.products.all():
+            # Prepare product data for categorization
+            product_data = {
+                'product': product,
+                'variants': [],
+                'category_name': category.name,
+                'category_slug': category.slug,
+            }
 
-    recent_tea = Product.objects.filter(category=tea_category,is_active=True).order_by('-created_at')[:3]
-    recent_spice = Product.objects.filter(category=spice_category,is_active=True).order_by('-created_at')[:3]
-    recent_offer = Product.objects.filter(is_offer=True,is_active=True).order_by('-created_at')[:3]
-    recent_combo = ComboProduct.objects.filter(is_combo=True,is_active=True).order_by('-created_at')[:3]
-    recent_herbs=Product.objects.filter(category=herbs_category).order_by('-created_at')[:3]
- 
+            # Check variants and offers
+            for variant in product.variants.all():
+                variant_data = {
+                    'variant': variant,
+                    'base_price': variant.calculate_base_price(),
+                    'discounted_price': None,
+                    'discount_percentage': None,
+                }
+
+                # Check for valid offers
+                valid_offers = [offer for offer in product.offers.all() if offer.is_valid]
+                if valid_offers:
+                    valid_offer = valid_offers[0]
+                    variant_data['discounted_price'] = variant.get_discounted_price(valid_offer)
+                    variant_data['discount_percentage'] = valid_offer.discount_percentage
+
+                    # Add product with valid offer to the offer list
+                    products_with_valid_offers.append({
+                        'product': product,
+                        'variant': variant,
+                        'category_name': category.name,
+                        'category_slug': category.slug,
+                        'offer': valid_offer,
+                        'discounted_price': variant_data['discounted_price'],
+                        'discount_percentage': variant_data['discount_percentage'],
+                        'base_price': variant.calculate_base_price(),
+                    })
+
+                product_data['variants'].append(variant_data)
+
+            # Collect all products for this category
+            category_products.append(product_data)
+
+        # Keep only the recent three products for this category
+        categorized_products[category.name] = category_products[:3]
+
+    # Keep only the recent three products with valid offers
+    products_with_valid_offers = products_with_valid_offers[:3]
+
+    # Prepare context
     context = {
-        'recent_tea': recent_tea,
-        'recent_spice': recent_spice,
-        
-
-        'recent_offer': recent_offer,
-        'recent_combo': recent_combo,
-        'recent_herbs':recent_herbs
+        'categorized_products': dict(categorized_products),
+        'offer_products': products_with_valid_offers,
     }
 
     return render(request, 'base/home.html', context)
 
+
+
+ 
 def search_products_home(request):
     query = request.GET.get('q', '')  # Get the search query
     if query:
@@ -65,7 +126,6 @@ def search_products_home(request):
     return render(request, 'base/search_results.html', context)
 
 
-    return render(request,'sign_in_up.html')
 
 def register(request):
     if request.method == 'POST':

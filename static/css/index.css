@@ -51,6 +51,53 @@ a {
   font-weight: normal;
 }
 
+.about-section {
+  padding: 60px 15px;
+  background-color: #f9f9f9;
+}
+
+.about-heading {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #045839; /* Light gray for a subtle look */
+  font-family: 'Georgia', serif; /* Changing font style */
+  margin-bottom: 110px;
+}
+.underlined-heading {
+  border-bottom: 2px solid #8abb20; /* Blue underline, you can change the color */
+  padding-bottom: 5px; /* Space between text and underline */
+  display: inline-block; /* Keeps the underline only below the text */
+}
+
+
+.about-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2e4c2d;
+  margin-bottom: 100px;
+
+  border-radius:2px solid #045839; ;
+}
+
+
+
+.about-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+.image-grid img {
+  border-radius: 2px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.image-grid img:hover {
+  transform: scale(1.05);
+}
 
 /*** Navbar ***/
 
@@ -69,19 +116,10 @@ a {
   
 }
 
-.navbar .navbar-brand {
-  position: absolute;
-  padding: 0;
-  width: 170px;
-  height: 135px;
-  top: 0;
-  left: 0;
-  font-size: small;
-  color: #FFFFFF;
-}
+
 
 .navbar-expand-lg {
-  height: 80px;
+  height: 90px;
 }
 
 .navbar .navbar-nav .nav-link {
@@ -120,9 +158,7 @@ a {
 #nav-search{
   background: transparent;
 }
-.navbar.scrolled #nav-search{
-  background: initial;
-}
+
 
 /* Style for the search bar on the scrolled navbar */
 .navbar.scrolled .form-control {
@@ -135,15 +171,20 @@ a {
 .navbar.scrolled .form-control::placeholder {
   color: #6c757d;
 }
+.navbar.scrolled .cart-i{
+  color: #033506; /* Example color: Bootstrap primary */
+  fill:  #033506;
+}
+
 
 /* Dropdown arrow styling */
-.navbar .dropdown-toggle::after {
+.navbar .dropdown-lerle::after {
   border: none;
   content: "\f107";
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   vertical-align: middle;
-  margin-left: 8px;
+  
 }
 .navbar .input-group-text{
   color: aliceblue;
@@ -152,8 +193,8 @@ a {
 .navbar.scrolled .input-group-text{
   color: black;
 }
-.navbar-toggler{
-  margin-top: 6px;
+@media (max-width: 576px) {
+  
 }
 
 @media (max-width: 991.98px) {
@@ -176,7 +217,107 @@ a {
   border: 1px solid aliceblue;
 
 }
+.cart-i {
+  /* background-image: url("../img/header_cart-eed150 _white.svg"); */
+  margin-right: 10px;
+}
+.cart-i{
+  width: 24px;
+  height: 24px;
+  
+}
+.cart-i-l{
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
 
+}
+.navbar.scrolled .login{
+ 
+  color: #033506;
+
+}
+.login {
+  
+  width: 34px;              /* Icon width */
+  height: 34px;  
+               /* Icon height */
+               background-size: contain; /* Ensure the icon fits well */
+               background-repeat: no-repeat;
+               background-position: center;  /* Ensure text alignment within the container */
+}
+.-l{
+  margin-bottom:100px;
+  margin-right: 4px;
+}
+
+.login-t {
+  display: flex;
+  flex-direction: column; /* Stack icon and text vertically */
+  align-items: center;    /* Center horizontally */
+  justify-content: center; /* Center vertically */
+  text-align: center; 
+  color: #054811;      /* Ensure text alignment within the container */
+}
+.icon-t {
+  width: 24px;              /* Icon width */
+  height: 24px;             /* Icon height */
+  background-size: contain; /* Ensure the icon fits well */
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 5px; 
+  
+}
+.navbar.scrolled .login{
+ 
+  color: #033506;
+
+}
+.login-l {
+  display: flex;
+  flex-direction: column; /* Stack icon and text vertically */
+  align-items: center;    /* Center horizontally */
+  justify-content: center; /* Center vertically */
+  text-align: center;     /* Ensure text alignment within the container */
+}
+.icon-l {
+  width: 24px;              /* Icon width */
+  height: 24px;             /* Icon height */
+  background-size: contain; /* Ensure the icon fits well */
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 5px;       /* Space between icon and text */
+}
+
+/* Text styling */
+.text-l {
+  font-size: 14px;          /* Adjust text size */
+  color: #eef3ee;           /* Text color */
+}
+.navbar.scrolled .login-l .text-l{
+
+  color: #033506;
+
+}
+.solid .text-l{
+  color: #033506;
+}
+
+.cart_count {
+  position: absolute;
+  right: 8px;
+  bottom: 14px;
+  text-align: center;
+  border-radius: 8px;
+  width: 18px;
+  height: 18px;
+  background-color: #ff6161;
+  border: 1px solid #fff;
+  color: #f0f0f0;
+  line-height: 16px;
+  font-size: 12px;
+  font-family: inter_semi_bold;
+}
 /* Default (transparent) navbar state */
 .navbar .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='white' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
@@ -192,7 +333,7 @@ a {
 
 .carousel-caption.overlay-caption {
   position: absolute;
-  bottom: 20px; /* Position near the bottom of the video */
+  bottom: 100px; /* Position near the bottom of the video */
   left: 50%;
   transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
@@ -202,6 +343,115 @@ a {
   width: 90%; /* Optional: Adjusts width of caption */
   text-align: center;
 }
+
+
+@media (min-width: 992px) {
+  .navbar .nav-item .dropdown-menu {
+      display: block;
+      
+      margin-top: 0;
+      top: 150%;
+      opacity: 0;
+      visibility: hidden;
+      transition: .5s;
+      box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 0px 5px 10px;
+        background-color: #fff;
+        font-family: inter_semi_bold, fallback-inter_semi_bold, Arial, sans-serif;
+  }
+
+  .navbar .nav-item:hover .dropdown-menu {
+      top: 100%;
+      visibility: visible;
+      transition: .5s;
+      opacity: 1;
+  }
+}
+.transparent-navbar {
+  background-color: transparent;
+  color: white; /* Example styles */
+}
+
+
+.solid-navbar {
+  background-color:#fff;
+  color: black; /* Example styles */
+}
+.sr-btn{
+background-color: transparent;
+}
+.sr-sm{
+  background-color: transparent;
+}
+.solid .sr-btn{
+color: #000000 ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.navbar.solid {
+  background-color:#fff; /* Background color when scrolled */
+  box-shadow: rgba(225, 234, 229, 0.619) 0px 0px 0px 3px;
+  
+}
+
+
+
+
+
+
+.navbar.solid .navbar-nav .nav-link {
+  
+  color: rgb(9, 9, 9) !important; /* Initial text color for transparent navbar */
+
+}
+.navbar.navbar.solid .navbar-brand{
+  color: rgb(9, 9, 9) !important;
+}
+
+
+
+
+
+/* Style for the search bar on the scrolled navbar */
+.navbar.solid .form-control {
+  background-color: #f8f9fa;
+  color: #333; /* Darker text color */
+  border-color: #ced4da;
+}
+
+/* Update placeholder color when navbar is scrolled */
+.navbar.solid .form-control::placeholder {
+  color: #6c757d;
+}
+.navbar.scrolled .cart-i{
+  color: #033506; /* Example color: Bootstrap primary */
+  fill:  #033506;
+}
+
+
+
+/* Scrolled or solid navbar state */
+.navbar.solid .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='black' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+.position-relative {
+  position: relative;
+}
+
 
 
 @media (min-width: 992px) {
@@ -227,99 +477,164 @@ a {
   color: white; /* Example styles */
 }
 
+
 .solid-navbar {
-  background-color: aliceblue;
+  background-color:#fff;
   color: black; /* Example styles */
 }
-.sr-btn{
-background-color: transparent;
-}
-.sr-sm{
-  background-color: transparent;
-}
-
-#offcanvasMenu {
-  width: 350px; 
-  background-color:white;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-  box-shadow: rgba(4, 128, 66, 0.3) 0px 0px 0px 3px;
-  border-radius: 4px;
-} 
-
-
-.offcanvas-body i {
-  margin-right: 10px; 
-}
-
-.offcanvas-header {
-  border-bottom: 2px solid #ddd;
-  margin-bottom: 15px;
-}
 
 
 
 
-.offcanvas-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-}
+
+
+
+
+
+
 
 .offcanvas-body {
-    padding: 1.5rem;
-    font-family: Arial, sans-serif;
+  
+  scrollbar-color: #aab7cf transparent;
+  scrollbar-width: thin;
 }
 
-/* Menu Links */
+/* Scrollbar Customization */
+.offcanvas-body::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+  background-color: #fff;
+}
+
+.offcanvas-body::-webkit-scrollbar-thumb {
+  background-color: #aab7cf;
+}
+/* Offcanvas Header */
+.offcanvas-header {
+  padding: 15px 20px;
+  
+  background-color:aliceblue
+}
+
+.offcanvas-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Offcanvas Body */
+.offcanvas-body {
+  padding: 10px 15px;
+  width: 400px;
+}
+#offcanvasMenu{
+  width: 300px;
+}
+
+/* Main Navigation Links */
 .offcanvas-body a.nav-link {
-    font-size: 1rem;
-    color: #555;
-    text-decoration: none;
-    margin-bottom: 1rem;
-    display: block;
-    transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #4154f1; /* Link color */
+  background-color: transparent;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out; /* Smooth hover transition */
 }
 
+.offcanvas-body a.nav-link i {
+  font-size: 18px;
+  margin-right: 10px;
+  color: #4154f1; /* Icon color matches link */
+}
 
+/* Hover Effect for Main Links */
+.offcanvas-body li.nav-link:hover {
+  color: #fff;
+  background-color: #4154f1; /* Sidebar hover background color */
+}
 
+.offcanvas-body a.nav-link:hover i {
+  color: #fff; /* Icon turns white on hover */
+}
 
+/* Active State for Main Links */
+.offcanvas-body a.nav-link.active {
+  color: #fff;
+  background-color: #4154f1; /* Active link background color */
+}
+
+.offcanvas-body a.nav-link.active i {
+  color: #fff; /* Active icon color */
+}
+
+/* Submenu Links */
 .offcanvas-body ul {
-    list-style-type: none;
-    padding-left: 1rem;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.offcanvas-body ul li {
+  padding-left: 15px; /* Indentation matches sidebar submenu */
 }
 
 .offcanvas-body ul li a {
-    font-size: 1rem;
-    color: #666;
-    text-decoration: none;
+  display: flex;
+  align-items: center;
+
+  font-weight: 400;
+  color: #012970; /* Submenu link color */
+  padding: 10px 0;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
 }
 
+/* Hover Effect for Submenu Links */
 .offcanvas-body ul li a:hover {
-    color: #28a745;
+  color: #4154f1; /* Submenu hover color */
 }
 
-/* Icons */
-.offcanvas-body .fas {
-    margin-right: 10px;
+/* Active State for Submenu Links */
+.offcanvas-body ul li a.active {
+  color: #fff;
+  background-color: #4154f1; /* Submenu active background color */
 }
 
-.offcanvas-body .badge {
-    font-size: 0.9rem;
+.offcanvas-body ul li a.active i {
+  color: #fff;
 }
+.offcanvas-body a i{
+  font-size: 6px;
+  margin-right: 8px;
+  line-height: 0;
+  border-radius: 50%;
 
-/* Profile Section */
-.offcanvas-body .nav-item .text-muted {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
 }
+.offcanvas-body
+{
+  
 
-.offcanvas-body .text-danger {
-    font-weight: bold;
+  color: #054811;
+  padding: 10px 15px;
+  margin-top: 15px;
 }
+/* Section Titles */
+.offcanvas-body  a:hover {
+  color: #717ff5;
+  text-decoration: none;
+}  
 
-/* Button Close Icon */
+/* Offcanvas Footer (Optional) */
+.offcanvas-footer {
+  padding: 15px;
+  background-color: #f6f9ff;
+  border-top: 2px solid #ddd;
+}
 
 
 /* Responsive Design */
@@ -333,19 +648,36 @@ background-color: transparent;
   width: 450px;
   height: 38px;
 }
+.t-p-sr {
+  width:224px;
+  height: 38px;
+}
 .p-sr-sr {
   width: 250px;
   height: 32px;
+}
+.psr-l{
+  width: 378px;
+    margin-left: 3px;
+
 }
 .c-img{
   height: 600px;
   background-size: cover;
 }
+
 .position-relative {
   position: relative;
 }
-
-
+.-m{
+  margin-top: -111px;
+}
+.-mns{
+  margin-top: -145px;
+}
+.-mct{
+  margin-top: -100px;
+}
 .overlay {
   position: absolute;
   top: 0;
@@ -358,7 +690,7 @@ background-color: transparent;
 }
 .carousel-media {
     object-fit: cover;
-    height: 550px; /* Set desired height for all media */
+    height: 610px; /* Set desired height for all media */
   }
 
 .carousel-caption {
@@ -367,13 +699,19 @@ background-color: transparent;
 }
 
 
-.logo{
-  width: 100px;
-  height: 75px;
+.logo-sm{
+  width: 149px;
+  height: 149px;
+  
+ 
 
   
 }
-
+.logo{
+margin-bottom: 16px;
+  width: 150px;
+  height: 150px;
+}
 
 
 
@@ -424,7 +762,7 @@ background-color: transparent;
 .image-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures the image covers the area without distortion */
+    /* object-fit: cover;  */
 }
 
 /* Ensuring consistent card size */
@@ -433,6 +771,10 @@ background-color: transparent;
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Ensures content is spaced evenly */
+    object-fit: cover;
+}
+.store-item{
+  width: 320px;
 }
 
 /* Optional: Add hover effect */
@@ -1217,17 +1559,99 @@ a .owl-carousel{
 /* Product Card */
 .product-card {
   padding: 15px;
-  
+  object-fit: cover;
   border-radius: 5px;
    border-bottom: 3px solid #92df9a;
  
   margin-bottom: 0px; /* Added consistent spacing between cards */
 }
 
-.product-card img {
+.product-card .prd-img {
   width: 200px;
   height: 200px;
   border-radius: 3px;
+}
+.offer-product {
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 250px;
+  text-align: center;
+}
+
+.offer-product:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+.offer-product h5 {
+
+  margin-bottom: 0.5rem;
+}
+
+.offer-product p {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.offer-product .rating i {
+  font-size: 0.9rem;
+}
+
+.offer-product {
+  
+  margin: 7.5px; /* Spacing between cards */
+  background-color: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+
+.offer-product .image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.offer-product .offer-banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 10;
+    text-align: center;
+    padding: 5px; /* Optional: Adjust as needed */
+}
+.offer-banner{
+  height: 30px;
+}
+
+.image-container {
+  overflow: hidden; /* Ensure the image fits nicely inside the container */
+}
+
+
+.rating {
+  margin-top: 5px;
+  display: flex;
+  justify-content: center;
+}
+
+.rating i {
+  margin: 0 2px;
+}
+
+.carousel-item .d-flex {
+  gap: 15px; /* Spacing between cards */
+  flex-wrap: wrap; /* Ensure cards wrap if necessary */
+  justify-content: center; /* Center the cards */
+  padding: 15px 0; /* Padding for aesthetics */
 }
 
 .product-card strong {
@@ -1241,7 +1665,7 @@ a .owl-carousel{
 
 /* Progress Bar */
 .progress-bar-custom {
-  --progress-height: 12px; /* Reusable height variable */
+  --progress-height: 5px; /* Reusable height variable */
   background-color: var(--progress-bg);
   border-radius: 50px;
   overflow: hidden;
@@ -1294,4 +1718,140 @@ a .owl-carousel{
 
 .btn-shopping:hover {
   background-color: var(--btn-shopping-hover-bg);
+}
+
+
+
+
+/* Container for the tracking bar */
+.tracking-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+/* Tracking bar layout */
+.tracking-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* Individual tracking steps */
+.tracking-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  flex: 1;
+}
+
+/* Step circles */
+.step-circle {
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  border: 3px solid white;
+}
+
+/* Active step style */
+.tracking-step.active .step-circle {
+  background-color: #007bff;
+}
+
+/* Connecting lines */
+.tracking-bar::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #ccc;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+/* Active connecting line */
+.tracking-bar .tracking-step.active + .tracking-step.active .tracking-bar::before {
+  background-color: #007bff;
+}
+
+/* Step text */
+.step-text {
+  margin-top: 10px;
+}
+
+.step-text p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.step-text span {
+  font-size: 12px;
+  color: #666;
+}
+
+.c1-section {
+  /* background-image: linear-gradient(-225deg, #DFFFCD 0%, #90F9C4 48%, #39F3BB 100%); */
+    background-image: linear-gradient(-225deg, #84fe7e 0%, #DFFFCD 48%, #84fe7e 100%);
+;
+  /* background-image: linear-gradient(to right top, #00ff63, #00f56e, #0beb77, #1de07e, #2bd683); */
+  /* background-image: linear-gradient(to right top, #20f772, #7ee095, #1ee57e); */
+        }
+
+.c1-image img {
+           max-width: 100%;
+           
+        }
+/* Ensure the card is fixed size */
+.custom-card {
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: auto;
+}
+
+
+.custom-card .card-img-top {
+  width: 100%;
+  height: 200px; 
+  object-fit: cover;
+  
+}
+
+/* Adjust text alignment and spacing */
+.custom-card .card-body {
+  padding: 8px;
+}
+
+.custom-card .card-title {
+  font-size: 14px;
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.custom-card .card-text {
+  font-size: 12px;
+  color: #e74c3c;
+  margin: 4px 0 0;
+}
+
+#itemslider{
+  padding: 18px;
+  background: aliceblue;
+  
 }

@@ -1,39 +1,60 @@
 from decimal import Decimal
 from django.shortcuts import redirect, get_object_or_404, render
-from .models import Cart, CartItem, Product, ComboProduct, Address, Payment, Order, OrderItem
+from .models import Cart, CartItem, Product, ComboProduct, Address, Payment, Order, OrderItem,Category
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator
 from itertools import islice
 from django.template.loader import render_to_string
 from django.http import JsonResponse,HttpResponse
 from django.db import transaction
 from .constants import  PAYMENT_METHOD_CHOICES
 from django.utils import timezone
-from .forms import DeliveryInfoForm,QuantityForm
+from .forms import DeliveryInfoForm,QuantityForm,ReviewForm
 from  .models import Delivery
 import uuid
 def chunked(iterable, size):
     it = iter(iterable)
     return iter(lambda: list(islice(it, size)), [])
+from django.db.models import Q
+from django.shortcuts import render
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
+from django.http import JsonResponse
+from .models import Product, ComboProduct, Category, Offer
+from django.utils import timezone
 
 def list_products(request, category_slug):
     search_query = request.GET.get('search-query', '')
     sort_by = request.GET.get('sort-by', 'default')
 
-    # Filter products based on category_slug
-    if category_slug == 'tea':
-        products = Product.objects.filter(category__slug='tea',is_active=True)
-    elif category_slug == 'spice':
-        products = Product.objects.filter(category__slug='spice',is_active=True)
-    elif category_slug == 'combo':
-        products = ComboProduct.objects.filter(is_combo=True,is_active=True)
-    elif category_slug == 'offer':
-        products = Product.objects.filter(is_offer=True,is_active=True)
-    elif category_slug == 'herbs':
-        products = Product.objects.filter(category__slug='herbs',is_active=True)
-    else:
-        products = []  # Empty list for invalid types
+    # Dynamically fetch the category and filter products based on the category_slug
+    try:
+        category = Category.objects.get(slug=category_slug)  # Get the category dynamically based on slug
+    except Category.DoesNotExist:
+        category = None  # If category doesn't exist, return empty
+
+    # Initialize products as an empty queryset
+    products = Product.objects.none()
+
+    # If a category is found, fetch products for that category
+    if category:
+        products = Product.objects.filter(category=category, is_active=True)
+
+    # If it's combo category, fetch combo products
+    if category_slug == 'combo':
+        products = ComboProduct.objects.filter(is_combo=True, is_active=True)
+
+    # If it's "offer" type, fetch products that have active offers
+    if category_slug == 'offer':
+        # Filter products with active offers
+        products = Product.objects.filter(
+            offers__is_active=True,
+            offers__start_date__lte=timezone.now(),
+            offers__end_date__gte=timezone.now(),
+            is_active=True
+        ).distinct()  # Ensure no duplicate products are returned
 
     # Apply search query if provided
     if search_query:
@@ -47,9 +68,9 @@ def list_products(request, category_slug):
     elif sort_by == 'price-high-low':
         products = products.order_by('-price')
     elif sort_by == 'rating-high-low':
-        products = products.order_by('-rating')  # Assuming you have a 'rating' field
+        products = products.order_by('-rating')
     elif sort_by == 'date-newest':
-        products = products.order_by('-created_at')  # Assuming a 'created_at' field
+        products = products.order_by('-created_at')
     elif sort_by == 'date-oldest':
         products = products.order_by('created_at')
     elif sort_by == 'name-asc':
@@ -57,27 +78,44 @@ def list_products(request, category_slug):
     elif sort_by == 'name-desc':
         products = products.order_by('-title')
 
-    # Convert queryset to a list for chunking
-    product_list = list(products)
-    chunked_products = list(chunked(product_list, 3))
+    # Check for active offers for each product in the queryset
+    for product in products:
+        product.valid_offer = None  # Default value if no valid offer
+        product.discounted_price = None
+        if hasattr(product, 'offers'):
+            # Check for an active offer
+            offer = product.offers.filter(
+                is_active=True,
+                start_date__lte=timezone.now(),
+                end_date__gte=timezone.now()
+            ).first()
+            if offer:
+                product.valid_offer = offer
+                for variant in product.variants.all():
+                    product.discounted_price = variant.get_discounted_price(offer=offer)
+                    print(product.discounted_price)
+
+    paginator = Paginator(products, 3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     # Handle AJAX request for live search and sorting
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        html = render_to_string('partials/partial_product.html', {'chunked_products': chunked_products})
+        html = render_to_string('partials/partial_product.html', {'page_obj': page_obj})
         return JsonResponse({'html': html})
 
     # If not AJAX, render the full page
     context = {
-        'chunked_products': chunked_products,
+        'page_obj': page_obj,
         'selected_category_slug': category_slug,
     }
     return render(request, 'products/view-products.html', context)
 
 
 @login_required
-def add_to_cart(request, product_id):
+def add_to_cart(request, product_slug):
     if request.method == 'POST':
-        product = get_object_or_404(Product, id=product_id)
+        product = get_object_or_404(Product, slug=product_slug)
         
         # Get or create the user's cart
         cart, created = Cart.objects.get_or_create(user=request.user)
@@ -474,3 +512,26 @@ def cancel_order(request, order_id):
         messages.error(request, f"Order cannot be canceled as it is already {order.status}.")
 
     return redirect('order_summary')
+def submit_review(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.customer = request.user
+            review.product = product
+            review.save()
+            return redirect('product_detail', product_id=product.id)
+    else:
+        form = ReviewForm()
+    return render(request, 'submit_review.html', {'form': form, 'product': product})
+def product_detail(request, product_slug):
+    product = get_object_or_404(Product, slug=product_slug)
+    reviews = product.reviews.all()
+    form = ReviewForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        review = form.save(commit=False)
+        review.customer = request.user
+        review.product = product
+        review.save()
+    return render(request, 'products/product_details.html', {'product': product, 'reviews': reviews, 'form': form})
