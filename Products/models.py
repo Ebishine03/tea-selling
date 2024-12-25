@@ -69,6 +69,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     offers = models.ManyToManyField('Offer', related_name='products', blank=True)
 
+
     def __str__(self):
         return self.title
 
@@ -86,15 +87,8 @@ class Product(models.Model):
         return self.variants.filter(stock__gt=0)
     def linked_offers(self):
         return ", ".join(offer.offer_title for offer in self.offers.all())
-
-    def get_discounted_price(self, offer=None):
-        """Calculate the minimum discounted price across all variants."""
-        variants = self.get_variants()
-        if not variants.exists():
-            return None
-        if offer and offer.is_valid:
-            return min(variant.get_discounted_price(offer) for variant in variants)
-        return min(variant.calculate_base_price() for variant in variants)
+   
+    
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -124,6 +118,8 @@ class Offer(models.Model):
         decimal_places=2,
         help_text="Discount percentage (e.g., 10.00 for 10%)"
     )
+    discount_price = models.FloatField(null=True, blank=True)  # New field for discount price
+
     type_of_offer = models.CharField(
         max_length=50,
         choices=OFFER_TYPE_CHOICES,
@@ -142,8 +138,11 @@ class Offer(models.Model):
             self.start_date <= current_time and
             (self.end_date is None or self.end_date >= current_time)
         )
+    
+
+    
     def __str__(self):
-        return f"{self.get_type_of_offer_display()} - {self.discount_percentage}% off"
+        return f"{self.discount_percentage}- {self.offer_title}"
 
 
 class ProductVariant(models.Model):
@@ -151,23 +150,33 @@ class ProductVariant(models.Model):
     variant_name = models.CharField(max_length=255)
     weight = models.DecimalField(max_digits=10, decimal_places=2)  # weight in kilograms (or grams)
     price_per_kg = models.DecimalField(max_digits=10, decimal_places=2)  # price per unit weight
+    base_price = models.FloatField(null=True, blank=True)  # New field to store base price
+
     stock = models.PositiveIntegerField()
-
     def calculate_base_price(self):
-        """Calculates the base price of the variant based on weight."""
-        return self.price_per_kg * self.weight
+        """Calculate the base price as weight * price_per_kg."""
+        return self.weight * self.price_per_kg
 
-    def get_discounted_price(self, offer=None):
-        """Calculates the discounted price for the variant."""
+    def get_discount_price(self):
+        """Calculate the discount price based on valid offers."""
         base_price = self.calculate_base_price()
-        if offer and offer.is_valid:
-            discount = (offer.discount_percentage / Decimal(100)) * base_price
-            discounted_price = max(base_price - discount, Decimal(0))  # Prevent negative price
-            return discounted_price
-        return None  
+        valid_offers = self.product.offers.filter(is_active=True, start_date__lte=now())
+        if valid_offers.exists():
+            offer = valid_offers.first()  # Assuming only one active offer is relevant
+            discount_amount = (offer.discount_percentage / 100) * base_price
+            return max(base_price - discount_amount, 0)  # Prevent negative price
+        return None  # No valid offers
+
+    def get_price_details(self):
+        """Returns both base price and discount price."""
+        return {
+            "base_price": self.calculate_base_price(),
+            "discount_price": self.get_discount_price(),
+        }
 
     def __str__(self):
         return f"{self.variant_name} - {self.weight} kg"
+  
 PAYMENT_METHOD_CHOICES = [
     ('Credit Card', 'Credit Card'),
     ('PayPal', 'PayPal'),

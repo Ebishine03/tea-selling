@@ -75,7 +75,7 @@ def index(request):
                 valid_offers = [offer for offer in product.offers.all() if offer.is_valid]
                 if valid_offers:
                     valid_offer = valid_offers[0]
-                    variant_data['discounted_price'] = variant.get_discounted_price(valid_offer)
+                    variant_data['discounted_price'] = variant.offer_discount_price
                     variant_data['discount_percentage'] = valid_offer.discount_percentage
 
                     # Add product with valid offer to the offer list
@@ -288,10 +288,8 @@ def dashboard_employee(request):
     all_products = Product.objects.filter(is_active=True)
     all_orders = Order.objects.all().order_by('-order_date')
  # Fetch employee-specific notifications
-    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
 
     # Count unread notifications
-    unread_notifications_count = notifications.filter(is_read=False).count()
     
    
 

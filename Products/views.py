@@ -3,7 +3,11 @@ from django.shortcuts import redirect, get_object_or_404, render
 from .models import Cart, CartItem, Product, ComboProduct, Address, Payment, Order, OrderItem,Category
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Subquery, OuterRef
+
+from django.utils.timezone import now
+from django.db.models.functions import Coalesce
+from django.db.models import Q, Min, Case, When, F, FloatField,Value,BooleanField
 from django.core.paginator import Paginator
 from itertools import islice
 from django.template.loader import render_to_string
@@ -25,88 +29,86 @@ from django.http import JsonResponse
 from .models import Product, ComboProduct, Category, Offer
 from django.utils import timezone
 
+
+
+
 def list_products(request, category_slug):
     search_query = request.GET.get('search-query', '')
     sort_by = request.GET.get('sort-by', 'default')
 
-    # Dynamically fetch the category and filter products based on the category_slug
-    try:
-        category = Category.objects.get(slug=category_slug)  # Get the category dynamically based on slug
-    except Category.DoesNotExist:
-        category = None  # If category doesn't exist, return empty
-
-    # Initialize products as an empty queryset
-    products = Product.objects.none()
-
-    # If a category is found, fetch products for that category
-    if category:
+    # Fetch the category or return 404 if it doesn't exist
+    if category_slug not in ['combo', 'offer-products']:
+        category = get_object_or_404(Category, slug=category_slug)
         products = Product.objects.filter(category=category, is_active=True)
+    else:
+        category = None
+        if category_slug == 'combo':
+            products = Product.objects.filter(is_active=True, variants__stock__gt=0).distinct()  # Adjust according to your ComboProduct model
+        elif category_slug == 'offer-products':
+            current_time = now()
+            products = Product.objects.filter(
+                Q(offers__is_active=True) &
+                Q(offers__start_date__lte=current_time) &
+                (Q(offers__end_date__gte=current_time) | Q(offers__end_date__isnull=True))
+            ).distinct()
 
-    # If it's combo category, fetch combo products
-    if category_slug == 'combo':
-        products = ComboProduct.objects.filter(is_combo=True, is_active=True)
-
-    # If it's "offer" type, fetch products that have active offers
-    if category_slug == 'offer':
-        # Filter products with active offers
-        products = Product.objects.filter(
-            offers__is_active=True,
-            offers__start_date__lte=timezone.now(),
-            offers__end_date__gte=timezone.now(),
-            is_active=True
-        ).distinct()  # Ensure no duplicate products are returned
-
-    # Apply search query if provided
+    # Apply search filtering
     if search_query:
         products = products.filter(
             Q(title__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    # Apply sorting if selected
-    if sort_by == 'price-low-high':
-        products = products.order_by('price')
-    elif sort_by == 'price-high-low':
-        products = products.order_by('-price')
-    elif sort_by == 'rating-high-low':
-        products = products.order_by('-rating')
-    elif sort_by == 'date-newest':
-        products = products.order_by('-created_at')
-    elif sort_by == 'date-oldest':
-        products = products.order_by('created_at')
-    elif sort_by == 'name-asc':
-        products = products.order_by('title')
-    elif sort_by == 'name-desc':
-        products = products.order_by('-title')
-
-    # Check for active offers for each product in the queryset
+    # Add calculated values for each product
+    products_with_prices = []
     for product in products:
-        product.valid_offer = None  # Default value if no valid offer
-        product.discounted_price = None
-        if hasattr(product, 'offers'):
-            # Check for an active offer
-            offer = product.offers.filter(
-                is_active=True,
-                start_date__lte=timezone.now(),
-                end_date__gte=timezone.now()
-            ).first()
-            if offer:
-                product.valid_offer = offer
-                for variant in product.variants.all():
-                    product.discounted_price = variant.get_discounted_price(offer=offer)
-                    print(product.discounted_price)
+        variants = product.get_variants()
+        for variant in variants:
+            prices = variant.get_price_details()
+            base_price = prices['base_price']
+            discount_price = prices['discount_price']
+            discount_percentage = ((base_price - discount_price) / base_price * 100) if discount_price is not None else 0
 
-    paginator = Paginator(products, 3)
+            products_with_prices.append({
+                'product': product,
+                'variant': variant,
+                'base_price': base_price,
+                'discount_price': discount_price if discount_price is not None else base_price,
+                'discount_percentage': discount_percentage,
+            })
+
+    # Apply sorting
+    def get_sort_key(item):
+        return item['discount_price'] if item['discount_price'] != item['base_price'] else item['base_price']
+
+    if sort_by == 'price-low-high':
+        products_with_prices.sort(key=get_sort_key)
+    elif sort_by == 'price-high-low':
+        products_with_prices.sort(key=get_sort_key, reverse=True)
+    elif sort_by == 'rating-high-low':
+        products_with_prices.sort(key=lambda p: p['product'].average_rating(), reverse=True)
+    elif sort_by == 'date-newest':
+        products_with_prices.sort(key=lambda p: p['product'].created_at, reverse=True)
+    elif sort_by == 'date-oldest':
+        products_with_prices.sort(key=lambda p: p['product'].created_at)
+    elif sort_by == 'name-asc':
+        products_with_prices.sort(key=lambda p: p['product'].title)
+    elif sort_by == 'name-desc':
+        products_with_prices.sort(key=lambda p: p['product'].title, reverse=True)
+
+    # Pagination
+    paginator = Paginator(products_with_prices, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Handle AJAX request for live search and sorting
+    # Handle AJAX requests for partial updates
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         html = render_to_string('partials/partial_product.html', {'page_obj': page_obj})
         return JsonResponse({'html': html})
 
-    # If not AJAX, render the full page
+    # Render the full page
     context = {
         'page_obj': page_obj,
+        'category': category,
         'selected_category_slug': category_slug,
     }
     return render(request, 'products/view-products.html', context)
@@ -525,13 +527,53 @@ def submit_review(request, product_id):
     else:
         form = ReviewForm()
     return render(request, 'submit_review.html', {'form': form, 'product': product})
+
+
+
 def product_detail(request, product_slug):
     product = get_object_or_404(Product, slug=product_slug)
     reviews = product.reviews.all()
-    form = ReviewForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        review = form.save(commit=False)
-        review.customer = request.user
-        review.product = product
-        review.save()
-    return render(request, 'products/product_details.html', {'product': product, 'reviews': reviews, 'form': form})
+
+    # Retrieve variant details for main product
+    variants_with_prices = []
+    variants = product.get_variants()
+    for variant in variants:
+        prices = variant.get_price_details()
+        base_price = prices['base_price']
+        discount_price = prices['discount_price']
+        discount_percentage = ((base_price - discount_price) / base_price * 100) if discount_price is not None else 0
+
+        variants_with_prices.append({
+            'variant': variant,
+            'base_price': base_price,
+            'discount_price': discount_price if discount_price is not None else base_price,
+            'discount_percentage': discount_percentage,
+        })
+
+    # Retrieve related products and their offer details
+    related_products = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id)[:4]
+    related_products_with_prices = []
+    for related_product in related_products:
+        variants = related_product.get_variants()
+        for variant in variants:
+            prices = variant.get_price_details()
+            base_price = prices['base_price']
+            discount_price = prices['discount_price']
+            discount_percentage = ((base_price - discount_price) / base_price * 100) if discount_price is not None else 0
+
+            related_products_with_prices.append({
+                'product': related_product,
+                'variant': variant,
+                'base_price': base_price,
+                'discount_price': discount_price if discount_price is not None else base_price,
+                'discount_percentage': discount_percentage,
+            })
+
+    context = {
+        'product': product,
+        'variants_with_prices': variants_with_prices,
+        'reviews': reviews,
+        'related_products_with_prices': related_products_with_prices,
+    }
+
+    return render(request, 'products/product_details.html', context)

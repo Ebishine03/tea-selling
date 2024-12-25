@@ -221,7 +221,7 @@
         </div>
         <div class="row g-4">
             {% for combo in recent_combo %}
-            <div class="col-lg-4 col-md-6">
+            <div class="col-6 col-lg-4 col-md-6">
                 <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
                     <div class="image-container">
                         {% if combo.combo_image %}
@@ -252,8 +252,8 @@
         </div>
         <div class="row g-4">
             {% for product_data in products %}
-                <div class="col-lg-4 col-md-6">
-                    <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
+                <div class="col-6 col-lg-4 col-md-6">
+                    <div class="store-item card shadow-lg p-3 bg-light rounded  text-center">
                         <div class="image-container position-relative">
                             {% if product_data.product.product_image %}
                                 <img class="img-fluid" src="{{ product_data.product.product_image.url }}" alt="{{ product_data.product.title }}" />

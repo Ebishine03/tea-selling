@@ -51,4 +51,4 @@ def format_weight(weight):
         return f"{weight * 1000:.0f} g"
     else:
         # Show weight in kilograms for weights equal to or greater than 1kg
-        return f"{weight:.2f} kg"
+        return f"{weight:.0f} kg"
