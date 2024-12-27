@@ -145,12 +145,13 @@
         <div class="carousel-inner">
             <div class="d-flex flex-row flex-wrap justify-content-center">
                 {% for offer_product in offer_products %}
+                
                     <div class="offer-product shadow-sm mx-2 mb-4" style="width: 18rem;">
                         <a href="{% url 'product_detail' offer_product.product.slug %}" class="text-decoration-none text-dark">
                             <!-- Product Image with Discount Badge -->
                             <div class="image-container position-relative">
                                 {% if offer_product.product.product_image %}
-                                    <img class="img-fluid" src="{{ offer_product.product.product_image.url }}" alt="{{ product.product.title }}">
+                                    <img class="img-fluid" src="{{ offer_product.product.product_image.url }}" alt="{{ offer_product.product.title }}">
                                 {% else %}
                                     <img class="img-fluid" src="/static/images/default-product.jpg" alt="No Image Available">
                                 {% endif %}
@@ -171,9 +172,9 @@
                                 </h5>
 
                                 <div class="d-flex flex-column align-items-center" class="text-center mb-3" style="font-family: 'Roboto', sans-serif;">
-                                    {% if offer_product.base_price %}
+                                    {% if offer_product.discount_price %}
                                         <h6 class="text-danger mb-1" class="text-center" style="font-family: 'Roboto', sans-serif;">
-                                            <i class="bi bi-currency-rupee"></i>{{ offer_product.discounted_price|floatformat:2 }}
+                                            <i class="bi bi-currency-rupee"></i>{{ offer_product.discount_price|floatformat:2 }}
                                         </h6>
 
                                         <h6 class="text-muted text-decoration-line-through mb-2" class="text-center mb-3" style="font-family: 'Roboto', sans-serif;">
@@ -186,7 +187,7 @@
                             <!-- Star Rating -->
                             <div class="rating p-1">
                                 {% for i in "12345" %}
-                                    {% if forloop.counter <= product.product.average_rating|default:0 %}
+                                    {% if forloop.counter <= offer_product.product.average_rating|default:0 %}
                                         <i class="fas fa-star text-warning"></i>
                                     {% else %}
                                         <i class="far fa-star text-muted"></i>
@@ -210,36 +211,7 @@
     </div>
 </div>
 
-
-  
-
-<!-- Combo Deals Section -->
-<div class="container-xxl py-5">
-    <div class="container">
-        <div class="section-title text-center mx-auto" style="max-width: 500px;">
-            <h1 class="display-6 fw-bold text-muted">Combo Deals</h1>
-        </div>
-        <div class="row g-4">
-            {% for combo in recent_combo %}
-            <div class="col-6 col-lg-4 col-md-6">
-                <div class="store-item card shadow-lg p-3 bg-light rounded h-100 text-center">
-                    <div class="image-container">
-                        {% if combo.combo_image %}
-                            <img class="img-fluid" src="{{ combo.combo_image.url }}" alt="{{ combo.title }}">
-                        {% else %}
-                            <img class="img-fluid" src="{% static 'default-image.jpg' %}" alt="No Image Available">
-                        {% endif %}
-                    </div>
-                    <div class="p-4">
-                        <h4 class="mb-3">{{ combo.title }}</h4>
-                        <h4 class="fw-bold">Rs.{{ combo.price }}</h4>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+<!-- Categories Section -->
 
 <!-- Categories Section -->
 {% for category, products in categorized_products.items %}
@@ -253,7 +225,7 @@
         <div class="row g-4">
             {% for product_data in products %}
                 <div class="col-6 col-lg-4 col-md-6">
-                    <div class="store-item card shadow-lg p-3 bg-light rounded  text-center">
+                    <div class="store-item card shadow-lg p-3 bg-light rounded text-center">
                         <div class="image-container position-relative">
                             {% if product_data.product.product_image %}
                                 <img class="img-fluid" src="{{ product_data.product.product_image.url }}" alt="{{ product_data.product.title }}" />
@@ -261,8 +233,11 @@
                                 <img class="img-fluid" src="{% static 'default-image.jpg' %}" alt="No Image Available">
                             {% endif %}
 
+                            <!-- Show Discount Badge only if the product has a valid offer -->
+                          
                             {% for variant_data in product_data.variants %}
-                                {% if variant_data.discounted_price %}
+                            {{ variant_data.discount_price  }}cvjhkbjklgyy
+                                {% if variant_data.discount_price %}
                                     <div class="discount-badge position-absolute top-0 start-0 bg-danger text-white px-2 py-1 small">
                                         {{ variant_data.discount_percentage|floatformat:0 }}% OFF
                                     </div>
@@ -280,16 +255,19 @@
                             </h5>
                             <p>{{ product_data.product.description|truncatechars:100 }}</p>
 
+                            <!-- Pricing Logic -->
                             {% for variant_data in product_data.variants %}
-                                {% if variant_data.discounted_price %}
+                                {% if variant_data.discount_price %}
+                                    <!-- Product has an offer, show discounted price and strike-through base price -->
                                     <h6 class="text-danger mb-1" style="font-family: 'Roboto', sans-serif;">
-                                        <i class="bi bi-currency-rupee"></i>{{ variant_data.discounted_price|floatformat:2 }}
+                                        <i class="bi bi-currency-rupee"></i>{{ variant_data.discount_price|floatformat:2 }}
                                     </h6>
                                     <h6 class="text-muted text-decoration-line-through mb-2" style="font-family: 'Roboto', sans-serif;">
                                         <i class="bi bi-currency-rupee"></i>{{ variant_data.base_price|floatformat:2 }}
                                     </h6>
                                 {% else %}
-                                    <h6 class="mb-2" style="font-family: 'Roboto', sans-serif;">
+                                    <!-- Product has no offer, show only base price -->
+                                    <h6 class="mb-1" style="font-family: 'Roboto', sans-serif;">
                                         <i class="bi bi-currency-rupee"></i>{{ variant_data.base_price|floatformat:2 }}
                                     </h6>
                                 {% endif %}
@@ -314,15 +292,15 @@
             {% endfor %}
         </div>
         <div class="text-center mt-5">
-           
             {% if products.0.category_slug %}
-            <a href="{% url 'view-products' products.0.category_slug %}" class="btn btn-primary rounded-pill py-3 px-5">
-                View More <i class="fa fa-arrow-right ms-2"></i>
-            </a>
-        {% endif %}
-            
+                <a href="{% url 'view-products' products.0.category_slug %}" class="btn btn-primary rounded-pill py-3 px-5">
+                    View More <i class="fa fa-arrow-right ms-2"></i>
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>
 {% endfor %}
+
+
 {% endblock %}

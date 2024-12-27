@@ -35,8 +35,6 @@ def group_into_chunks(iterable, chunk_size):
     """Groups an iterable into chunks of a specified size."""
     args = [iter(iterable)] * chunk_size
     return zip_longest(*args)
-
-
 def index(request):
     # Fetch all categories and their products
     categories = Category.objects.prefetch_related(
@@ -46,15 +44,12 @@ def index(request):
         )
     )
 
-    # Dictionary to hold categorized products
     categorized_products = defaultdict(list)
     products_with_valid_offers = []
 
-    # Process each category and its products
     for category in categories:
         category_products = []
-        for product in category.products.all():
-            # Prepare product data for categorization
+        for product in category.products.all()[:3]:  # Get only the recent three products
             product_data = {
                 'product': product,
                 'variants': [],
@@ -62,46 +57,56 @@ def index(request):
                 'category_slug': category.slug,
             }
 
-            # Check variants and offers
             for variant in product.variants.all():
-                variant_data = {
-                    'variant': variant,
-                    'base_price': variant.calculate_base_price(),
-                    'discounted_price': None,
-                    'discount_percentage': None,
-                }
+                prices = variant.get_price_details()
+                base_price = prices['base_price']
+                discount_price = prices['discount_price']
+                discount_percentage = ((base_price - discount_price) / base_price * 100) if discount_price is not None else 0
 
-                # Check for valid offers
+                # Check if there are valid offers
                 valid_offers = [offer for offer in product.offers.all() if offer.is_valid]
-                if valid_offers:
-                    valid_offer = valid_offers[0]
-                    variant_data['discounted_price'] = variant.offer_discount_price
-                    variant_data['discount_percentage'] = valid_offer.discount_percentage
 
-                    # Add product with valid offer to the offer list
+                # If the product has a valid offer, append the offer details
+                if valid_offers:
+                    valid_offer = valid_offers[0]  # Take the first valid offer
                     products_with_valid_offers.append({
                         'product': product,
                         'variant': variant,
                         'category_name': category.name,
                         'category_slug': category.slug,
                         'offer': valid_offer,
-                        'discounted_price': variant_data['discounted_price'],
-                        'discount_percentage': variant_data['discount_percentage'],
-                        'base_price': variant.calculate_base_price(),
+                        'discount_price': discount_price,
+                        'discount_percentage': discount_percentage,
+                        'base_price': base_price,
                     })
 
-                product_data['variants'].append(variant_data)
+                    # Add variant details with discount price and percentage
+                    product_data['variants'].append({
+                        'variant': variant,
+                        'base_price': base_price,
+                        'discount_price': discount_price,
+                        'discount_percentage': discount_percentage,
+                    })
+                else:
+                    # If no valid offer, only append the base price without discount info
+                    product_data['variants'].append({
+                        'variant': variant,
+                        'base_price': base_price,
+                    })
 
-            # Collect all products for this category
             category_products.append(product_data)
+        categorized_products[category.name] = category_products
 
-        # Keep only the recent three products for this category
-        categorized_products[category.name] = category_products[:3]
+    # Ensure unique products with offers
+    product_ids_with_offers = set()
+    unique_products_with_valid_offers = []
+    for product in products_with_valid_offers:
+        if product['product'].id not in product_ids_with_offers:
+            unique_products_with_valid_offers.append(product)
+            product_ids_with_offers.add(product['product'].id)
 
-    # Keep only the recent three products with valid offers
-    products_with_valid_offers = products_with_valid_offers[:3]
+    products_with_valid_offers = unique_products_with_valid_offers[:3]  # Keep only the recent three unique products with valid offers
 
-    # Prepare context
     context = {
         'categorized_products': dict(categorized_products),
         'offer_products': products_with_valid_offers,
@@ -109,9 +114,6 @@ def index(request):
 
     return render(request, 'base/home.html', context)
 
-
-
- 
 def search_products_home(request):
     query = request.GET.get('q', '')  # Get the search query
     if query:
