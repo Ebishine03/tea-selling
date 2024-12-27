@@ -30,50 +30,57 @@ from .models import Product, ComboProduct, Category, Offer
 from django.utils import timezone
 
 
-
-
 def list_products(request, category_slug):
     search_query = request.GET.get('search-query', '')
     sort_by = request.GET.get('sort-by', 'default')
 
-    # Fetch the category or return 404 if it doesn't exist
-    if category_slug not in ['combo', 'offer-products']:
+    
+    if category_slug == 'combo':
+    
+        products = Product.objects.filter(is_active=True, variants__stock__gt=0).distinct()
+        category = None
+    elif category_slug == 'offer-products':
+       
+        current_time = now()
+        products = Product.objects.filter(
+            Q(offers__is_active=True) &
+            Q(offers__start_date__lte=current_time) &
+            (Q(offers__end_date__gte=current_time) | Q(offers__end_date__isnull=True))
+        ).distinct()
+        category = None
+    else:
+      
         category = get_object_or_404(Category, slug=category_slug)
         products = Product.objects.filter(category=category, is_active=True)
-    else:
-        category = None
-        if category_slug == 'combo':
-            products = Product.objects.filter(is_active=True, variants__stock__gt=0).distinct()  # Adjust according to your ComboProduct model
-        elif category_slug == 'offer-products':
-            current_time = now()
-            products = Product.objects.filter(
-                Q(offers__is_active=True) &
-                Q(offers__start_date__lte=current_time) &
-                (Q(offers__end_date__gte=current_time) | Q(offers__end_date__isnull=True))
-            ).distinct()
 
-    # Apply search filtering
     if search_query:
         products = products.filter(
             Q(title__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    # Add calculated values for each product
+   
     products_with_prices = []
     for product in products:
         variants = product.get_variants()
+        
         for variant in variants:
+            # Get price details using the model's function
             prices = variant.get_price_details()
-            base_price = prices['base_price']
-            discount_price = prices['discount_price']
-            discount_percentage = ((base_price - discount_price) / base_price * 100) if discount_price is not None else 0
+            base_price = prices["base_price"]
+            discount_price = prices["discount_price"] if prices["discount_price"] is not None else 0  # Default to 0 if no discount
+
+            valid_offers = [offer for offer in product.offers.all() if offer.is_valid]
+            if valid_offers:
+                valid_offer = valid_offers[0] 
+                discount_percentage = valid_offer.discount_percentage  
 
             products_with_prices.append({
                 'product': product,
                 'variant': variant,
                 'base_price': base_price,
                 'discount_price': discount_price if discount_price is not None else base_price,
-                'discount_percentage': discount_percentage,
+                'discount_percentage': discount_percentage, 
+                'has_offer': bool(valid_offers), 
             })
 
     # Apply sorting
@@ -112,6 +119,8 @@ def list_products(request, category_slug):
         'selected_category_slug': category_slug,
     }
     return render(request, 'products/view-products.html', context)
+
+
 
 
 @login_required
